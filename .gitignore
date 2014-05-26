@@ -1,0 +1,18 @@
+# eagle
+*.epf
+*.l#*
+*.s#*
+*.b#*
+*.b##
+
+
+# c
+*.o
+
+
+# backups
+*~
+
+
+#other
+*.fuse_hidden*
