@@ -10018,11 +10018,7 @@ Source: 008-0260-0_E.pdf</description>
 <segment>
 <pinref part="GND26" gate="1" pin="GND"/>
 <wire x1="88.9" y1="38.1" x2="88.9" y2="40.64" width="0.1524" layer="91"/>
-<pinref part="IC3" gate="G$1" pin="VSS6"/>
-<wire x1="96.52" y1="33.02" x2="93.98" y2="33.02" width="0.1524" layer="91"/>
-<wire x1="93.98" y1="33.02" x2="93.98" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="IC3" gate="G$1" pin="VSS1"/>
-<wire x1="93.98" y1="35.56" x2="93.98" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="38.1" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="40.64" x2="93.98" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="43.18" x2="93.98" y2="45.72" width="0.1524" layer="91"/>
@@ -10035,10 +10031,6 @@ Source: 008-0260-0_E.pdf</description>
 <junction x="93.98" y="40.64"/>
 <pinref part="IC3" gate="G$1" pin="VSS4"/>
 <wire x1="96.52" y1="38.1" x2="93.98" y2="38.1" width="0.1524" layer="91"/>
-<junction x="93.98" y="38.1"/>
-<pinref part="IC3" gate="G$1" pin="VSS5"/>
-<wire x1="96.52" y1="35.56" x2="93.98" y2="35.56" width="0.1524" layer="91"/>
-<junction x="93.98" y="35.56"/>
 <wire x1="88.9" y1="40.64" x2="93.98" y2="40.64" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="45.72" x2="93.98" y2="50.8" width="0.1524" layer="91"/>
 <junction x="93.98" y="45.72"/>
@@ -10048,6 +10040,14 @@ Source: 008-0260-0_E.pdf</description>
 <wire x1="93.98" y1="58.42" x2="96.52" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="93.98" y1="58.42" x2="93.98" y2="50.8" width="0.1524" layer="91"/>
 <junction x="93.98" y="50.8"/>
+<pinref part="IC3" gate="G$1" pin="VSS5"/>
+<wire x1="93.98" y1="38.1" x2="93.98" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="35.56" x2="96.52" y2="35.56" width="0.1524" layer="91"/>
+<junction x="93.98" y="38.1"/>
+<pinref part="IC3" gate="G$1" pin="VSS6"/>
+<wire x1="93.98" y1="35.56" x2="93.98" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="33.02" x2="96.52" y2="33.02" width="0.1524" layer="91"/>
+<junction x="93.98" y="35.56"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="G$1" pin="GND"/>
