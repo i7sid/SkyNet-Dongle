@@ -10330,13 +10330,15 @@ Source: 008-0260-0_E.pdf</description>
 </net>
 <net name="BT_AT" class="0">
 <segment>
+<pinref part="IC3" gate="G$1" pin="P2[5]/PWM1[6]/DTR1/TRACEDATA[0]"/>
+<wire x1="185.42" y1="88.9" x2="187.96" y2="88.9" width="0.1524" layer="91"/>
+<label x="188.214" y="87.884" size="1.778" layer="95"/>
+</segment>
+<segment>
 <pinref part="IC1" gate="G$1" pin="PIO11"/>
 <wire x1="10.16" y1="162.56" x2="7.62" y2="162.56" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="162.56" x2="7.62" y2="172.72" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="172.72" x2="73.66" y2="172.72" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="172.72" x2="73.66" y2="154.94" width="0.1524" layer="91"/>
-<pinref part="IC3" gate="G$1" pin="P0[4]/I2SRX_CLK/RD2/CAP2[0]"/>
-<wire x1="73.66" y1="154.94" x2="96.52" y2="154.94" width="0.1524" layer="91"/>
+<label x="4.572" y="168.402" size="1.778" layer="95"/>
+<wire x1="7.62" y1="162.56" x2="7.62" y2="167.64" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="USB-CON" class="0">
@@ -10408,15 +10410,6 @@ Source: 008-0260-0_E.pdf</description>
 <label x="25.146" y="98.298" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
-<net name="BT_RESET" class="0">
-<segment>
-<pinref part="IC1" gate="G$1" pin="RST"/>
-<wire x1="58.42" y1="137.16" x2="60.96" y2="137.16" width="0.1524" layer="91"/>
-<wire x1="60.96" y1="137.16" x2="60.96" y2="152.4" width="0.1524" layer="91"/>
-<pinref part="IC3" gate="G$1" pin="P0[5]/I2SRX_WS/TD2/CAP2[1]"/>
-<wire x1="60.96" y1="152.4" x2="96.52" y2="152.4" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="RF-GPIO0" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="GPIO0"/>
@@ -10442,16 +10435,20 @@ Source: 008-0260-0_E.pdf</description>
 </net>
 <net name="CHGSEL_H" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[0]/ENET_TXD0"/>
-<wire x1="185.42" y1="165.1" x2="193.04" y2="165.1" width="0.1524" layer="91"/>
-<label x="193.802" y="164.338" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="P3[25]/MAT0[0]/PWM1[2]"/>
+<wire x1="185.42" y1="63.5" x2="187.96" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="187.96" y1="63.5" x2="187.96" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="187.96" y1="68.58" x2="193.04" y2="68.58" width="0.1524" layer="91"/>
+<label x="193.294" y="67.564" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="CHGSEL_L" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[1]/ENET_TXD1"/>
-<wire x1="185.42" y1="162.56" x2="193.04" y2="162.56" width="0.1524" layer="91"/>
-<label x="193.802" y="161.798" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="P3[26]/STCLK/MAT0[1]/PWM1[3]"/>
+<wire x1="185.42" y1="60.96" x2="190.5" y2="60.96" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="60.96" x2="190.5" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="66.04" x2="193.04" y2="66.04" width="0.1524" layer="91"/>
+<label x="193.294" y="65.024" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EXT_PWR" class="0">
@@ -10463,16 +10460,16 @@ Source: 008-0260-0_E.pdf</description>
 </net>
 <net name="CHG_S1" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[4]/ENET_TX_EN"/>
-<wire x1="185.42" y1="160.02" x2="193.04" y2="160.02" width="0.1524" layer="91"/>
-<label x="193.802" y="159.258" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="P0[10]/TXD2/SDA2/MAT3[0]"/>
+<wire x1="96.52" y1="139.7" x2="93.98" y2="139.7" width="0.1524" layer="91"/>
+<label x="92.964" y="139.192" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="CHG_S2" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[8]/ENET_CRS"/>
-<wire x1="185.42" y1="157.48" x2="193.04" y2="157.48" width="0.1524" layer="91"/>
-<label x="193.802" y="156.718" size="1.778" layer="95"/>
+<pinref part="IC3" gate="G$1" pin="P0[11]/RXD2/SCL2/MAT3[1]"/>
+<wire x1="96.52" y1="137.16" x2="93.98" y2="137.16" width="0.1524" layer="91"/>
+<label x="92.964" y="136.652" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="RTCX2" class="0">
@@ -10564,23 +10561,23 @@ Source: 008-0260-0_E.pdf</description>
 </net>
 <net name="SDA_EXT" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P0[10]/TXD2/SDA2/MAT3[0]"/>
-<wire x1="96.52" y1="139.7" x2="93.98" y2="139.7" width="0.1524" layer="91"/>
-<label x="92.964" y="139.192" size="1.778" layer="95" rot="MR0"/>
+<pinref part="IC3" gate="G$1" pin="P0[27]/SDA0/USB_SDA"/>
+<wire x1="96.52" y1="104.14" x2="93.98" y2="104.14" width="0.1524" layer="91"/>
+<label x="93.472" y="103.378" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="SCL_EXT" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P0[11]/RXD2/SCL2/MAT3[1]"/>
-<wire x1="96.52" y1="137.16" x2="93.98" y2="137.16" width="0.1524" layer="91"/>
-<label x="92.964" y="136.652" size="1.778" layer="95" rot="MR0"/>
+<pinref part="IC3" gate="G$1" pin="P0[28]/SCL0/USB_SCL"/>
+<wire x1="96.52" y1="101.6" x2="93.98" y2="101.6" width="0.1524" layer="91"/>
+<label x="93.472" y="100.838" size="1.778" layer="95" rot="MR0"/>
 </segment>
 </net>
 <net name="AD-PWR" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P0[22]/RTS1/TD1"/>
-<wire x1="96.52" y1="116.84" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
-<label x="93.472" y="116.078" size="1.778" layer="95" rot="MR0"/>
+<pinref part="IC3" gate="G$1" pin="P1[29]/MCOB2/PCAP1[1]/MAT0[1]"/>
+<wire x1="185.42" y1="111.76" x2="187.96" y2="111.76" width="0.1524" layer="91"/>
+<label x="188.214" y="110.998" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="JTAG-TRST" class="0">
@@ -10602,6 +10599,19 @@ Source: 008-0260-0_E.pdf</description>
 <pinref part="IC3" gate="G$1" pin="P2[2]/PWM1[3]/CTS1/TRACEDATA[3]"/>
 <wire x1="185.42" y1="96.52" x2="187.96" y2="96.52" width="0.1524" layer="91"/>
 <label x="188.214" y="95.758" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="BT-RST" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[22]/RTS1/TD1"/>
+<wire x1="96.52" y1="116.84" x2="93.98" y2="116.84" width="0.1524" layer="91"/>
+<label x="93.472" y="116.078" size="1.778" layer="95" rot="MR0"/>
+</segment>
+<segment>
+<pinref part="IC1" gate="G$1" pin="RST"/>
+<wire x1="58.42" y1="137.16" x2="60.96" y2="137.16" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="137.16" x2="60.96" y2="142.24" width="0.1524" layer="91"/>
+<label x="59.69" y="142.494" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
