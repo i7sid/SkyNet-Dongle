@@ -40,12 +40,13 @@ EAGLE files (schematics, layout)
 --------------------------------
 
 The eagle files contained in this repository
-(schematics, layouts) need the following libraries:
-* [lpc1xxx-v6.lbr](http://www.cadsoft.de/downloads/file/lpc1xxx-v6.lbr)
-* [Bluetooth HC-05.lbr](https://github.com/ErichStyger/mcuoneclipse/tree/master/Eagle/Library)
-* [microchip-battery.lbr](https://github.com/scott-42/eagle-lib)
-* [usb_con-update.lbr](http://www.cadsoft.de/downloads/file/usb_con-update.lbr)
-* TPS63001 (from this repository)
+(schematics, layouts) use the following libraries:
+* LPC1769: [lpc1xxx-v6.lbr](http://www.cadsoft.de/downloads/file/lpc1xxx-v6.lbr)
+* HC-05: [Bluetooth HC-05.lbr](https://github.com/ErichStyger/mcuoneclipse/tree/master/Eagle/Library)
+* MCP73871: [microchip-battery.lbr](https://github.com/scott-42/eagle-lib)
+* Micro USB connector: [usb_con-update.lbr](http://www.cadsoft.de/downloads/file/usb_con-update.lbr)
+* Switch: [switch-ck.lbr](https://github.com/robertstarr/lbr_user/blob/master/switch-ck.lbr)
+* [Microbuilder Library](http://www.microbuilder.eu/Projects/EagleFootprintLibrary.aspx)
 * RF4463PRO (from this repository)
 * skynet_other (from this repository)
 
