@@ -7074,8 +7074,32 @@ Source: AVX .. aphvc.pdf</description>
 <vertex x="3" y="-0.8"/>
 <vertex x="3" y="0"/>
 </polygon>
-<smd name="1" x="0.250696875" y="-2.00304375" dx="1.27" dy="0.635" layer="1" rot="R90"/>
-<smd name="2" x="4.130546875" y="-2.00304375" dx="1.27" dy="0.635" layer="1" rot="R90"/>
+<smd name="1" x="0.250696875" y="-2.00304375" dx="1.27" dy="0.635" layer="1" rot="R90" stop="no"/>
+<smd name="2" x="4.130546875" y="-2.00304375" dx="1.27" dy="0.635" layer="1" rot="R90" stop="no"/>
+<polygon width="0.127" layer="29">
+<vertex x="0.6" y="0"/>
+<vertex x="-0.2" y="-0.8"/>
+<vertex x="-0.2" y="-3.1"/>
+<vertex x="0.6" y="-3.9"/>
+<vertex x="1.4" y="-3.9"/>
+<vertex x="1.4" y="-3.1"/>
+<vertex x="0.7" y="-2.5"/>
+<vertex x="0.7" y="-1.4"/>
+<vertex x="1.4" y="-0.8"/>
+<vertex x="1.4" y="0"/>
+</polygon>
+<polygon width="0.127" layer="29">
+<vertex x="3.8" y="0"/>
+<vertex x="4.6" y="-0.8"/>
+<vertex x="4.6" y="-3.1"/>
+<vertex x="3.8" y="-3.9"/>
+<vertex x="3" y="-3.9"/>
+<vertex x="3" y="-3.1"/>
+<vertex x="3.7" y="-2.5"/>
+<vertex x="3.7" y="-1.4"/>
+<vertex x="3" y="-0.8"/>
+<vertex x="3" y="0"/>
+</polygon>
 </package>
 <package name="PTS645-VERT">
 <wire x1="3.302" y1="-0.762" x2="3.048" y2="-0.762" width="0.1524" layer="21"/>
@@ -7180,6 +7204,18 @@ Source: AVX .. aphvc.pdf</description>
 <rectangle x1="-2.8448" y1="1.4224" x2="-2.4638" y2="2.794" layer="51"/>
 <rectangle x1="-2.8448" y1="-0.6858" x2="-2.4638" y2="0.6858" layer="51"/>
 <rectangle x1="-2.8448" y1="-2.794" x2="-2.4638" y2="-1.4224" layer="51"/>
+<rectangle x1="-5.08" y1="1.27" x2="-1.27" y2="3.175" layer="31"/>
+<rectangle x1="-5.08" y1="-3.175" x2="-1.27" y2="-1.27" layer="31"/>
+<rectangle x1="1.2321" y1="1.2855" x2="4.219521875" y2="3.129175" layer="29"/>
+<rectangle x1="1.215221875" y1="-0.81189375" x2="4.455815625" y2="0.778065625" layer="29"/>
+<rectangle x1="1.2321" y1="-3.28140625" x2="4.20264375" y2="-1.2855" layer="31"/>
+<rectangle x1="-5.098153125" y1="-0.7739375" x2="-1.2305875" y2="0.785665625" layer="31"/>
+<rectangle x1="-5.08" y1="1.27" x2="-1.27" y2="3.175" layer="29"/>
+<rectangle x1="-5.09815" y1="-0.7739375" x2="-1.2305875" y2="0.7856625" layer="29"/>
+<rectangle x1="-5.08" y1="-3.175" x2="-1.27" y2="-1.27" layer="29"/>
+<rectangle x1="1.2321" y1="-3.28140625" x2="4.20264375" y2="-1.2855" layer="29"/>
+<rectangle x1="1.215221875" y1="-0.811890625" x2="4.455815625" y2="0.778065625" layer="31"/>
+<rectangle x1="1.2321" y1="1.2855" x2="4.21951875" y2="3.129175" layer="31"/>
 </package>
 </packages>
 <symbols>
@@ -9939,7 +9975,6 @@ Source: 008-0260-0_E.pdf</description>
 <part name="JP4" library="microbuilder" deviceset="HEADER-2X5" device="1.27MM" value="PERIPH"/>
 <part name="+3V11" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND13" library="supply1" deviceset="GND" device=""/>
-<part name="S1" library="switch-ck" deviceset="PTS645S???SMTR" device="" value="PROG"/>
 <part name="JP3" library="microbuilder" deviceset="HEADER-2X5" device="1.27MM" value="JTAG"/>
 <part name="+3V12" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
@@ -9970,6 +10005,7 @@ Source: 008-0260-0_E.pdf</description>
 <part name="C12" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
 <part name="GND21" library="supply1" deviceset="GND" device=""/>
 <part name="+3V22" library="supply1" deviceset="+3V3" device=""/>
+<part name="JP5" library="jumper" deviceset="JP1Q" device="" value="PROG"/>
 </parts>
 <sheets>
 <sheet>
@@ -10000,7 +10036,7 @@ Source: 008-0260-0_E.pdf</description>
 <instance part="GND11" gate="1" x="48.26" y="45.72"/>
 <instance part="R2" gate="G$1" x="68.58" y="66.04" rot="MR0"/>
 <instance part="+3V2" gate="G$1" x="58.42" y="73.66" rot="MR0"/>
-<instance part="GND5" gate="1" x="248.92" y="60.96"/>
+<instance part="GND5" gate="1" x="251.46" y="63.5"/>
 <instance part="GND6" gate="1" x="248.92" y="40.64"/>
 <instance part="GND7" gate="1" x="220.98" y="27.94"/>
 <instance part="+3V13" gate="G$1" x="88.9" y="81.28"/>
@@ -10009,7 +10045,7 @@ Source: 008-0260-0_E.pdf</description>
 <instance part="S2" gate="G$1" x="58.42" y="50.8" rot="R270"/>
 <instance part="S3" gate="G$1" x="236.22" y="45.72"/>
 <instance part="C1" gate="G$1" x="12.7" y="109.22" rot="MR0"/>
-<instance part="S1" gate="G$1" x="236.22" y="66.04" rot="R270"/>
+<instance part="JP5" gate="A" x="241.3" y="68.58" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -10062,12 +10098,6 @@ Source: 008-0260-0_E.pdf</description>
 <wire x1="241.3" y1="45.72" x2="248.92" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="GND5" gate="1" pin="GND"/>
-<wire x1="248.92" y1="63.5" x2="248.92" y2="66.04" width="0.1524" layer="91"/>
-<pinref part="S1" gate="G$1" pin="S"/>
-<wire x1="241.3" y1="66.04" x2="248.92" y2="66.04" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="C5" gate="G$1" pin="2"/>
 <wire x1="210.82" y1="27.94" x2="213.36" y2="27.94" width="0.1524" layer="91"/>
 <wire x1="213.36" y1="27.94" x2="213.36" y2="35.56" width="0.1524" layer="91"/>
@@ -10110,6 +10140,12 @@ Source: 008-0260-0_E.pdf</description>
 <wire x1="17.78" y1="104.14" x2="17.78" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="17.78" y1="101.6" x2="12.7" y2="101.6" width="0.1524" layer="91"/>
 <junction x="12.7" y="101.6"/>
+</segment>
+<segment>
+<pinref part="GND5" gate="1" pin="GND"/>
+<pinref part="JP5" gate="A" pin="2"/>
+<wire x1="251.46" y1="66.04" x2="251.46" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="251.46" y1="68.58" x2="248.92" y2="68.58" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="RTCX1" class="0">
@@ -10376,14 +10412,14 @@ Source: 008-0260-0_E.pdf</description>
 <net name="PROG" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="P2[10]/EINT0/NMI"/>
-<wire x1="185.42" y1="76.2" x2="228.6" y2="76.2" width="0.1524" layer="91"/>
-<wire x1="228.6" y1="76.2" x2="228.6" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="76.2" x2="231.14" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="R5" gate="G$1" pin="1"/>
-<wire x1="228.6" y1="76.2" x2="246.38" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="231.14" y1="76.2" x2="246.38" y2="76.2" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="76.2" x2="246.38" y2="81.28" width="0.1524" layer="91"/>
-<junction x="228.6" y="76.2"/>
-<pinref part="S1" gate="G$1" pin="P"/>
-<wire x1="228.6" y1="66.04" x2="231.14" y2="66.04" width="0.1524" layer="91"/>
+<pinref part="JP5" gate="A" pin="1"/>
+<wire x1="233.68" y1="68.58" x2="231.14" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="231.14" y1="68.58" x2="231.14" y2="76.2" width="0.1524" layer="91"/>
+<junction x="231.14" y="76.2"/>
 </segment>
 </net>
 <net name="RESET" class="0">
