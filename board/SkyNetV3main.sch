@@ -10640,8 +10640,8 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <instances>
 <instance part="USB1" gate="G$1" x="25.4" y="149.86" rot="MR0"/>
 <instance part="P+1" gate="1" x="35.56" y="165.1"/>
-<instance part="R15" gate="G$1" x="40.64" y="152.4" rot="R180"/>
-<instance part="R16" gate="G$1" x="50.8" y="147.32" rot="R180"/>
+<instance part="R15" gate="G$1" x="40.64" y="147.32" rot="R180"/>
+<instance part="R16" gate="G$1" x="50.8" y="152.4" rot="R180"/>
 <instance part="C22" gate="G$1" x="58.42" y="142.24"/>
 <instance part="C23" gate="G$1" x="68.58" y="142.24"/>
 <instance part="GND8" gate="1" x="45.72" y="127"/>
@@ -10763,39 +10763,23 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <net name="USB-D+" class="0">
 <segment>
 <pinref part="R15" gate="G$1" pin="1"/>
-<wire x1="45.72" y1="152.4" x2="58.42" y2="152.4" width="0.1524" layer="91"/>
+<wire x1="45.72" y1="147.32" x2="58.42" y2="147.32" width="0.1524" layer="91"/>
 <pinref part="C22" gate="G$1" pin="1"/>
-<wire x1="58.42" y1="152.4" x2="81.28" y2="152.4" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="144.78" x2="58.42" y2="152.4" width="0.1524" layer="91"/>
-<junction x="58.42" y="152.4"/>
-<label x="81.28" y="152.4" size="1.778" layer="95" xref="yes"/>
+<wire x1="58.42" y1="147.32" x2="81.28" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="58.42" y1="144.78" x2="58.42" y2="147.32" width="0.1524" layer="91"/>
+<junction x="58.42" y="147.32"/>
+<label x="81.28" y="147.32" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="USB-D-" class="0">
 <segment>
 <pinref part="R16" gate="G$1" pin="1"/>
-<wire x1="55.88" y1="147.32" x2="68.58" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="55.88" y1="152.4" x2="68.58" y2="152.4" width="0.1524" layer="91"/>
 <pinref part="C23" gate="G$1" pin="1"/>
-<wire x1="68.58" y1="147.32" x2="81.28" y2="147.32" width="0.1524" layer="91"/>
-<wire x1="68.58" y1="144.78" x2="68.58" y2="147.32" width="0.1524" layer="91"/>
-<junction x="68.58" y="147.32"/>
-<label x="81.28" y="147.32" size="1.778" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="USB-D+_IN" class="0">
-<segment>
-<pinref part="USB1" gate="G$1" pin="2"/>
-<pinref part="R15" gate="G$1" pin="2"/>
-<wire x1="30.48" y1="152.4" x2="35.56" y2="152.4" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="USB-D-_IN" class="0">
-<segment>
-<pinref part="USB1" gate="G$1" pin="3"/>
-<wire x1="30.48" y1="149.86" x2="35.56" y2="149.86" width="0.1524" layer="91"/>
-<wire x1="35.56" y1="149.86" x2="35.56" y2="147.32" width="0.1524" layer="91"/>
-<pinref part="R16" gate="G$1" pin="2"/>
-<wire x1="35.56" y1="147.32" x2="45.72" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="152.4" x2="83.82" y2="152.4" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="144.78" x2="68.58" y2="152.4" width="0.1524" layer="91"/>
+<junction x="68.58" y="152.4"/>
+<label x="83.82" y="152.4" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="SDA-EXT" class="0">
@@ -10908,6 +10892,22 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="JP4" gate="G$1" pin="2"/>
 <wire x1="223.52" y1="81.28" x2="228.6" y2="81.28" width="0.1524" layer="91"/>
 <label x="228.6" y="81.28" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="N$2" class="0">
+<segment>
+<pinref part="USB1" gate="G$1" pin="2"/>
+<pinref part="R16" gate="G$1" pin="2"/>
+<wire x1="30.48" y1="152.4" x2="45.72" y2="152.4" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="R15" gate="G$1" pin="2"/>
+<wire x1="35.56" y1="147.32" x2="33.02" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="147.32" x2="33.02" y2="149.86" width="0.1524" layer="91"/>
+<pinref part="USB1" gate="G$1" pin="3"/>
+<wire x1="33.02" y1="149.86" x2="30.48" y2="149.86" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
