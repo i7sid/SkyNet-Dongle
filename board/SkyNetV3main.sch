@@ -10564,19 +10564,15 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <net name="CHG-S1" class="0">
 <segment>
 <pinref part="IC6" gate="A" pin="STAT1/LBO"/>
-<wire x1="60.96" y1="93.98" x2="40.64" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="93.98" x2="40.64" y2="124.46" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="124.46" x2="40.64" y2="124.46" width="0.1524" layer="91"/>
-<label x="88.9" y="124.46" size="1.778" layer="95" xref="yes"/>
+<wire x1="60.96" y1="93.98" x2="55.88" y2="93.98" width="0.1524" layer="91"/>
+<label x="55.88" y="93.98" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="CHG-S2" class="0">
 <segment>
 <pinref part="IC6" gate="A" pin="STAT2"/>
-<wire x1="60.96" y1="96.52" x2="38.1" y2="96.52" width="0.1524" layer="91"/>
-<wire x1="38.1" y1="96.52" x2="38.1" y2="129.54" width="0.1524" layer="91"/>
-<label x="88.9" y="129.54" size="1.778" layer="95" rot="MR180" xref="yes"/>
-<wire x1="38.1" y1="129.54" x2="88.9" y2="129.54" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="96.52" x2="55.88" y2="96.52" width="0.1524" layer="91"/>
+<label x="55.88" y="96.52" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="AD-IN" class="0">
