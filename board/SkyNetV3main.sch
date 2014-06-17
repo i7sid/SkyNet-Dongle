@@ -9326,7 +9326,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 </class>
 </classes>
 <parts>
-<part name="IC3" library="lpc1xxx-v6" deviceset="LPC1768" device=""/>
+<part name="IC3" library="lpc1xxx-v6" deviceset="LPC1768" device="" value="LPC1769"/>
 <part name="IC1" library="Bluetooth HC-05" deviceset="HC_05" device=""/>
 <part name="FRAME1" library="frames" deviceset="A4L-LOC" device="" value="SkyNet Main"/>
 <part name="C18" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
@@ -9443,7 +9443,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <part name="D1" library="diode" deviceset="ZENER-DIODE" device="SOT23" value="3v3"/>
 <part name="GND31" library="supply1" deviceset="GND" device=""/>
 <part name="LED2" library="adafruit" deviceset="RGBLED" device="5050"/>
-<part name="SJ1" library="jumper" deviceset="SJ" device=""/>
+<part name="SJ1" library="jumper" deviceset="SJ" device="" value="MEASURE"/>
 <part name="SJ2" library="jumper" deviceset="SJ" device="" value="PROG"/>
 <part name="C12" library="microbuilder" deviceset="CAP_TANTALUM" device="C/6032_WAVE" value="100u"/>
 <part name="+3V19" library="supply1" deviceset="+3V3" device=""/>
@@ -9452,7 +9452,7 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <part name="+3V20" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>
 <part name="GND21" library="supply1" deviceset="GND" device=""/>
-<part name="JP4" library="skynet_other" deviceset="PIN-HEAD-1X3" device=""/>
+<part name="JP4" library="skynet_other" deviceset="PIN-HEAD-1X3" device="" value="EXT"/>
 <part name="FRAME4" library="frames" deviceset="A4L-LOC" device="" value="SkyNet Main"/>
 </parts>
 <sheets>
