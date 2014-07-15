@@ -6,13 +6,20 @@
 *.b##
 
 
-# c
+# firmware
 *.o
+*.d
+firmware/core
+firmware/Release*
+firmware/Debug*
 
 
 # backups
 *~
 
+# doc
+firmware/doc/full/
 
 #other
 *.fuse_hidden*
+*.swp
