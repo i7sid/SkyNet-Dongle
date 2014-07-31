@@ -15,13 +15,13 @@
 /**
  * @brief 	Initialize ADC unit.
  */
-void adc_init();
+void adc_init(void);
 
 /**
  * @brief 	Measure battery voltage
  * @returns	battery voltage, //TODO which format? multiplied by?
  */
-uint16_t adc_measure();
+uint16_t adc_measure(void);
 
 /**
  * @brief Activate ADC measurement circuit.
@@ -29,7 +29,7 @@ uint16_t adc_measure();
  * Switches the MOSFETs so that the measurement can be done.
  * In this state the measurement circuit consumes current.
  */
-STATIC INLINE void adc_activate();
+void adc_activate(void);
 
 /**
  * @brief Deactivate ADC measurement circuit.
@@ -37,6 +37,6 @@ STATIC INLINE void adc_activate();
  * Switches the MOSFETs so that the measurement can \b not be done.
  * In this state the measurement circuit consumes \b no current.
  */
-STATIC INLINE void adc_deactivate();
+void adc_deactivate(void);
 
 #endif /* ADC_H_ */

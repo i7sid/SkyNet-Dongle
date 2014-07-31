@@ -55,9 +55,10 @@ void cpu_powerdown() {
 	bt_shutdown();
 	radio_shutdown();
 
-	//TODO: PLL trennen, sonstige?
+	//TODO: PLL trennen, irgendwas nötig?
 
-	Chip_PMU_PowerDownState(PMU_MCU_DEEP_PWRDOWN);
+	Chip_PMU_PowerDownState(LPC_PMU);
+	Chip_PMU_DeepPowerDownState(LPC_PMU);
 
 	//TODO: Stromverbrauch prüfen
 }

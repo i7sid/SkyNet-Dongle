@@ -19,8 +19,9 @@
 
 #include "misc/misc.h"
 
-#include "radio/radio.h"
+#include "radio/skynet_radio.h"
 #include "bluetooth/bluetooth.h"
+#include "periph/input.h"
 #include "periph/led.h"
 #include "periph/charger.h"
 #include "periph/adc.h"
@@ -116,6 +117,7 @@ int main(void) {
 
     bt_init();	// initialize UART for bluetooth communication
     msDelay(500);
+    charger_set_mode(USB_CHARGE);
     //bt_shutdown();
 
     bt_enable_AT_mode();
@@ -123,13 +125,15 @@ int main(void) {
     msDelay(100);
     bt_uart_puts("AT+ROLE?\r\n");
     msDelay(100);
+    bt_make_invisible();
     bt_disable_AT_mode();
 
     // DEBUG test if AT mode successfully disabled
-    bt_uart_puts("AT+ADDR\r\n");
+    //bt_uart_puts("AT+ADDR\r\n");
 
     bt_enable_AT_mode();
 	bt_uart_puts("AT+PSWD?\r\n");
+	bt_uart_puts("AT+CLASS?\r\n");
 
 	bt_disable_AT_mode();
 
@@ -164,11 +168,7 @@ int main(void) {
 	skynet_led_green(false);
 
 
-
-    // Force the counter to be placed into memory
-    volatile static int i = 0 ;
-    // Enter an infinite loop, just incrementing a counter
-
+    volatile static int i = 0;
     while(1) {
     	//ledOn(LED_RADIO);
 

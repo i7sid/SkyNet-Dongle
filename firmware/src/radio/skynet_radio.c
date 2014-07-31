@@ -6,6 +6,7 @@
  */
 
 #include "skynet_radio.h"
+#include "../cpu/systick.h"
 
 uint8_t bMain_IT_Status;
 uint8_t pwrLvlIdx = 0;
@@ -43,18 +44,16 @@ void radio_wakeup(void) {
 	radio_set_powered(true);
 }
 
-STATIC void radio_set_powered(bool on) {
+void radio_set_powered(bool on) {
 	Chip_GPIO_SetPinState(LPC_GPIO, SI_LIB_SDN_PORT, SI_LIB_SDN_PIN, !on);
 }
 
 //TODO
-void send_variable_packet(uint8_t *pkt, uint8_t length)
-{
+void send_variable_packet(uint8_t *pkt, uint8_t length) {
 	pwrLvlIdx = 0;
 	DBG("txPKT\n");
 
-	for (uint8_t pos = 0u; pos < pRadioConfiguration->Radio_PacketLength; pos++)
-	{
+	for (uint8_t pos = 0u; pos < pRadioConfiguration->Radio_PacketLength; pos++) {
 		if (pos < length)
 			customRadioPacket[pos+1] = pkt[pos];
 		else
@@ -68,8 +67,7 @@ void send_variable_packet(uint8_t *pkt, uint8_t length)
 }
 
 //TODO
-STATIC void radio_packet_handler(void)
-{
+void radio_packet_handler(void) {
 	bMain_IT_Status = bRadio_Check_Tx_RX();
 
 	switch (bMain_IT_Status)
@@ -137,8 +135,7 @@ STATIC void radio_packet_handler(void)
 }
 
 
-void RADIO_IRQ_HANDLER(void)
-{
+void RADIO_IRQ_HANDLER(void) {
 	// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
 	radio_packet_handler();
 

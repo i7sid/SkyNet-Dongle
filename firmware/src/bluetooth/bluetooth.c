@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 #include "bluetooth.h"
+#include "../cpu/systick.h"
 
 void bt_init() {
 	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_UART3);
@@ -41,6 +42,8 @@ void bt_uart_init(uint32_t baud) {
 	Chip_UART_ConfigData(BLUETOOTH_UART, (UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS));
 	Chip_UART_SetupFIFOS(BLUETOOTH_UART, (UART_FCR_FIFO_EN | UART_FCR_TRG_LEV1 | UART_FCR_RX_RS | UART_FCR_TX_RS ));
 	Chip_UART_TXEnable(BLUETOOTH_UART);
+
+	msDelay(500);
 }
 
 void bt_uart_deinit() {
@@ -49,20 +52,20 @@ void bt_uart_deinit() {
 	Chip_UART_DeInit(BLUETOOTH_UART);
 }
 
-void bt_uart_int_enable() {
+INLINE void bt_uart_int_enable() {
 	Chip_UART_IntEnable(BLUETOOTH_UART, BLUETOOTH_UART_INT_MASK);
 	NVIC_SetPriority(BLUETOOTH_UART_IRQn, 1); //TODO priority?
 	NVIC_EnableIRQ(BLUETOOTH_UART_IRQn);
 }
 
-void bt_uart_int_disable() {
+INLINE void bt_uart_int_disable() {
 	NVIC_DisableIRQ(BLUETOOTH_UART_IRQn);
 	Chip_UART_IntDisable(BLUETOOTH_UART, BLUETOOTH_UART_INT_MASK);
 }
 
 #define BLUETOOTH_AT_ANSWER 		("OK\r\n")
 void bt_first_configuration() {
-	volatile char buf[24];
+	char buf[24];
 	int read = 0;
 	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 
@@ -94,12 +97,12 @@ void bt_first_configuration() {
 		bt_hardreset();
 
 		bt_uart_init(38400); // reinit UART
-		//msDelay(1000);		 // wait for UART fully up and ready
+		//msDelay(100);		 // wait for UART fully up and ready
 
 		bt_uart_puts("AT\r\n");
 		msDelay(50);
 		read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-		DBG("read (%d): %s\n", read, buf);
+		DBG("read (AT) (%d): %s\n", read, buf);
 		bt_uart_clear_rx();
 
 
@@ -110,7 +113,7 @@ void bt_first_configuration() {
 			msDelay(50);
 
 			read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-			DBG("UART (%d): %s\n", read, buf);
+			DBG("UART (AT+UART) (%d): %s\n", read, buf);
 
 			bt_uart_clear_rx();
 
@@ -129,30 +132,7 @@ void bt_first_configuration() {
 	}
 	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 
-
-	/*
-	// DEBUG
-
-	bt_uart_puts("AT+NAME=SKYNET1\r\n");
-	msDelay(100);
-	read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-	DBG("NAME (%d): %s\n", read, buf);
-	bt_uart_clear_rx();
-	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
-
-	msDelay(100);
-
-	char buf2[100];
-	bt_uart_puts("AT+NAME?\r\n");
-	msDelay(100);
-	read = Chip_UART_Read(BLUETOOTH_UART, buf2, sizeof(buf2));
-	DBG("NAME? (%d): %s\n", read, buf2);
-	bt_uart_clear_rx();
-	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
-	*/
-
-
-	bt_change_visible(false);
+	//bt_change_visible(false);
 }
 
 void bt_deinit() {
@@ -173,16 +153,24 @@ void bt_hardreset() {
 	//msDelay(1000);
 	msDelay(500);
 }
-void bt_enable_AT_mode() {
-	bt_switch_at_pin(true);
+void bt_softreset() {
+	bt_uart_puts("AT+RESET\r\n");
 	msDelay(500);
+}
+void bt_enable_AT_mode() {
+	msDelay(250);
+	bt_switch_at_pin(true);
+	msDelay(250);
 }
 
 void bt_disable_AT_mode() {
-	msDelay(500);
+	msDelay(250);
 	bt_switch_at_pin(false);
 	//bt_uart_puts("AT+RESET\r\n");
+	msDelay(50);
 	bt_hardreset();
+	msDelay(250);
+	//bt_softreset();
 	//msDelay(1000);
 }
 
@@ -207,36 +195,38 @@ void bt_make_invisible() {
 	bt_disable_AT_mode();
 }
 
-STATIC INLINE void bt_change_visible(bool visible) {
+INLINE void bt_change_visible(bool visible) {
 	char buf[6];
 
 	switch (visible) {
 		case true:
 			bt_uart_puts("AT+IAC=928b33\r\n");
+			//bt_uart_puts("AT+CLASS=1f00\r\n");
 			break;
 		default:
 			bt_uart_puts("AT+IAC=928b30\r\n");
+			//bt_uart_puts("AT+CLASS=3f00\r\n");
 			break;
 	}
 
 	msDelay(100);
-	int read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-	DBG("set AT+IAC (%d): %s\n", read, buf);
-	bt_uart_clear_rx();
-	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
+	//int read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
+	//DBG("set AT+IAC (%d): %s\n", read, buf);
+	//bt_uart_clear_rx();
+	//memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 }
 
 //TODO: send non-blocking ?
-void bt_uart_puts(char *str) {
-	//DBG("BT TX: %s\n", str);
+INLINE void bt_uart_puts(char *str) {
+	DBG("BT TX: %s", str);
 	Chip_UART_SendBlocking(BLUETOOTH_UART, str, strlen(str));
 }
 
-void bt_uart_nputs(char *str, int count) {
+INLINE void bt_uart_nputs(char *str, int count) {
 	Chip_UART_SendBlocking(BLUETOOTH_UART, str, count);
 }
 
-void bt_uart_putc(char chr){
+INLINE void bt_uart_putc(char chr){
 	//DBG("BT TX: %c\n", chr);
 	Chip_UART_SendBlocking(BLUETOOTH_UART, &chr, 1);
 }
@@ -332,10 +322,10 @@ void bt_do_read(int len, char* data) {
 	}
 }
 
-void bt_switch_at_pin(bool state) {
+INLINE void bt_switch_at_pin(bool state) {
 	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_AT_PORT, BLUETOOTH_AT_PIN, state);
 }
 
-void bt_switch_reset_pin(bool state) {
+INLINE void bt_switch_reset_pin(bool state) {
 	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, !state);
 }

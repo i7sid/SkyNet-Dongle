@@ -46,14 +46,14 @@ uint16_t adc_measure() {
 }
 
 
-STATIC INLINE void adc_activate() {
+INLINE void adc_activate() {
 	PINSET(ADC_PWR_PORT, ADC_PWR_PIN);
 	msDelay(50);
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, ENABLE);
 	Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
 }
 
-STATIC INLINE void adc_deactivate() {
+INLINE void adc_deactivate() {
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, DISABLE);
 	PINCLR(ADC_PWR_PORT, ADC_PWR_PIN);
 }

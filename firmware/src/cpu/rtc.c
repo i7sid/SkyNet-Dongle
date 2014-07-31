@@ -33,10 +33,10 @@ void rtc_init() {
 
 void RTC_IRQHandler(void)
 {
-	uint32_t sec;
+	//uint32_t sec;
 	Chip_RTC_ClearIntPending(LPC_RTC, RTC_INT_COUNTER_INCREASE);
 
-	/*
+
 	if (Chip_RTC_GetIntPending(LPC_RTC, RTC_INT_COUNTER_INCREASE)) {
 		/// Clear pending interrupt
 		Chip_RTC_ClearIntPending(LPC_RTC, RTC_INT_COUNTER_INCREASE);
@@ -51,7 +51,6 @@ void RTC_IRQHandler(void)
 				FullTime.time[RTC_TIMETYPE_DAYOFMONTH],
 				FullTime.time[RTC_TIMETYPE_YEAR]);
 	}
-	*/
 
 
 	/*
@@ -63,7 +62,7 @@ void RTC_IRQHandler(void)
 
 	// Check for alarm match
 	if (Chip_RTC_GetIntPending(LPC_RTC, RTC_INT_ALARM)) {
-		//* Clear pending interrupt
+		// Clear pending interrupt
 		Chip_RTC_ClearIntPending(LPC_RTC, RTC_INT_ALARM);
 		fAlarmTimeMatched = true;	// set alarm handler flag
 	}

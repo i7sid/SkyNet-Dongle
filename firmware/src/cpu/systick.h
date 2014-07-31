@@ -36,11 +36,11 @@ void msDelay(uint32_t ms);
 /**
  * @brief	Activates the systick timer to provide cpu functionality for systick.
  */
-STATIC INLINE void enable_systick();
+void enable_systick(void);
 
 /**
  *  @brief	Callback function for msDelay function.
  */
-STATIC void msDelayCallback();
+void msDelayCallback(void);
 
 #endif /* SYSTICK_H_ */

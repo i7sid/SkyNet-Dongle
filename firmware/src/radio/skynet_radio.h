@@ -38,7 +38,7 @@ void radio_wakeup(void);
  * @brief	Sets SDN high or low to enable/disable complete radio module.
  * @param	on	\b true for powered (SDN=low), \b false for shutdown (SDN=high)
  */
-STATIC void radio_set_powered(bool on);
+void radio_set_powered(bool on);
 
 /**
  * @brief			Sends a packet of variable length
@@ -51,7 +51,7 @@ void send_variable_packet(uint8_t *pkt, uint8_t length);
 /**
  * @brief	Processes a received packet.
  */
-STATIC void radio_packet_handler(void);
+void radio_packet_handler(void);
 
 /**
  * @brief	Interrupt handler for interrupts from radio chip
