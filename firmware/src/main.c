@@ -80,7 +80,7 @@ int main(void) {
 
     SystemCoreClockUpdate();
 
-    cpu_set_speed(SPEED_30MHz);
+    cpu_set_speed(SPEED_120MHz);
 
 	StopWatch_Init();
 
@@ -196,9 +196,33 @@ int main(void) {
 				break;
 			case EVENT_SWITCH_SINGLE:
 				skynet_led_blue(true);
-				msDelay(200);
+				bt_make_visible(); 		//TODO
+
+				int timeout_cnt = 0;
+				bool connected = false;
+				while (!connected) {
+					timeout_cnt++;
+					if (timeout_cnt > 10) {
+						bt_make_invisible();
+						break;
+					}
+					bt_enable_AT_mode();
+
+					msDelayActive(1000);		// give user time to pair
+
+					char buf[25];
+					int read = bt_request("AT+STATE?\r\n", buf, 24);
+					DBG("STATE from BT module: %s\n", buf);
+					buf[read] = '\0';
+
+					if (!strncmp(buf, "+STATE:PAIRED", 13)) {
+						DBG("Yeah, user paired!\n");
+						connected = true;
+					}
+
+					//TODO: Erkennen, dass nicht mehr verbunden
+				}
 				skynet_led_blue(false);
-				//bt_make_visible(); 		//TODO
 				break;
 			case EVENT_SWITCH_DOUBLE:
 				skynet_led_green(true);

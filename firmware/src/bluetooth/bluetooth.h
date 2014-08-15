@@ -24,6 +24,12 @@ void bt_init(void);
 void bt_uart_init(uint32_t baud);
 
 /**
+ * @brief			Set UART to specified speed.
+ * @param	baud	Baud rate
+ */
+void bt_uart_set_speed(uint32_t baud);
+
+/**
  * @brief	Deinitializes the bluetooth UART.
  */
 void bt_uart_deinit(void);
@@ -89,7 +95,7 @@ void bt_shutdown(void);
 /**
  * @brief	Wake up bluetooth module by stop pulling RESET.
  */
-void bt_wakeup(bool at_mode);
+void bt_wakeup();
 
 /**
  * @brief	Send's the AT command to make the bluetooth module visible to clients.
@@ -146,6 +152,15 @@ void bt_switch_reset_pin(bool state);
  * @brief 			Clears the RX buffer removing all remaining bytes.
  */
 void bt_uart_clear_rx(void);
+
+/**
+ * @brief			Sends a command to BT module without raising RX interrupt.
+ *
+ * Disables the UART interrupt to receiving an answer from BT module blocking.
+ * After answer is received interrupt is enabled.
+ */
+int bt_request(char request[], char response[], int response_length);
+
 
 #define bt_uart_puts_P bt_uart_puts
 
