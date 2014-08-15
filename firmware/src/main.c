@@ -17,6 +17,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "stopwatch.h"
+
 #include "misc/misc.h"
 
 #include "radio/skynet_radio.h"
@@ -25,6 +27,7 @@
 #include "periph/led.h"
 #include "periph/charger.h"
 #include "periph/adc.h"
+#include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
 
@@ -35,6 +38,7 @@ const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 
 extern uint8_t pwrLvlIdx;
 extern uint8_t pwrLvl[];
+//extern char* packet_rx_buf;
 
 /**
  * @brief	Sends a packet via radio.
@@ -76,13 +80,13 @@ int main(void) {
 
     SystemCoreClockUpdate();
 
-    bool c = Chip_Clock_IsCrystalEnabled();
-    DBG("%d\n", c);
+    cpu_set_speed(SPEED_30MHz);
 
-    cpu_set_speed(SPEED_7M5Hz);
+	StopWatch_Init();
 
     DBG("Initialize RTC...\n");
-    //rtc_init();
+    rtc_init();
+
 
     DBG("Clock: %d, %d\n", SystemCoreClock, Chip_Clock_GetCPUClockDiv());
     //Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_CONNECT);
@@ -97,6 +101,7 @@ int main(void) {
 	skynet_led_green(false);
 	skynet_led_red(false);
 	charger_init();
+	charger_set_mode(USB_CHARGE); // USB_CHARGE
 
 	// give visual feedback that program started
 	skynet_led_red(true);
@@ -113,39 +118,15 @@ int main(void) {
     DBG("Initialize ADC...\n");
 	adc_init();
 
+
+
     DBG("Initialize Bluetooth module...\n");
-
     bt_init();	// initialize UART for bluetooth communication
-    msDelay(500);
-    charger_set_mode(USB_CHARGE);
-    //bt_shutdown();
-
-    bt_enable_AT_mode();
-    bt_uart_puts("AT+NAME?\r\n");
-    msDelay(100);
-    bt_uart_puts("AT+ROLE?\r\n");
-    msDelay(100);
-    bt_make_invisible();
-    bt_disable_AT_mode();
-
-    // DEBUG test if AT mode successfully disabled
-    //bt_uart_puts("AT+ADDR\r\n");
-
-    bt_enable_AT_mode();
-	bt_uart_puts("AT+PSWD?\r\n");
-	bt_uart_puts("AT+CLASS?\r\n");
-
-	bt_disable_AT_mode();
-
-    msDelay(500);
-
-
 
     DBG("Initialize radio module...\n");
     radio_init();
 
-    msDelay(100); 	// wait a moment to ensure that all systems are up and ready
-
+    msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
 
 
@@ -153,6 +134,30 @@ int main(void) {
 	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
 
 	DBG("Radio RX started.\n");
+
+	//radio_config_for_clock_measurement();
+
+    /*
+	// measure core clock frequency
+
+	si446x_get_property(0x0, 2, 0);
+	DBG("GLOBAL_CLK_CFG: %x %x\n", Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
+
+	Si446xCmd.GET_PROPERTY.DATA1 = 0b01100000;
+	//si446x_set_property(0x0, 2, Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
+    Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
+    Pro2Cmd[1] = 0x0;
+    Pro2Cmd[2] = 0x2;
+    Pro2Cmd[3] = 0x0;
+    Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
+    Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
+
+    radio_comm_SendCmd(6, Pro2Cmd);
+
+    si446x_get_property(0x0, 2, 0);
+	DBG("GLOBAL_CLK_CFG: %x %x\n", Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
+
+     */
 
 
 	skynet_led_green(true);
@@ -178,11 +183,12 @@ int main(void) {
     	DBG("Sending packet: %s\n", data);
     	sendVariablePacket(data, sizeof(data));
     	DBG("Packet sent.\n");
-    	//msDelay(500);
+
     	skynet_led_red(false);
-    	//msDelay(2500);
+
+    	msDelay(3000);
 #else
-    	//Chip_PMU_SleepState(LPC_PMU);
+
 
     	event_types event = events_dequeue();
     	switch (event) {
@@ -192,7 +198,7 @@ int main(void) {
 				skynet_led_blue(true);
 				msDelay(200);
 				skynet_led_blue(false);
-				bt_make_visible();
+				//bt_make_visible(); 		//TODO
 				break;
 			case EVENT_SWITCH_DOUBLE:
 				skynet_led_green(true);
@@ -202,15 +208,30 @@ int main(void) {
 			case EVENT_SWITCH_POWER:
 				cpu_powerdown();
 				break;
+			case EVENT_RF_GOT_PACKET:
+				DBG("RF packet received: %s\n", packet_rx_buf);
+				//TODO send via bluetooth
+				break;
 			default:
 				break;
 		}
 
-    	DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i\n", charger_status1(), charger_status2(), charger_external_power(), true, adc_measure());
+
+    	if (i >= 100) {
+    		i = 0;
+    		skynet_led_green(true);
+    		si446x_request_device_state();
+			DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i; input: %i; GPIO0: %i; state: %i\n",
+					charger_status1(), charger_status2(), charger_external_power(),
+					true, adc_measure(), input_state(), radio_get_gpio0(),
+					Si446xCmd.REQUEST_DEVICE_STATE.CURR_STATE);
+			msDelay(15);
+			skynet_led_green(false);
+    	}
 
 
     	//ledOff(LED_RADIO);
-    	msDelay(500);
+    	msDelay(10);
 #endif
 
         i++ ;

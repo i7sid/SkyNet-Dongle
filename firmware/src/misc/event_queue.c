@@ -13,6 +13,8 @@ uint8_t		events_queue_write_i = 0;
 uint8_t		events_queue_read_i = 0;
 
 void events_enqueue(event_types type) {
+	// TODO detect overflow
+
 	events_queued[events_queue_write_i] = type;
 	events_queue_write_i = (events_queue_write_i + 1) % MAX_QUEUED_EVENTS;
 }

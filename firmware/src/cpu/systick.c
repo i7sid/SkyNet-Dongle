@@ -6,6 +6,7 @@
  */
 
 #include "systick.h"
+#include "stopwatch.h"
 
 #define MAX_DELAYED_EVENTS (10)
 volatile bool tick_occured = false;
@@ -61,6 +62,11 @@ void msDelay(uint32_t ms)
 		//Chip_PMU_Sleep(LPC_PMU, PMU_MCU_SLEEP);
 		__WFI();
 	}
+}
+
+void msDelayActive(uint32_t ms)
+{
+	StopWatch_DelayMs(ms);
 }
 
 void enable_systick() {

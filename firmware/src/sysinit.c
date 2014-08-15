@@ -34,41 +34,47 @@
  #include "board.h"
  #endif
 
+#include "periph/led.h"
+#include "periph/input.h"
+#include "cpu/systick.h"
+#include "cpu/cpu.h"
+
+
 /* Pin muxing configuration */
 STATIC const PINMUX_GRP_T pinmuxing[] = {
 	// Bluetooth
-	{0,  0,   IOCON_MODE_INACT | IOCON_FUNC2},	// TXD3
-	{0,  1,   IOCON_MODE_INACT | IOCON_FUNC2},	// RXD3
-	{2,  13,  IOCON_MODE_INACT | IOCON_FUNC0},	// AT
-	{0,  11,  IOCON_MODE_INACT | IOCON_FUNC0},	// Reset
+	{0,  0,   IOCON_MODE_INACT | IOCON_FUNC2},		// TXD3
+	{0,  1,   IOCON_MODE_INACT | IOCON_FUNC2},		// RXD3
+	{BLUETOOTH_AT_PORT, BLUETOOTH_AT_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
+	{BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, IOCON_MODE_INACT | IOCON_FUNC0},
 
 	// radio
-	{2,  8,   IOCON_MODE_INACT | IOCON_FUNC0},	// SDN
-	{0,  19,   IOCON_MODE_INACT | IOCON_FUNC1},	// nIRQ
-	{0,  20,   IOCON_MODE_INACT | IOCON_FUNC0},	// GPIO0
+	{SI_LIB_SDN_PORT,  SI_LIB_SDN_PIN,   		IOCON_MODE_INACT | IOCON_FUNC0},
+	{SI_LIB_nIRQ_PORT,  SI_LIB_nIRQ_PIN,   		IOCON_MODE_INACT | IOCON_FUNC0},
+	{SI_LIB_GPIO0_PORT,  SI_LIB_GPIO0_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,  15,   IOCON_MODE_PULLDOWN | IOCON_FUNC3},	// SPI sCKL
 	{0,  16,   IOCON_MODE_PULLUP | IOCON_FUNC0},	// SPI nSEL
-	{0,  17,   IOCON_MODE_INACT | IOCON_FUNC3},	// SPI MISO
-	{0,  18,   IOCON_MODE_INACT | IOCON_FUNC3},	// SPI MOSI
+	{0,  17,   IOCON_MODE_INACT | IOCON_FUNC3},		// SPI MISO
+	{0,  18,   IOCON_MODE_INACT | IOCON_FUNC3},		// SPI MOSI
 
 	// ADC
-	{1,  0,   IOCON_MODE_INACT | IOCON_FUNC0},	// ADC PWR
-	{0,  23,   IOCON_MODE_INACT | IOCON_FUNC1},	// ADC IN
+	{ADC_PWR_PORT,	ADC_PWR_PIN,				IOCON_MODE_INACT | IOCON_FUNC0},
+	{ADC_IN_PORT,	ADC_IN_PIN,					IOCON_MODE_INACT | IOCON_FUNC1},
 
-	// charger
-	{0,  22,   IOCON_MODE_PULLUP | IOCON_FUNC0},	// STAT1 (open drain output!)
-	{0,  21,   IOCON_MODE_PULLUP | IOCON_FUNC0},	// STAT2 (open drain output!)
-	{2,  12,   IOCON_MODE_PULLDOWN | IOCON_FUNC0},	// EXT_PWR  //TODO: EINT?
-	{2,  3,   IOCON_MODE_INACT | IOCON_FUNC0},	// SEL_H
-	{2,  4,   IOCON_MODE_INACT | IOCON_FUNC0},	// SEL_L
+	// charger (outputs OPEN DRAIN !)
+	{CHARGER_STAT1_PORT, CHARGER_STAT1_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
+	{CHARGER_STAT2_PORT, CHARGER_STAT2_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
+	{CHARGER_EXTPWR_PORT, CHARGER_EXTPWR_PIN, 	IOCON_MODE_PULLDOWN | IOCON_FUNC0},
+	{CHARGER_SEL_H_PORT, CHARGER_SEL_H_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
+	{CHARGER_SEL_L_PORT, CHARGER_SEL_L_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
 
 	// input button
-	{2,  11,   IOCON_MODE_PULLUP | IOCON_FUNC1},	// input
+	{INPUT_SWITCH_PORT,  INPUT_SWITCH_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC1},
 
 	// LED
-	{2,  2,   IOCON_MODE_INACT | IOCON_FUNC0},	// R
-	{2,  1,   IOCON_MODE_INACT | IOCON_FUNC0},	// G
-	{2,  0,   IOCON_MODE_INACT | IOCON_FUNC0},	// B
+	{LED_R_PORT,  LED_R_PIN,					IOCON_MODE_INACT | IOCON_FUNC0},
+	{LED_G_PORT,  LED_G_PIN,					IOCON_MODE_INACT | IOCON_FUNC0},
+	{LED_B_PORT,  LED_B_PIN,					IOCON_MODE_INACT | IOCON_FUNC0},
 
 
 
@@ -164,8 +170,44 @@ void SystemInit(void)
     Chip_Clock_SetCPUClockDiv(16);
     */
 
+
 	Board_SetupMuxing();
+
 	SystemSetupClocking();
+
+/*
+	// check if we came from deep power down mode
+	if ((LPC_PMU->PCON & PMU_PCON_DPDFLAG) != 0x0) {
+		LPC_PMU->PCON |= PMU_PCON_DPDFLAG; // reset deep power down flag
+		skynet_led_init();
+
+		skynet_led_red(true);
+		msDelay(25);
+		skynet_led_red(false);
+
+		if (!input_state()) { // not pressed? go back sleeping!
+			cpu_repowerdown();
+		}
+		msDelay(1000);
+		if (!input_state()) { // not pressed long enough? go back sleeping!
+			cpu_repowerdown();
+		}
+
+		// all went good, switch was pressed long enough, let's boot up!
+
+
+		skynet_led_green(true);
+		msDelay(500);
+		skynet_led_red(true);
+		msDelay(500);
+		skynet_led_blue(true);
+		msDelay(1000);
+		skynet_led_red(false);
+		skynet_led_green(false);
+		skynet_led_blue(false);
+	}
+	*/
+
 
 #if defined(NO_BOARD_LIB)
 	/* Chip specific SystemInit */

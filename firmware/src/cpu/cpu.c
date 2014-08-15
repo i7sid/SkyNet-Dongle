@@ -7,8 +7,12 @@
 
 
 #include "cpu.h"
+#include "rtc.h"
+#include "systick.h"
 #include "../radio/skynet_radio.h"
 #include "../bluetooth/bluetooth.h"
+#include "../periph/led.h"
+
 
 volatile bool cpu_powered_down = false;
 
@@ -44,32 +48,87 @@ void cpu_sleep() {
 void cpu_powerdown() {
 	cpu_powered_down = true;
 
+	skynet_led_red(true);
 	skynet_led_green(true);
-	msDelay(100);
+	skynet_led_blue(true);
+	msDelay(500);
 	skynet_led_green(false);
-	msDelay(75);
-	skynet_led_green(true);
-	msDelay(100);
-	skynet_led_green(false);
+	msDelay(500);
+	skynet_led_red(false);
+	msDelay(500);
+	skynet_led_blue(false);
+
 
 	bt_shutdown();
 	radio_shutdown();
 
-	//TODO: PLL trennen, irgendwas nötig?
+	rtc_prepare_powerdown();
 
-	Chip_PMU_PowerDownState(LPC_PMU);
-	Chip_PMU_DeepPowerDownState(LPC_PMU);
+
+	//Chip_PMU_PowerDownState(LPC_PMU);
+
+
+    //LPC_PMU->PCON |= PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG;
+    LPC_PMU->PCON &= ~(PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG);
+	SCB->SCR = SCB_SCR_SEVONPEND_Msk | SCB_SCR_SLEEPDEEP_Msk;
+	//SCB->SCR = SCB_SCR_SLEEPDEEP_Msk;
+	__WFI();
+
+	//NVIC_SystemReset();
+
+
+
+
+
+
+	//Chip_PMU_PowerDownState(LPC_PMU);
+
+	//__WFI();
+	/*
+	NVIC_ClearPendingIRQ(RTC_IRQn);
+	NVIC_EnableIRQ(RTC_IRQn);
+	NVIC_ClearPendingIRQ(EINT1_IRQn);
+	NVIC_EnableIRQ(EINT1_IRQn);
+	Chip_PMU_DeepSleepState(LPC_PMU);
+	*/
+
+
+	skynet_led_green(true);
+	msDelay(500);
+	skynet_led_red(true);
+	msDelay(500);
+	skynet_led_blue(true);
+	msDelay(1000);
+	skynet_led_red(false);
+	skynet_led_green(false);
+	skynet_led_blue(false);
+
+
+	//Chip_PMU_DeepPowerDownState(LPC_PMU);
 
 	//TODO: Stromverbrauch prüfen
 }
 
+void cpu_repowerdown() {
+	cpu_powered_down = true;
+
+	Chip_RTC_Init(LPC_RTC);
+
+    rtc_prepare_powerdown();
+
+    LPC_PMU->PCON |= PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG;
+	SCB->SCR = 4;
+	__WFI();
+}
 
 void cpu_wakeup() {
+	// TODO: nicht nötig bei Deep Power Down
+
 	skynet_led_green(true);
 	msDelay(500);
 	skynet_led_green(false);
 
 	//TODO: Clocks wiederherstellen?
 	radio_wakeup();
-	bt_wakeup();
+	bt_wakeup(false);
 }

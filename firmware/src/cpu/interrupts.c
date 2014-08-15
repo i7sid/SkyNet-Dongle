@@ -9,13 +9,13 @@
 
 #include "interrupts.h"
 
-void EINT3_IRQ_HANDLER(void)
-{
+//void EINT3_IRQ_HANDLER(void)
+//{
 	//TODO???
 	/*
 	 * if RADIO_IRQ_SOURCE is set
 	 * 		call RADIO_IRQ_HANDLER()
 	 */
-}
+//}
 
 

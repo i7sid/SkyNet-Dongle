@@ -18,6 +18,7 @@
 #include "../misc/misc.h"
 #include "../skynet.h"
 #include "../spi/spi.h"
+#include "../cpu/systick.h"
 
 uint8_t Radio_Configuration_Data_Array[] = RADIO_CONFIGURATION_DATA_ARRAY;
 
@@ -59,18 +60,6 @@ void vRadio_Init(void)
 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, SI_LIB_nIRQ_PORT, SI_LIB_nIRQ_PIN);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
 
-	//Chip_IOCON_PinMux(LPC_IOCON, SI_LIB_SDN_PORT, SI_LIB_SDN_PIN, IOCON_MODE_INACT, IOCON_FUNC0);
-
-
-
-
-	/*
-	INPUT(SI_LIB_nIRQ);
-	SET(SI_LIB_nIRQ);
-
-	OUTPUT(SI_LIB_SDN);
-	SET(SI_LIB_SDN);
-	*/
 
 	/* Power Up the radio chip */
 	DBG("Power up radio...\n");
@@ -96,24 +85,15 @@ void vRadio_Init(void)
 
 
 
-
+/*
+	//TODO: was hab ich hier nochmal gemacht?
 	Si446xCmd.GET_PROPERTY.DATA0 = 0x01;
 	si446x_set_property_lpc(0x01, 1, 0);
 	Si446xCmd.GET_PROPERTY.DATA0 = 0x00; 	// DEBUG
 	si446x_get_property(0x01, 1, 0);		// DEBUG
     DBG("0x%x\n", Si446xCmd.GET_PROPERTY.DATA0); // DEBUG
+*/
 
-
-
-	// configure external intrrupt pin EINT1
-	//Chip_IOCON_PinMux(LPC_IOCON, SI_LIB_nIRQ_PORT, SI_LIB_nIRQ_PIN, IOCON_MODE_INACT, IOCON_FUNC1);
-    //LPC_SYSCTL->EXTMODE = 0x0;
-    //LPC_SYSCTL->EXTPOLAR = 0x0;
-
-
-	// TODO: Interrupt an nIRQ registieren und maskieren?
-    //LPC_SYSCTL->EXTINT |= 0x2;
-	//NVIC_EnableIRQ(EINT1_IRQn);
 
 
 	DBG("init done\n");
@@ -160,9 +140,7 @@ U8 bRadio_Check_Tx_RX(void)
 		}
 
 		if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_PEND_BIT)
-		{
-			// Packet RX
-			DBG("rx\n");
+		{	// Packet RX
 
 			// Get payload length
 			si446x_fifo_info(0x00);
@@ -175,37 +153,13 @@ U8 bRadio_Check_Tx_RX(void)
 		if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_CRC_ERROR_BIT)
 		{
 			DBG("crc err\n");
-			//TODO?
-			/*
-			bt_uart_puts_P("$LOGC,");
-			bt_uart_puts(timeStr);
-			bt_uart_putc(',');
-			for (uint8_t i = 0; i < pRadioConfiguration->Radio_PacketLength; i++)
-			{
-				if(customRadioPacket[i] >= 32 && customRadioPacket[i] <= 126 && customRadioPacket[i] != 92)		//'\\'
-				{
-					bt_uart_putc(customRadioPacket[i]);
-				}
-				else
-				{
-					bt_uart_putc(92);
-					if(customRadioPacket[i] == 92)
-					{
-						bt_uart_putc(92);
-					}
-					else
-					{
-						char temp[10];
-						sprintf(temp, "%02X", customRadioPacket[i]);
-						bt_uart_puts(temp);
-					}
-				}
-			}
-			bt_uart_puts_P("\r\n");
-			*/
 
-			// Reset FIFO
+			// reset RX FIFO
 			si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
+
+			// manually go to RX state again
+			// (automatic transission does not work for some reason...)
+			si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_RX);
 		}
 
 	}
@@ -273,33 +227,4 @@ void vRadio_Change_PwrLvl(uint8_t lvl)
 	si446x_pa_pwr_lvl(lvl);
 
 	DBG("txPwr: %i\n", lvl);
-}
-
-
-
-// addition by MZ
-void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP)
-{
-    Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
-    Pro2Cmd[1] = GROUP;
-    Pro2Cmd[2] = NUM_PROPS;
-    Pro2Cmd[3] = START_PROP;
-    Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
-    Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
-    Pro2Cmd[6] = Si446xCmd.GET_PROPERTY.DATA2;
-    Pro2Cmd[7] = Si446xCmd.GET_PROPERTY.DATA3;
-    Pro2Cmd[8] = Si446xCmd.GET_PROPERTY.DATA4;
-    Pro2Cmd[9] = Si446xCmd.GET_PROPERTY.DATA5;
-    Pro2Cmd[10] = Si446xCmd.GET_PROPERTY.DATA6;
-    Pro2Cmd[11] = Si446xCmd.GET_PROPERTY.DATA7;
-    Pro2Cmd[12] = Si446xCmd.GET_PROPERTY.DATA8;
-    Pro2Cmd[13] = Si446xCmd.GET_PROPERTY.DATA9;
-    Pro2Cmd[14] = Si446xCmd.GET_PROPERTY.DATA10;
-    Pro2Cmd[15] = Si446xCmd.GET_PROPERTY.DATA11;
-    Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
-    Pro2Cmd[17] = Si446xCmd.GET_PROPERTY.DATA13;
-    Pro2Cmd[18] = Si446xCmd.GET_PROPERTY.DATA14;
-    Pro2Cmd[19] = Si446xCmd.GET_PROPERTY.DATA15;
-
-    radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
 }

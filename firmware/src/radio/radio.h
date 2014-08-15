@@ -52,14 +52,4 @@ void	vRadio_StartTx_Variable_Packet(uint8_t, uint8_t*, uint8_t);
 uint8_t vRadio_getFFR_A(void);
 void vRadio_Change_PwrLvl(uint8_t lvl);
 
-// addition by MZ
-/*!
- * Send SET_PROPERTY command to the radio.
- * Properties are read from Si446xCmd.GET_PROPERTY.DATA{0..15}
- *
- * @param GROUP       Property group.
- * @param NUM_PROPS   Number of property to be set.
- * @param START_PROP  Start sub-property address.
- */
-void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP);
 #endif /* RADIO_H_ */

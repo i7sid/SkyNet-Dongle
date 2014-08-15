@@ -11,6 +11,8 @@
 #include "bluetooth.h"
 #include "../cpu/systick.h"
 
+static bool visible = false;
+
 void bt_init() {
 	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_UART3);
 
@@ -21,18 +23,22 @@ void bt_init() {
 	// reset pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN);
 
-	// reset module to be NOT in program mode
-	bt_hardreset();
+	msDelayActive(25);	// wait for pins to be configured and working properly
+	bt_shutdown();		// assure that module is shut down
+
+	bt_wakeup(true);	// start in AT mode to make us Ninja styl (invisible)
+	bt_change_visible(false);
+
+	//TODO: Wie Unsichtbarkeit beibehalten?
+
+
+	bt_hardreset();		// start in normal operation mode
 
 	// configure bluetooth UART
 	bt_first_configuration();
-	//bt_disable_AT_mode();
 
 	// enable IRQ
 	bt_uart_int_enable();
-
-	// leave AT mode for immediate data transmission
-	bt_disable_AT_mode();
 }
 
 void bt_uart_init(uint32_t baud) {
@@ -43,7 +49,7 @@ void bt_uart_init(uint32_t baud) {
 	Chip_UART_SetupFIFOS(BLUETOOTH_UART, (UART_FCR_FIFO_EN | UART_FCR_TRG_LEV1 | UART_FCR_RX_RS | UART_FCR_TX_RS ));
 	Chip_UART_TXEnable(BLUETOOTH_UART);
 
-	msDelay(500);
+	//msDelay(500);
 }
 
 void bt_uart_deinit() {
@@ -54,7 +60,7 @@ void bt_uart_deinit() {
 
 INLINE void bt_uart_int_enable() {
 	Chip_UART_IntEnable(BLUETOOTH_UART, BLUETOOTH_UART_INT_MASK);
-	NVIC_SetPriority(BLUETOOTH_UART_IRQn, 1); //TODO priority?
+	NVIC_SetPriority(BLUETOOTH_UART_IRQn, 3); //TODO priority?
 	NVIC_EnableIRQ(BLUETOOTH_UART_IRQn);
 }
 
@@ -69,38 +75,29 @@ void bt_first_configuration() {
 	int read = 0;
 	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 
-	bt_switch_at_pin(true);
+	msDelayActive(100);
+	bt_enable_AT_mode();
 
-	// first try to read VERSION at full speed
-	bt_uart_init(115200);
-	msDelay(500);		 // wait for UART fully up and ready
+	// first try to read AT => OK at full speed
+	//bt_uart_init(115200);	// assure that we are use full speed
+	msDelayActive(500);		// wait for UART fully up and ready
 	bt_uart_puts("AT\r\n");
-	msDelay(500);
+	msDelayActive(100);		// give the module some time to think
 	read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
 	DBG("read (%d): %s\n", read, buf);
 	bt_uart_clear_rx();
-
 
 	if (strncmp(buf, BLUETOOTH_AT_ANSWER, sizeof(BLUETOOTH_AT_ANSWER) * sizeof(char)) != 0) {
 		memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 
 		// speed not correct, try to fix it
 		DBG("now fix baud rate\n");
-		//bt_uart_deinit(); // shutdown UART
 
-		/*
-		bt_shutdown();	// shutdown bt module to reinit it in 38400 baud bode
-		msDelay(50);
-		bt_wakeup();	// wake up with AT pin high, so that module enters 38400 baud mode
-		msDelay(50);
-		*/
-		bt_hardreset();
-
-		bt_uart_init(38400); // reinit UART
-		//msDelay(100);		 // wait for UART fully up and ready
+		bt_shutdown();
+		bt_wakeup(true);		// restart in AT mode
 
 		bt_uart_puts("AT\r\n");
-		msDelay(50);
+		msDelayActive(100);
 		read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
 		DBG("read (AT) (%d): %s\n", read, buf);
 		bt_uart_clear_rx();
@@ -109,30 +106,25 @@ void bt_first_configuration() {
 		if (strncmp(buf, BLUETOOTH_AT_ANSWER, sizeof(BLUETOOTH_AT_ANSWER) * sizeof(char)) == 0) {
 			memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
 
+			// set UART speed
 			bt_uart_puts("AT+UART=115200,0,0\r\n");
-			msDelay(50);
+			msDelayActive(100);
 
 			read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
 			DBG("UART (AT+UART) (%d): %s\n", read, buf);
-
 			bt_uart_clear_rx();
 
-			//bt_uart_deinit(); // shutdown UART
-			msDelay(100);
-			bt_uart_init(115200); // reinit UART
+			// set name
+			bt_uart_puts("AT+NAME=SKYNET\r\n");
+			msDelayActive(100);
 
-			bt_shutdown();	// shutdown bt module to reinit it in 115200 baud bode
-			bt_switch_at_pin(false);
-			msDelay(100);
-			bt_wakeup();	// wake up with AT pin high, so that module enters 115200 baud mode
+			read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
+			DBG("UART (AT+UART) (%d): %s\n", read, buf);
+			bt_uart_clear_rx();
 
-			bt_switch_at_pin(true);
-			msDelay(50);
+			bt_hardreset();			// restart in normal operation mode
 		}
 	}
-	memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
-
-	//bt_change_visible(false);
 }
 
 void bt_deinit() {
@@ -147,73 +139,97 @@ void bt_reset() {
 
 void bt_hardreset() {
 	bt_shutdown();
-	//msDelay(500);
-	msDelay(500);
-	bt_wakeup();
-	//msDelay(1000);
-	msDelay(500);
+	bt_wakeup(false);
 }
 void bt_softreset() {
+	bt_enable_AT_mode();
 	bt_uart_puts("AT+RESET\r\n");
-	msDelay(500);
+	msDelay(1000);
 }
-void bt_enable_AT_mode() {
-	msDelay(250);
+INLINE void bt_enable_AT_mode() {
+	// wait for previous transmission to be completed
+	msDelayActive(100);
+
 	bt_switch_at_pin(true);
-	msDelay(250);
+
+	// assure that module has enough time to recognize new state
+	msDelayActive(100);
 }
 
-void bt_disable_AT_mode() {
-	msDelay(250);
+INLINE void bt_disable_AT_mode() {
+	// wait for previous transmission to be completed
+	msDelayActive(100);
+
 	bt_switch_at_pin(false);
-	//bt_uart_puts("AT+RESET\r\n");
-	msDelay(50);
-	bt_hardreset();
-	msDelay(250);
-	//bt_softreset();
-	//msDelay(1000);
+
+	// assure that pin was toggled and module can recognize the changed state
+	msDelayActive(100);
 }
 
 void bt_shutdown() {
+	// wait for previous transmission to be completed
+	msDelayActive(100);
 	bt_switch_reset_pin(true);
+	// wait for module to be fully shut down
+	msDelayActive(50);
 }
 
-void bt_wakeup() {
-	// TODO: unsichtbar machen nötig?
+void bt_wakeup(bool at_mode) {
+	// TODO bei jedem Start erstmal im AT mode, unsichtbar schalten, AUßER Sichtbarkeit ist explizit gewünscht (bool parameter?)
+
+	if (at_mode) {
+		bt_enable_AT_mode();
+		bt_uart_init(38400);	// configure UART for 38400 baud (fixed in AT mode)
+	}
+	else {
+		bt_disable_AT_mode();
+		bt_uart_init(115200);	// configure UART for 115200 baud (full speed)
+	}
+
 	bt_switch_reset_pin(false);
+
+	// the module needs about 650ms to resume work,
+	// so wait for a second to guarantee functionality
+	// (wait active to assure that pin can be set, don't sleep!)
+	msDelayActive(1250);
 }
 
 void bt_make_visible() {
+	visible = true;
+	bt_hardreset();
+	/*
 	bt_enable_AT_mode();
 	bt_change_visible(true);
 	bt_disable_AT_mode();
+	*/
 }
 
 void bt_make_invisible() {
+	visible = false;
 	bt_enable_AT_mode();
 	bt_change_visible(false);
 	bt_disable_AT_mode();
 }
 
 INLINE void bt_change_visible(bool visible) {
-	char buf[6];
+	char buf[9];
 
 	switch (visible) {
 		case true:
 			bt_uart_puts("AT+IAC=928b33\r\n");
-			//bt_uart_puts("AT+CLASS=1f00\r\n");
 			break;
 		default:
 			bt_uart_puts("AT+IAC=928b30\r\n");
-			//bt_uart_puts("AT+CLASS=3f00\r\n");
 			break;
 	}
 
-	msDelay(100);
-	//int read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-	//DBG("set AT+IAC (%d): %s\n", read, buf);
-	//bt_uart_clear_rx();
-	//memset(buf, 0, sizeof(buf) * sizeof(char)); // empty buf stack memory
+	msDelayActive(100);
+
+	// take answer of AT+IAC command and ignore it
+	// (it will be ERROR(E) even if it works...)
+	int read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
+	DBG("set AT+IAC (%d): %s\n", read, buf);
+	bt_uart_clear_rx();
 }
 
 //TODO: send non-blocking ?

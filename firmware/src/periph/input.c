@@ -135,12 +135,24 @@ void recheck_switch_state() {
 
 void INPUT_SWITCH_HANDLER(void) {
 	DBG("INPUT pressed\n");
-	switch_state = SWITCH_FSM_FIRST;
 
-	// disable interrupt
-	NVIC_DisableIRQ(INPUT_SWITCH_IRQn);
+	// TODO: Prüfen ob im SLEEP-Modus
+	if (false) {
+		// TODO 2 Sekunden warten, ob immer noch gedrückt
+		// wenn ja: aufwachen, Sleep zurücksetzen
+		// wenn nein: abbrechen
+	}
+	else {
+		// button pressed in normal operation mode
+		switch_state = SWITCH_FSM_FIRST;
 
-	register_delayed_event(SWITCH_CHECK_WAIT_MS, recheck_switch_state);
+		// disable interrupt
+		NVIC_DisableIRQ(INPUT_SWITCH_IRQn);
 
-	LPC_SYSCTL->EXTINT |= 0x2;
+		// enqueue next check if button is still pressed
+		register_delayed_event(SWITCH_CHECK_WAIT_MS, recheck_switch_state);
+
+		// reset EINT flag
+		LPC_SYSCTL->EXTINT |= 0x2;
+	}
 }

@@ -42,6 +42,14 @@ void cpu_sleep();
 void cpu_powerdown();
 
 /**
+ * @brief			Reenters power down mode.
+ *
+ * Powers down CPU without caring about peripherals (radio, bluetooth).
+ * Reenables RTC interrupts etc.
+ */
+void cpu_repowerdown();
+
+/**
  * @brief			Called after a successful wakeup from poweroff state.
  */
 void cpu_wakeup();

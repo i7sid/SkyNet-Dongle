@@ -5,16 +5,25 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#include <string.h>
+
 #include "skynet_radio.h"
+#include "radio_config.h"
 #include "../cpu/systick.h"
+#include "../misc/event_queue.h"
 
 uint8_t bMain_IT_Status;
 uint8_t pwrLvlIdx = 0;
 uint8_t pwrLvl[] = {8,12,19,35,127};	//0, 5, 10, 15, 20 dBm
 char timeStr[] = {0, 0, 0, 0, 0, 0};
 
+//char packet_rx_buf[50];
+// should greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
+uint8_t packet_rx_buf[RADIO_MAX_PACKET_LENGTH];
+
 
 void radio_init(void) {
+	Chip_GPIOINT_Init(LPC_GPIOINT);
 	vRadio_Init();	// intialize radio chip
 
     si446x_part_info();
@@ -34,6 +43,10 @@ void radio_init(void) {
     DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
     DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
     DBG("------ end radio chip version information ------\n");
+
+
+    NVIC_SetPriority(EINT3_IRQn, 1);
+    radio_enable_irq();
 }
 
 void radio_shutdown(void) {
@@ -42,6 +55,16 @@ void radio_shutdown(void) {
 
 void radio_wakeup(void) {
 	radio_set_powered(true);
+}
+
+void radio_enable_irq(void) {
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
+	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
+	NVIC_EnableIRQ(EINT3_IRQn);
+}
+
+void radio_disable_irq(void) {
+	NVIC_DisableIRQ(EINT3_IRQn);
 }
 
 void radio_set_powered(bool on) {
@@ -81,7 +104,7 @@ void radio_packet_handler(void) {
 		{
 			vRadio_Change_PwrLvl(pwrLvl[pwrLvlIdx]);
 			customRadioPacket[0] = pwrLvl[pwrLvlIdx];
-			_delay_ms(10);					//just to be sure
+			msDelayActive(10);					//just to be sure
 
 			vRadio_StartTx_Variable_Packet(pRadioConfiguration->Radio_ChannelNumber, &customRadioPacket[0], pRadioConfiguration->Radio_PacketLength);
 		}
@@ -94,38 +117,24 @@ void radio_packet_handler(void) {
 		break;
 
 	case SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_PEND_BIT:
-
-		DBG("rxPKT:");
-		//for (uint8_t i = 0; i < pRadioConfiguration->Radio_PacketLength; i++)
-		//{
-		//	uart1_putc(customRadioPacket[i]);
-		//}
-		DBG("\n");
-
-		// inform skytraxx
-		bt_uart_puts_P("$1,");
-		bt_uart_puts((char *) &customRadioPacket[1]);
-		bt_uart_puts_P("\r\n");
-
 		/*
-		uint8_t rssi = vRadio_getFFR_A();
-		char rssiStr[10];
+		DBG("rxPKT: ");
+		for (uint8_t i = 0; i < pRadioConfiguration->Radio_PacketLength; i++)
+		{
+			DBG("%c", customRadioPacket[i]);
+		}
+		DBG("\n");
+		*/
 
-		//do logging
-		//$LOGR,RSSI,ID\r\n
-		bt_uart_puts_P("$LOGR,");
-		char temp[10];
-		sprintf(temp, "%i,", customRadioPacket[0]);
-		bt_uart_puts(temp);
-		itoa(rssi, rssiStr, 10);
-		bt_uart_puts(rssiStr);
-		bt_uart_putc(',');
-		customRadioPacket[6] = 0;
-		customRadioPacket[11] = 0;
-		bt_uart_puts((char *) &customRadioPacket[1]);
-		bt_uart_puts((char *) &customRadioPacket[7]);
-		bt_uart_puts_P("\r\n");
-*/
+		memcpy(packet_rx_buf, customRadioPacket, pRadioConfiguration->Radio_PacketLength);
+		packet_rx_buf[pRadioConfiguration->Radio_PacketLength] = '\0';
+
+
+		uint8_t rssi = vRadio_getFFR_A();
+		DBG("RSSI: %i\n\n", rssi);
+
+		events_enqueue(EVENT_RF_GOT_PACKET);
+
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
 		break;
 
@@ -135,13 +144,70 @@ void radio_packet_handler(void) {
 }
 
 
+INLINE bool radio_get_gpio0(void) {
+	return Chip_GPIO_GetPinState(LPC_GPIO, SI_LIB_GPIO0_PORT, SI_LIB_GPIO0_PIN);
+}
+
+void radio_config_for_clock_measurement() {
+	si446x_get_property(0x0, 1, 1);
+	DBG("GLOBAL_CLK_CFG: %x\n", Si446xCmd.GET_PROPERTY.DATA0);
+
+	Si446xCmd.GET_PROPERTY.DATA0 = 0b01110000; // enable clock output and divide by 30
+	si446x_set_property_lpc(0x0, 1, 1);
+
+    si446x_get_property(0x0, 1, 1);
+	DBG("GLOBAL_CLK_CFG: %x\n", Si446xCmd.GET_PROPERTY.DATA0);
+
+	si446x_gpio_pin_cfg(0x7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
+}
+
+
 void RADIO_IRQ_HANDLER(void) {
+	//DBG("RADIO_IRQ_HANDLER\n");
 	// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
-	radio_packet_handler();
 
-	si446x_get_int_status(0u, 0u, 0u);	// update IRQ state in radio CPU
-	LPC_SYSCTL->EXTINT |= (1<<EINT1);	// reset IRQ state
+	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT0) & (1 << 19)) {
 
+		//DBG("RADIO packet received\n");
+		radio_packet_handler();
 
+//#ifndef SKYNET_TX_TEST	// DEBUG
+		si446x_get_int_status(0u, 0u, 0u);	// update IRQ state in radio CPU
+//#endif
+
+		Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
+	}
+
+	LPC_SYSCTL->EXTINT |= (1<<EINT3);	// reset IRQ state
+	NVIC_ClearPendingIRQ(EINT3_IRQn);
+	//DBG("Leave RADIO_IRQ_HANDLER\n");
 	//TODO???
+}
+
+
+
+void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP)
+{
+    Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
+    Pro2Cmd[1] = GROUP;
+    Pro2Cmd[2] = NUM_PROPS;
+    Pro2Cmd[3] = START_PROP;
+    Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
+    Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
+    Pro2Cmd[6] = Si446xCmd.GET_PROPERTY.DATA2;
+    Pro2Cmd[7] = Si446xCmd.GET_PROPERTY.DATA3;
+    Pro2Cmd[8] = Si446xCmd.GET_PROPERTY.DATA4;
+    Pro2Cmd[9] = Si446xCmd.GET_PROPERTY.DATA5;
+    Pro2Cmd[10] = Si446xCmd.GET_PROPERTY.DATA6;
+    Pro2Cmd[11] = Si446xCmd.GET_PROPERTY.DATA7;
+    Pro2Cmd[12] = Si446xCmd.GET_PROPERTY.DATA8;
+    Pro2Cmd[13] = Si446xCmd.GET_PROPERTY.DATA9;
+    Pro2Cmd[14] = Si446xCmd.GET_PROPERTY.DATA10;
+    Pro2Cmd[15] = Si446xCmd.GET_PROPERTY.DATA11;
+    Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
+    Pro2Cmd[17] = Si446xCmd.GET_PROPERTY.DATA13;
+    Pro2Cmd[18] = Si446xCmd.GET_PROPERTY.DATA14;
+    Pro2Cmd[19] = Si446xCmd.GET_PROPERTY.DATA15;
+
+    radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
 }

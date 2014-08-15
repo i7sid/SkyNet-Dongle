@@ -89,7 +89,7 @@ void bt_shutdown(void);
 /**
  * @brief	Wake up bluetooth module by stop pulling RESET.
  */
-void bt_wakeup(void);
+void bt_wakeup(bool at_mode);
 
 /**
  * @brief	Send's the AT command to make the bluetooth module visible to clients.

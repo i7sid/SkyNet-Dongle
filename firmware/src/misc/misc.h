@@ -40,7 +40,8 @@
 #define SI_LIB_GPIO0_PORT	0	///< PORT and PIN where GPIO0 from radio chip is connected
 #define SI_LIB_GPIO0_PIN	20	///< @copydoc  SI_LIB_GPIO0_PORT
 //TODO: IRQ handler anpassen (müsste EINT3 oder so sein)
-#define RADIO_IRQ_HANDLER	radio_irq_sub_handler
+#define RADIO_IRQ_HANDLER	EINT3_IRQ_HANDLER
+//#define RADIO_IRQ_HANDLER	radio_irq_sub_handler
 #define RADIO_IRQ_SOURCE	EINT3
 
 
@@ -98,7 +99,8 @@
 #define EINT2	0x4	///< @copydoc EINT0
 #define EINT3	0x8	///< @copydoc EINT0
 
-#define _delay_ms msDelay
+/// Let _delay_ms point to an active waiting routine as expected.
+#define _delay_ms msDelayActive
 
 
 #endif /* MISC_H_ */

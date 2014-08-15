@@ -34,6 +34,17 @@ void register_delayed_event(uint32_t ms, void* f);
 void msDelay(uint32_t ms);
 
 /**
+ * @brief		Blocks for a specific amount of time (actively).
+ * @param	ms	Milliseconds to block.
+ *
+ * CPU can handle incoming interrupts.
+ *
+ * @warning		Do not use this function in interrupt handlers!
+ * 				Use \ref register_delayed_event() or \ref events_enqueue() for delaying in ISRs.
+ */
+void msDelayActive(uint32_t ms);
+
+/**
  * @brief	Activates the systick timer to provide cpu functionality for systick.
  */
 void enable_systick(void);

@@ -12,6 +12,6 @@
 
 #include "../misc/misc.h"
 
-void EINT3_IRQ_HANDLER(void);
+//void EINT3_IRQ_HANDLER(void);
 
 #endif /* INTERRUPTS_H_ */

@@ -5,36 +5,28 @@
 
 void radio_hal_AssertShutdown(void)
 {
-	DBG("AssertShutdown: State of sdn pin: %d\n", PINGET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN));
 	PINSET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
-	DBG("AssertShutdown: State of sdn pin: %d\n", PINGET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN));
+	msDelayActive(25);
 }
 
 void radio_hal_DeassertShutdown(void)
 {
-	DBG("DeassertShutdown: State of sdn pin: %d\n", PINGET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN));
 	PINCLR(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
-	DBG("DeassertShutdown: State of sdn pin: %d\n", PINGET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN));
+	msDelayActive(25);
 }
 
 void radio_hal_ClearNsel(void)
 {
 	SPI_AssertSSEL(); // TODO: board-unabhängig
-	// Not neccessary, chip SPI driver does it
-	//PINCLR(SPI_nCS);
 }
 
 void radio_hal_SetNsel(void)
 {
 	SPI_DeassertSSEL(); // TODO: board-unabhängig
-	// Not neccessary, chip SPI driver does it
-	//PINSET(SPI_nCS);
 }
 
 uint8_t radio_hal_NirqLevel(void)
 {
-	//TODO: stimmt so? Vorher war es:
-	// return GET(SPI_nCS)
     return PINGET(SI_LIB_nIRQ_PORT, SI_LIB_nIRQ_PIN);
 }
 
