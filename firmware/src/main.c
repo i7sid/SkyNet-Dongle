@@ -80,12 +80,14 @@ int main(void) {
 
     SystemCoreClockUpdate();
 
-    cpu_set_speed(SPEED_120MHz);
+    cpu_set_speed(SPEED_30MHz);
 
 	StopWatch_Init();
 
+#ifdef RTC_ENABLED
     DBG("Initialize RTC...\n");
     rtc_init();
+#endif
 
 
     DBG("Clock: %d, %d\n", SystemCoreClock, Chip_Clock_GetCPUClockDiv());
@@ -117,7 +119,9 @@ int main(void) {
 	input_init();
     DBG("Initialize ADC...\n");
 	adc_init();
+	adc_start_buffered_measure();
 
+	SPI_Init();
 
 
     DBG("Initialize Bluetooth module...\n");
@@ -128,12 +132,33 @@ int main(void) {
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
+    /*
+
+    // DEBUG: test current consumption
+    bt_shutdown();
+    bt_deinit();
+
+    msDelayActive(1000);
+
+    bt_init(); // implies wakeup; TODO: dokumentieren
+
+    msDelayActive(1000);
+
+
+    radio_shutdown();
+
+    msDelayActive(1000);
+
+    radio_init(); // implies wakeup; TODO: dokumentieren
+
+
+    msDelayActive(1000);
+
+*/
 
 
     DBG("Initialization complete.\n");
-	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
 
-	DBG("Radio RX started.\n");
 
 	//radio_config_for_clock_measurement();
 
@@ -247,7 +272,7 @@ int main(void) {
     		si446x_request_device_state();
 			DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i; input: %i; GPIO0: %i; state: %i\n",
 					charger_status1(), charger_status2(), charger_external_power(),
-					true, adc_measure(), input_state(), radio_get_gpio0(),
+					true, adc_get_buffered_value(), input_state(), radio_get_gpio0(),
 					Si446xCmd.REQUEST_DEVICE_STATE.CURR_STATE);
 			msDelay(15);
 			skynet_led_green(false);

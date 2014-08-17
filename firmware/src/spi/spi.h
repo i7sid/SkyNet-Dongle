@@ -11,6 +11,9 @@
 /// @brief	Initialize SPI port pins and SPI module.
 void SPI_Init(void);
 
+/// @brief	Powers down SPI unit.
+void SPI_Deinit(void);
+
 /**
  * @brief			Sends a single byte and receives the immediate answer byte.
  * @param	data	Byte to be sent.

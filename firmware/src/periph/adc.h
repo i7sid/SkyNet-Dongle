@@ -18,8 +18,29 @@
 void adc_init(void);
 
 /**
+ * @brief	Discards all operation on ADC to reduce power consumption.
+ */
+void adc_deinit(void);
+
+/**
+ * @brief	Start regular update of buffered ADC measurement.
+ */
+void adc_start_buffered_measure(void);
+
+/**
+ * @brief	Callback for delayed event for ADC measurement.
+ */
+void adc_read_buffered_measure(void);
+
+/**
+ * @brief	Get latest value from buffered ADC measurement.
+ * @returns	Last value that was read from via \ref adc_measure() .
+ */
+uint16_t adc_get_buffered_value(void);
+
+/**
  * @brief 	Measure battery voltage
- * @returns	battery voltage, //TODO which format? multiplied by?
+ * @returns	battery voltage, 12 bit
  */
 uint16_t adc_measure(void);
 

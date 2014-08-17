@@ -2,27 +2,28 @@
 #include "radio.h"
 #include "../spi/spi.h"
 #include "../misc/misc.h"
+#include "../cpu/systick.h"
 
 void radio_hal_AssertShutdown(void)
 {
 	PINSET(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
-	msDelayActive(25);
+	msDelayActive(50);
 }
 
 void radio_hal_DeassertShutdown(void)
 {
 	PINCLR(SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
-	msDelayActive(25);
+	msDelayActive(50);
 }
 
 void radio_hal_ClearNsel(void)
 {
-	SPI_AssertSSEL(); // TODO: board-unabhängig
+	SPI_AssertSSEL();
 }
 
 void radio_hal_SetNsel(void)
 {
-	SPI_DeassertSSEL(); // TODO: board-unabhängig
+	SPI_DeassertSSEL();
 }
 
 uint8_t radio_hal_NirqLevel(void)

@@ -9,6 +9,8 @@
 
 #include "skynet_radio.h"
 #include "radio_config.h"
+#include "radio_hal.h"
+#include "../spi/spi.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
 
@@ -17,9 +19,11 @@ uint8_t pwrLvlIdx = 0;
 uint8_t pwrLvl[] = {8,12,19,35,127};	//0, 5, 10, 15, 20 dBm
 char timeStr[] = {0, 0, 0, 0, 0, 0};
 
-//char packet_rx_buf[50];
-// should greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
+// should be greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
 uint8_t packet_rx_buf[RADIO_MAX_PACKET_LENGTH];
+
+volatile bool radio_initialized = false;
+
 
 
 void radio_init(void) {
@@ -44,31 +48,30 @@ void radio_init(void) {
     DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
     DBG("------ end radio chip version information ------\n");
 
-
     NVIC_SetPriority(EINT3_IRQn, 1);
     radio_enable_irq();
+
+    // start receiving...
+	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
+	DBG("Radio RX started.\n");
 }
 
 void radio_shutdown(void) {
-	radio_set_powered(false);
-}
-
-void radio_wakeup(void) {
-	radio_set_powered(true);
+	radio_disable_irq();
+	radio_hal_AssertShutdown();
+	SPI_Deinit();
 }
 
 void radio_enable_irq(void) {
 	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
 	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
+	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_EnableIRQ(EINT3_IRQn);
 }
 
 void radio_disable_irq(void) {
+	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_DisableIRQ(EINT3_IRQn);
-}
-
-void radio_set_powered(bool on) {
-	Chip_GPIO_SetPinState(LPC_GPIO, SI_LIB_SDN_PORT, SI_LIB_SDN_PIN, !on);
 }
 
 //TODO
@@ -163,7 +166,7 @@ void radio_config_for_clock_measurement() {
 
 
 void RADIO_IRQ_HANDLER(void) {
-	//DBG("RADIO_IRQ_HANDLER\n");
+	DBG("RADIO_IRQ_HANDLER\n");
 	// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
 
 	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT0) & (1 << 19)) {

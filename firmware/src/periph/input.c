@@ -5,6 +5,7 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 #include "input.h"
+#include "../cpu/cpu.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
 
@@ -136,13 +137,9 @@ void recheck_switch_state() {
 void INPUT_SWITCH_HANDLER(void) {
 	DBG("INPUT pressed\n");
 
-	// TODO: Prüfen ob im SLEEP-Modus
-	if (false) {
-		// TODO 2 Sekunden warten, ob immer noch gedrückt
-		// wenn ja: aufwachen, Sleep zurücksetzen
-		// wenn nein: abbrechen
-	}
-	else {
+	// if we are in sleep mode, just do nothing
+	// otherwise, handle event
+	if (!cpu_powered_down) {
 		// button pressed in normal operation mode
 		switch_state = SWITCH_FSM_FIRST;
 
@@ -151,8 +148,7 @@ void INPUT_SWITCH_HANDLER(void) {
 
 		// enqueue next check if button is still pressed
 		register_delayed_event(SWITCH_CHECK_WAIT_MS, recheck_switch_state);
-
-		// reset EINT flag
-		LPC_SYSCTL->EXTINT |= 0x2;
 	}
+	// reset EINT flag
+	LPC_SYSCTL->EXTINT |= 0x2;
 }

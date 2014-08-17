@@ -23,9 +23,6 @@ void bt_init() {
 	// reset pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN);
 
-	bt_uart_init(38400);
-	msDelayActive(25);	// wait for pins to be configured and working properly
-
 	bt_hardreset();		// start in normal operation mode
 
 	// configure bluetooth UART
@@ -38,14 +35,14 @@ void bt_init() {
 void bt_uart_init(uint32_t baud) {
 	// UART initialization
 	Chip_UART_Init(BLUETOOTH_UART);
-	Chip_UART_SetBaud(BLUETOOTH_UART, baud); // should be: 115200
+	Chip_UART_SetBaud(BLUETOOTH_UART, baud);
 	Chip_UART_ConfigData(BLUETOOTH_UART, (UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS));
 	Chip_UART_SetupFIFOS(BLUETOOTH_UART, (UART_FCR_FIFO_EN | UART_FCR_TRG_LEV1 | UART_FCR_RX_RS | UART_FCR_TX_RS ));
 	Chip_UART_TXEnable(BLUETOOTH_UART);
 }
 
 void bt_uart_set_speed(uint32_t baud) {
-	Chip_UART_SetBaud(BLUETOOTH_UART, baud); // should be: 115200
+	Chip_UART_SetBaud(BLUETOOTH_UART, baud);
 }
 
 void bt_uart_deinit() {
@@ -117,6 +114,7 @@ void bt_first_configuration() {
 void bt_deinit() {
 	NVIC_DisableIRQ(BLUETOOTH_UART_IRQn);
 	Chip_UART_DeInit(BLUETOOTH_UART);
+	Chip_Clock_DisablePeriphClock(SYSCTL_CLOCK_UART3);
 }
 
 void bt_reset() {
@@ -156,20 +154,20 @@ void bt_disable_AT_mode() {
 void bt_shutdown() {
 	// wait for previous transmission to be completed
 	msDelayActive(100);
+
 	bt_switch_reset_pin(true);
 	// wait for module to be fully shut down
 	msDelayActive(1500);
 }
 
 void bt_wakeup() {
-	DBG("bt_wakeup visible:  %i\n", visible);
 	if (visible) {
 		bt_disable_AT_mode();
-		bt_uart_set_speed(115200);	// configure UART for 115200 baud (full speed)
+		bt_uart_init(115200);	// configure UART for 115200 baud (full speed)
 	}
 	else {
 		bt_enable_AT_mode();	// start in full AT mode
-		bt_uart_set_speed(38400);	// configure UART for 38400 baud (fixed in AT mode)
+		bt_uart_init(38400);	// configure UART for 38400 baud (fixed in AT mode)
 	}
 
 	bt_switch_reset_pin(false);	// power up!
@@ -225,7 +223,7 @@ INLINE void bt_change_visible(bool visible) {
 
 //TODO: send non-blocking ?
 INLINE void bt_uart_puts(char *str) {
-	DBG("BT TX: %s", str);
+	//DBG("BT TX: %s", str);
 	Chip_UART_SendBlocking(BLUETOOTH_UART, str, strlen(str));
 }
 
@@ -244,7 +242,7 @@ void bt_uart_clear_rx() {
 
 	while (read > 0) {
 		read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
-		DBG("clear %d %s\n", read, buf);
+		//DBG("clear %d %s\n", read, buf);
 	}
 }
 

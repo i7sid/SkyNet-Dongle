@@ -11,6 +11,7 @@
 #include "systick.h"
 #include "../radio/skynet_radio.h"
 #include "../bluetooth/bluetooth.h"
+#include "../periph/input.h"
 #include "../periph/led.h"
 
 
@@ -40,8 +41,8 @@ void cpu_set_speed(cpu_speed speed) {
 }
 
 
-void cpu_sleep() {
-	//TODO
+INLINE void cpu_sleep() {
+	Chip_PMU_SleepState(LPC_PMU);
 }
 
 
@@ -59,76 +60,48 @@ void cpu_powerdown() {
 	skynet_led_blue(false);
 
 
+	adc_deinit();
 	bt_shutdown();
 	radio_shutdown();
 
-	rtc_prepare_powerdown();
+	while (cpu_powered_down) {
+		NVIC_EnableIRQ(INPUT_SWITCH_IRQn); 		// enable switch IRQ for wakeup
+		NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
+
+		rtc_prepare_powerdown();
+
+		Chip_PMU_DeepSleepState(LPC_PMU);
+		//Chip_PMU_SleepState(LPC_PMU);
+
+		SystemInit(); // restore IOCON and clocks (important for msDelay!)
+		SystemCoreClockUpdate();
+		cpu_set_speed(SPEED_30MHz);
+		enable_systick(); // reenable SysTick functionality (updates clock)
 
 
-	//Chip_PMU_PowerDownState(LPC_PMU);
-
-
-    //LPC_PMU->PCON |= PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG;
-    LPC_PMU->PCON &= ~(PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG);
-	SCB->SCR = SCB_SCR_SEVONPEND_Msk | SCB_SCR_SLEEPDEEP_Msk;
-	//SCB->SCR = SCB_SCR_SLEEPDEEP_Msk;
-	__WFI();
-
-	//NVIC_SystemReset();
-
-
-
-
-
-
-	//Chip_PMU_PowerDownState(LPC_PMU);
-
-	//__WFI();
-	/*
-	NVIC_ClearPendingIRQ(RTC_IRQn);
-	NVIC_EnableIRQ(RTC_IRQn);
-	NVIC_ClearPendingIRQ(EINT1_IRQn);
-	NVIC_EnableIRQ(EINT1_IRQn);
-	Chip_PMU_DeepSleepState(LPC_PMU);
-	*/
+		msDelay(2000);
+		if (input_state()) {
+			cpu_powered_down = false;
+		}
+	}
 
 
 	skynet_led_green(true);
-	msDelay(500);
 	skynet_led_red(true);
-	msDelay(500);
 	skynet_led_blue(true);
-	msDelay(1000);
+	msDelayActive(2000);
 	skynet_led_red(false);
 	skynet_led_green(false);
 	skynet_led_blue(false);
 
+	adc_init();
+	bt_init();
+	radio_init();
 
-	//Chip_PMU_DeepPowerDownState(LPC_PMU);
+	skynet_led_green(true);
+	msDelay(1000);
+	skynet_led_green(false);
 
 	//TODO: Stromverbrauch prüfen
 }
 
-void cpu_repowerdown() {
-	cpu_powered_down = true;
-
-	Chip_RTC_Init(LPC_RTC);
-
-    rtc_prepare_powerdown();
-
-    LPC_PMU->PCON |= PMU_PCON_PM1_FLAG | PMU_PCON_PM0_FLAG;
-	SCB->SCR = 4;
-	__WFI();
-}
-
-void cpu_wakeup() {
-	// TODO: nicht nötig bei Deep Power Down
-
-	skynet_led_green(true);
-	msDelay(500);
-	skynet_led_green(false);
-
-	//TODO: Clocks wiederherstellen?
-	radio_wakeup();
-	bt_wakeup(false);
-}

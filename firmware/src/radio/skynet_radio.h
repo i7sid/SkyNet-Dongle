@@ -19,9 +19,10 @@
 #include "radio_config.h"
 
 extern uint8_t packet_rx_buf[RADIO_MAX_PACKET_LENGTH];
+extern volatile bool radio_initialized;
 
 /**
- * @brief	Initialize radio communication chip
+ * @brief	Initialize radio communication chip and wakes it up.
  */
 void radio_init(void);
 
@@ -29,11 +30,6 @@ void radio_init(void);
  * @brief	Shuts the entire radio chip down.
  */
 void radio_shutdown(void);
-
-/**
- * @brief	Wakes the radio chip up to resume normal operation.
- */
-void radio_wakeup(void);
 
 /**
  * @brief	Enables the IRQ reception.
@@ -44,12 +40,6 @@ void radio_enable_irq(void);
  * @brief	Disables the IRQ reception.
  */
 void radio_disable_irq(void);
-
-/**
- * @brief	Sets SDN high or low to enable/disable complete radio module.
- * @param	on	\b true for powered (SDN=low), \b false for shutdown (SDN=high)
- */
-void radio_set_powered(bool on);
 
 /**
  * @brief			Sends a packet of variable length

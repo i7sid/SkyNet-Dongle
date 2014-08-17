@@ -14,10 +14,12 @@
 #endif
 
 #include "adc.h"
+#include "../cpu/systick.h"
 
 static ADC_CLOCK_SETUP_T ADCSetup;
+static volatile uint16_t adc_buffered_value = 0xFFF; // 4095
 
-void adc_init() {
+void adc_init(void) {
 	// init pwr pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, ADC_PWR_PORT, ADC_PWR_PIN);
 
@@ -27,7 +29,25 @@ void adc_init() {
 	adc_deactivate();
 }
 
-uint16_t adc_measure() {
+void adc_deinit(void) {
+	adc_deactivate();
+	Chip_ADC_DeInit(LPC_ADC);
+}
+
+void adc_start_buffered_measure(void) {
+	register_delayed_event(5000, adc_read_buffered_measure);
+}
+
+void adc_read_buffered_measure(void) {
+	adc_buffered_value = adc_measure();
+	adc_start_buffered_measure();
+}
+
+INLINE uint16_t adc_get_buffered_value(void) {
+	return adc_buffered_value;
+}
+
+uint16_t adc_measure(void) {
 	uint16_t data;
 
 	// activate
@@ -42,18 +62,18 @@ uint16_t adc_measure() {
 	// deactivate
 	adc_deactivate();
 
-	return data; // TODO: multiply by 2 to because of voltage divider ?
+	return data;
 }
 
 
-INLINE void adc_activate() {
+INLINE void adc_activate(void) {
 	PINSET(ADC_PWR_PORT, ADC_PWR_PIN);
-	msDelay(50);
+	msDelayActive(50);
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, ENABLE);
 	Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
 }
 
-INLINE void adc_deactivate() {
+INLINE void adc_deactivate(void) {
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, DISABLE);
 	PINCLR(ADC_PWR_PORT, ADC_PWR_PIN);
 }

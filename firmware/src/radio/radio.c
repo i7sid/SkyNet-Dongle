@@ -39,23 +39,23 @@ void vRadio_PowerUp(void)
 	/* Hardware reset the chip */
 	si446x_reset();
 
-	msDelay(200);
+	msDelayActive(100);
 }
 
 /*!
  *  Radio Initialization.
  *
- *  @author Sz. Papp
+ *  @author Sz. Papp, Michael Zapf
  *
  *  @note
  *
  */
 void vRadio_Init(void)
 {
-	DBG("Initialize SPI...\n");
+	//DBG("Initialize SPI...\n");
 	SPI_Init();
 
-	//TODO: Initialisiere nIRQ und SDN?
+	// initialize nIRQ and SDN
 	DBG("Setup port pins for SPI additions...\n");
 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, SI_LIB_nIRQ_PORT, SI_LIB_nIRQ_PIN);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, SI_LIB_SDN_PORT, SI_LIB_SDN_PIN);
@@ -81,18 +81,6 @@ void vRadio_Init(void)
 
 	// Read ITs, clear pending ones
 	si446x_get_int_status(0u, 0u, 0u);
-
-
-
-
-/*
-	//TODO: was hab ich hier nochmal gemacht?
-	Si446xCmd.GET_PROPERTY.DATA0 = 0x01;
-	si446x_set_property_lpc(0x01, 1, 0);
-	Si446xCmd.GET_PROPERTY.DATA0 = 0x00; 	// DEBUG
-	si446x_get_property(0x01, 1, 0);		// DEBUG
-    DBG("0x%x\n", Si446xCmd.GET_PROPERTY.DATA0); // DEBUG
-*/
 
 
 
