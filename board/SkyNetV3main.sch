@@ -9677,12 +9677,6 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <wire x1="71.12" y1="99.06" x2="68.58" y2="99.06" width="0.1524" layer="91"/>
 <label x="68.58" y="99.06" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
-<segment>
-<pinref part="R4" gate="G$1" pin="1"/>
-<wire x1="198.12" y1="81.28" x2="198.12" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="198.12" y1="78.74" x2="208.28" y2="78.74" width="0.1524" layer="91"/>
-<label x="208.28" y="78.74" size="1.27" layer="95" xref="yes"/>
-</segment>
 </net>
 <net name="USB-D-" class="0">
 <segment>
@@ -9962,6 +9956,14 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="IC3" gate="G$1" pin="P0[21]/RI1/RD1"/>
 <wire x1="71.12" y1="119.38" x2="68.58" y2="119.38" width="0.1524" layer="91"/>
 <label x="68.58" y="119.38" size="1.27" layer="95" rot="MR0" xref="yes"/>
+</segment>
+</net>
+<net name="USB-CABLE-D+" class="0">
+<segment>
+<pinref part="R4" gate="G$1" pin="1"/>
+<wire x1="198.12" y1="81.28" x2="198.12" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="198.12" y1="78.74" x2="205.74" y2="78.74" width="0.1524" layer="91"/>
+<label x="205.74" y="78.74" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
@@ -10894,14 +10896,14 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <label x="228.6" y="81.28" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="N$2" class="0">
+<net name="USB-CABLE-D-" class="0">
 <segment>
 <pinref part="USB1" gate="G$1" pin="2"/>
 <pinref part="R16" gate="G$1" pin="2"/>
 <wire x1="30.48" y1="152.4" x2="45.72" y2="152.4" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$3" class="0">
+<net name="USB-CABLE-D+" class="0">
 <segment>
 <pinref part="R15" gate="G$1" pin="2"/>
 <wire x1="35.56" y1="147.32" x2="33.02" y2="147.32" width="0.1524" layer="91"/>
