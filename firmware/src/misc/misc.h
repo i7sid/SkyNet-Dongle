@@ -102,5 +102,4 @@
 /// Let _delay_ms point to an active waiting routine as expected.
 #define _delay_ms msDelayActive
 
-
 #endif /* MISC_H_ */

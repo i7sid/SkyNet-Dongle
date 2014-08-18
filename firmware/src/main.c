@@ -103,7 +103,13 @@ int main(void) {
 	skynet_led_green(false);
 	skynet_led_red(false);
 	charger_init();
-	charger_set_mode(USB_CHARGE); // USB_CHARGE
+	charger_set_mode(USB_HIGH); // USB_CHARGE
+
+
+	// DEBUG
+	Chip_USB_Init();
+
+
 
 	// give visual feedback that program started
 	skynet_led_red(true);

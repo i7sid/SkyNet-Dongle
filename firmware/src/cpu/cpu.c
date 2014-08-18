@@ -9,8 +9,9 @@
 #include "cpu.h"
 #include "rtc.h"
 #include "systick.h"
-#include "../radio/skynet_radio.h"
 #include "../bluetooth/bluetooth.h"
+#include "../radio/skynet_radio.h"
+#include "../periph/adc.h"
 #include "../periph/input.h"
 #include "../periph/led.h"
 
@@ -69,6 +70,8 @@ void cpu_powerdown() {
 		NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
 
 		rtc_prepare_powerdown();
+
+		// TODO disconnect and disable PLL0 (see Errata)
 
 		Chip_PMU_DeepSleepState(LPC_PMU);
 		//Chip_PMU_SleepState(LPC_PMU);

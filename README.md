@@ -29,6 +29,10 @@ The firmware uses the Si446x API library from Silicon Laboratories, Inc.
 The library was slightly adjusted to compile for and work nicely on LPC1769.
 
 
+Pinouts
+-------
+... are documented in board/pinouts.txt .
+
 
 Flashing / Programming
 ----------------------
