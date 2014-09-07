@@ -9,6 +9,7 @@
 #include "cpu.h"
 #include "rtc.h"
 #include "systick.h"
+#include "../sysinit.h"
 #include "../bluetooth/bluetooth.h"
 #include "../radio/skynet_radio.h"
 #include "../periph/adc.h"
@@ -66,21 +67,29 @@ void cpu_powerdown() {
 	radio_shutdown();
 
 	while (cpu_powered_down) {
+		disable_systick();
+		// TODO: abort all running switch pressing handlers
 		NVIC_EnableIRQ(INPUT_SWITCH_IRQn); 		// enable switch IRQ for wakeup
 		NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
 
 		rtc_prepare_powerdown();
 
-		// TODO disconnect and disable PLL0 (see Errata)
+		// disconnect and disable PLL0 (see Errata sheet, section 3.10)
+		// (not sure if this could be done in one call to Chip_Clock_DisablePLL,
+		//  so do it step by step)
+		Chip_Clock_DisablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_CONNECT);
+		while (Chip_Clock_IsMainPLLConnected()) {} // Wait to be disconnected
+		Chip_Clock_DisablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE);
+		while (Chip_Clock_IsMainPLLEnabled()) {} // Wait to be disabled
 
-		Chip_PMU_DeepSleepState(LPC_PMU);
+		// And now go to sleep!
+		Chip_PMU_PowerDownState(LPC_PMU);
 		//Chip_PMU_SleepState(LPC_PMU);
 
 		SystemInit(); // restore IOCON and clocks (important for msDelay!)
 		SystemCoreClockUpdate();
 		cpu_set_speed(SPEED_30MHz);
 		enable_systick(); // reenable SysTick functionality (updates clock)
-
 
 		msDelay(2000);
 		if (input_state()) {
@@ -100,6 +109,8 @@ void cpu_powerdown() {
 	adc_init();
 	bt_init();
 	radio_init();
+
+	adc_start_buffered_measure();
 
 	skynet_led_green(true);
 	msDelay(1000);

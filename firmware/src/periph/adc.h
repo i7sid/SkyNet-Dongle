@@ -33,6 +33,14 @@ void adc_start_buffered_measure(void);
 void adc_read_buffered_measure(void);
 
 /**
+ * @brief	Disables the regular update of buffered ADC measurements.
+ *
+ * Needed for example if you want to go to deep sleep or simply
+ * do not need a current battery voltage measurement.
+ */
+void adc_stop_buffered_measure(void);
+
+/**
  * @brief	Get latest value from buffered ADC measurement.
  * @returns	Last value that was read from via \ref adc_measure() .
  */

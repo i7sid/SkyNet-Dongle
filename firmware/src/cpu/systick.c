@@ -22,7 +22,7 @@ void SysTick_Handler(void) {
 	// delayed events
 	bool no_delayed = true;
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
-		if (tick_events_t[i] > 0) {
+		if (tick_events_t[i] > 0 && tick_events_f[i] > 0x0) {
 			no_delayed = false;
 			tick_events_t[i] -= 1;
 			if (tick_events_t[i] == 0) {
@@ -49,7 +49,26 @@ void register_delayed_event(uint32_t ms, void* f) {
 	DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
 }
 
-void msDelayCallback() {
+void remove_delayed_event(void* f) {
+	bool stop_systick = true;
+	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
+		if (tick_events_f[i] == f) {
+			tick_events_t[i] = 0;
+			tick_events_f[i] = 0x0;
+		}
+		else if (tick_events_f[i] != 0x0) {
+			stop_systick = false;
+		}
+	}
+
+	if (stop_systick) {
+		disable_systick();
+	}
+
+	DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
+}
+
+void msDelayCallback(void) {
 	tick_occured = true;
 }
 
@@ -76,9 +95,15 @@ void msDelayActiveUs(uint32_t us)
 	StopWatch_DelayUs(us);
 }
 
-void enable_systick() {
+void enable_systick(void) {
 	SystemCoreClockUpdate(); // Generic Initialization
 	SysTick_Config(SystemCoreClock/1000); // Enable and setup SysTick Timer at 0.001 HZ
+	//NVIC_EnableIRQ(SysTick_IRQn);
+}
+
+INLINE void disable_systick(void) {
+	SysTick->CTRL  = 0; // disable Systick if not needed any more
+	//NVIC_DisableIRQ(SysTick_IRQn);
 }
 
 

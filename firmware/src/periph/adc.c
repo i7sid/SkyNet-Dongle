@@ -30,8 +30,10 @@ void adc_init(void) {
 }
 
 void adc_deinit(void) {
+	adc_stop_buffered_measure();
 	adc_deactivate();
 	Chip_ADC_DeInit(LPC_ADC);
+	//TODO: Preiph Clock trennen möglich?
 }
 
 void adc_start_buffered_measure(void) {
@@ -45,6 +47,10 @@ void adc_read_buffered_measure(void) {
 
 INLINE uint16_t adc_get_buffered_value(void) {
 	return adc_buffered_value;
+}
+
+INLINE void adc_stop_buffered_measure(void) {
+	remove_delayed_event(adc_read_buffered_measure);
 }
 
 uint16_t adc_measure(void) {

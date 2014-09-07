@@ -23,6 +23,12 @@ void SysTick_Handler(void);
 void register_delayed_event(uint32_t ms, void* f);
 
 /**
+ * @brief		Removes a delayed event from the queue to disable it.
+ * @param	f	Function pointer to the event that should be removed.
+ */
+void remove_delayed_event(void* f);
+
+/**
  * @brief		Blocks for a specific amount of time (passively).
  * @param	ms	Milliseconds to block.
  *
@@ -59,6 +65,11 @@ void msDelayActiveUs(uint32_t us);
  * @brief	Activates the systick timer to provide cpu functionality for systick.
  */
 void enable_systick(void);
+
+/**
+ * @brief	Dectivates the systick timer.
+ */
+void disable_systick(void);
 
 /**
  *  @brief	Callback function for msDelay function.

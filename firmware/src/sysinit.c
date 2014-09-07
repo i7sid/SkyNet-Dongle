@@ -34,6 +34,8 @@
  #include "board.h"
  #endif
 
+#include "sysinit.h"
+
 #include "periph/led.h"
 #include "periph/input.h"
 #include "cpu/systick.h"
@@ -204,58 +206,11 @@ STATIC void SystemSetupClocking(void)
 /* Set up and initialize hardware prior to call to main */
 void SystemInit(void)
 {
-	/*
-	Chip_Clock_SetCrystalRangeLo();
-    Chip_SetupXtalClocking();
-    Chip_SYSCTL_SetFLASHAccess(FLASHTIM_100MHZ_CPU);
-
-
-    Chip_Clock_SetCPUClockDiv(16);
-    */
-
-
 	Board_SetupMuxing();
 
 	SystemSetupClocking();
 
-/*
-	// check if we came from deep power down mode
-	if ((LPC_PMU->PCON & PMU_PCON_DPDFLAG) != 0x0) {
-		LPC_PMU->PCON |= PMU_PCON_DPDFLAG; // reset deep power down flag
-		skynet_led_init();
-
-		skynet_led_red(true);
-		msDelay(25);
-		skynet_led_red(false);
-
-		if (!input_state()) { // not pressed? go back sleeping!
-			cpu_repowerdown();
-		}
-		msDelay(1000);
-		if (!input_state()) { // not pressed long enough? go back sleeping!
-			cpu_repowerdown();
-		}
-
-		// all went good, switch was pressed long enough, let's boot up!
-
-
-		skynet_led_green(true);
-		msDelay(500);
-		skynet_led_red(true);
-		msDelay(500);
-		skynet_led_blue(true);
-		msDelay(1000);
-		skynet_led_red(false);
-		skynet_led_green(false);
-		skynet_led_blue(false);
-	}
-	*/
-
-
-#if defined(NO_BOARD_LIB)
-	/* Chip specific SystemInit */
-	//Chip_SystemInit();
-#else
+#ifndef NO_BOARD_LIB
 	/* Board specific SystemInit */
 	Board_SystemInit();
 #endif

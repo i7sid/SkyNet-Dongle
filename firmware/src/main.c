@@ -107,7 +107,7 @@ int main(void) {
 
 
 	// DEBUG
-	Chip_USB_Init();
+	//Chip_USB_Init();
 
 
 
@@ -220,6 +220,7 @@ int main(void) {
     	msDelay(3000);
 #else
 
+    	// TODO: RF modul nur einschalten, wenn BT verbunden
 
     	event_types event = events_dequeue();
     	switch (event) {
