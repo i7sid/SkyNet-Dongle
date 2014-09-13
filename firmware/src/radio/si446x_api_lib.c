@@ -17,6 +17,7 @@
 #include "si446x_defs.h"
 #include "radio_comm.h"
 #include "radio_hal.h"
+#include "si446x_patch.h"
 
 
 union si446x_cmd_reply_union Si446xCmd;
@@ -121,8 +122,10 @@ U8 si446x_configuration_init(const U8* pSetPropCmd)
 U8 si446x_apply_patch(void)
 {
 #ifdef SI446X_PATCH_CMDS
-    SEGMENT_VARIABLE(line, U16, SEG_DATA);
-    SEGMENT_VARIABLE(row,  U8, SEG_DATA);
+    uint16_t line;
+    uint8_t row;
+
+    uint8_t Si446xPatchCommands[][8] = { SI446X_PATCH_CMDS };
 
     /* Check if patch is needed. */
     si446x_part_info();

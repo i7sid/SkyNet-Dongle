@@ -3,6 +3,8 @@
  *
  * @date	25.04.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functions to communicate with the bluetooth module.
  */
 
 #include <string.h>
@@ -133,31 +135,31 @@ void bt_softreset() {
 }
 void bt_enable_AT_mode() {
 	// wait for previous transmission to be completed
-	msDelayActive(100);
+	msDelayActive(BLUETOOTH_AT_PRESWITCH_DELAY);
 
 	bt_switch_at_pin(true);
 
 	// assure that module has enough time to recognize new state
-	msDelayActive(250);
+	msDelayActive(BLUETOOTH_AT_POSTSWITCH_DELAY);
 }
 
 void bt_disable_AT_mode() {
 	// wait for previous transmission to be completed
-	msDelayActive(100);
+	msDelayActive(BLUETOOTH_AT_PRESWITCH_DELAY);
 
 	bt_switch_at_pin(false);
 
 	// assure that pin was toggled and module can recognize the changed state
-	msDelayActive(250);
+	msDelayActive(BLUETOOTH_AT_POSTSWITCH_DELAY);
 }
 
 void bt_shutdown() {
 	// wait for previous transmission to be completed
-	msDelayActive(100);
+	msDelayActive(BLUETOOTH_BEFORE_SHUTDOWN_DELAY);
 
 	bt_switch_reset_pin(true);
 	// wait for module to be fully shut down
-	msDelayActive(1500);
+	msDelayActive(BLUETOOTH_AFTER_SHUTDOWN_DELAY);
 }
 
 void bt_wakeup() {
@@ -176,7 +178,7 @@ void bt_wakeup() {
 	// the module needs some time to resume work,
 	// so wait  to guarantee functionality
 	// (wait active to assure that pin can be set, don't sleep!)
-	msDelayActive(1500);
+	msDelayActive(BLUETOOTH_AFTER_WAKEUP_DELAY);
 
 	if (!visible) {
 		bt_change_visible(false);	// and now bring us to Ninja mode (invisble)

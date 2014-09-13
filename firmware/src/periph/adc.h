@@ -3,6 +3,7 @@
  *
  * @date	28.06.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ * @brief	Contains public interface to battery monitoring.
  */
 
 #ifndef ADC_H_

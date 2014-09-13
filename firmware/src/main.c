@@ -27,6 +27,7 @@
 #include "periph/led.h"
 #include "periph/charger.h"
 #include "periph/adc.h"
+#include "periph/dcdc.h"
 #include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
@@ -64,25 +65,23 @@ void sendVariablePacket(uint8_t *pkt, uint8_t length)
 }
 
 
+
 int main(void) {
 
 #if defined (__USE_LPCOPEN)
 #if !defined(NO_BOARD_LIB)
     // Read clock settings and update SystemCoreClock variable
     SystemCoreClockUpdate();
-
-	// TODO: replace with future debugging feature (other UART?)
-	// DEBUGINIT();
-
 #endif
 #endif
     DBG("Booting up...");
 
     SystemCoreClockUpdate();
 
-    cpu_set_speed(SPEED_30MHz);
+    cpu_set_speed(SPEED_120MHz);
 
 	StopWatch_Init();
+
 
 #ifdef RTC_ENABLED
     DBG("Initialize RTC...\n");
@@ -104,6 +103,8 @@ int main(void) {
 	skynet_led_red(false);
 	charger_init();
 	charger_set_mode(USB_HIGH); // USB_CHARGE
+	dcdc_init();
+
 
 
 	// DEBUG
@@ -131,66 +132,17 @@ int main(void) {
 
 
     DBG("Initialize Bluetooth module...\n");
-    bt_init();	// initialize UART for bluetooth communication
+    //bt_init();	// initialize UART for bluetooth communication
 
     DBG("Initialize radio module...\n");
     radio_init();
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
-    /*
-
-    // DEBUG: test current consumption
-    bt_shutdown();
-    bt_deinit();
-
-    msDelayActive(1000);
-
-    bt_init(); // implies wakeup; TODO: dokumentieren
-
-    msDelayActive(1000);
-
-
-    radio_shutdown();
-
-    msDelayActive(1000);
-
-    radio_init(); // implies wakeup; TODO: dokumentieren
-
-
-    msDelayActive(1000);
-
-*/
-
 
     DBG("Initialization complete.\n");
 
 
-	//radio_config_for_clock_measurement();
-
-    /*
-	// measure core clock frequency
-
-	si446x_get_property(0x0, 2, 0);
-	DBG("GLOBAL_CLK_CFG: %x %x\n", Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
-
-	Si446xCmd.GET_PROPERTY.DATA1 = 0b01100000;
-	//si446x_set_property(0x0, 2, Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
-    Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
-    Pro2Cmd[1] = 0x0;
-    Pro2Cmd[2] = 0x2;
-    Pro2Cmd[3] = 0x0;
-    Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
-    Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
-
-    radio_comm_SendCmd(6, Pro2Cmd);
-
-    si446x_get_property(0x0, 2, 0);
-	DBG("GLOBAL_CLK_CFG: %x %x\n", Si446xCmd.GET_PROPERTY.DATA0, Si446xCmd.GET_PROPERTY.DATA1);
-
-     */
-
-
 	skynet_led_green(true);
 	msDelay(250);
 	skynet_led_green(false);
@@ -204,20 +156,33 @@ int main(void) {
 	skynet_led_green(false);
 
 
+	unsigned char data[8192];
+	data[8191] = 0;
     volatile static int i = 0;
     while(1) {
-    	//ledOn(LED_RADIO);
 
 #ifdef SKYNET_TX_TEST
+    	msDelay(1000);
+
     	skynet_led_red(true);
-    	unsigned char data[] = "$SKT1,56812,JE00,0.836377,0.142920,852,40,0.0";
+
+
+    	for (int i=0; i < 8191; i += 2) {
+    		//data[i] = (i % 10) + 48;
+    		data[i] = (i/60) + 48;
+    		data[i+1] = (i % 60) + 65;
+    		//DBG("write data: %c at %d\n", data[i], i);
+    	}
+
     	DBG("Sending packet: %s\n", data);
-    	sendVariablePacket(data, sizeof(data));
+    	//sendVariablePacket(data, 76);
+    	//sendLongPacket(data, 76);
+    	radio_send_variable_packet(data, 4096);
     	DBG("Packet sent.\n");
 
     	skynet_led_red(false);
 
-    	msDelay(3000);
+    	msDelay(2000);
 #else
 
     	// TODO: RF modul nur einschalten, wenn BT verbunden

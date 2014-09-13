@@ -3,6 +3,8 @@
  *
  * @date	29.06.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality for charger configuration.
  */
 
 #if defined (__USE_LPCOPEN)
@@ -23,7 +25,7 @@ void charger_init() {
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, CHARGER_SEL_H_PORT, CHARGER_SEL_H_PIN);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, CHARGER_SEL_L_PORT, CHARGER_SEL_L_PIN);
 
-	//TODO: register interrupt?
+	//TODO: register interrupt for external power supplied?
 
 	charger_set_mode(USB_LOW);
 }

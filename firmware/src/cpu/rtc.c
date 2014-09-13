@@ -3,13 +3,15 @@
  *
  * @date	10.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality to deal with CPU's Real Time Clock.
  */
 
 
 
 #include "rtc.h"
 
-RTC_TIME_T FullTime;
+extern RTC_TIME_T FullTime;
 
 
 void rtc_init() {
@@ -91,15 +93,6 @@ void RTC_IRQHandler(void)
 				FullTime.time[RTC_TIMETYPE_DAYOFMONTH],
 				FullTime.time[RTC_TIMETYPE_YEAR]);
 	}
-
-
-	/*
-	// display timestamp every 5 seconds in the background
-	sec = Chip_RTC_GetTime(LPC_RTC, RTC_TIMETYPE_SECOND);
-	if (!(sec % 5)) {
-		fIntervalReached = true;	// set flag for background
-	}
-	*/
 
 	// Check for alarm match
 	if (Chip_RTC_GetIntPending(LPC_RTC, RTC_INT_ALARM)) {

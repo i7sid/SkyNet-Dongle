@@ -3,25 +3,17 @@
  *
  * @date	24.04.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality for SPI port, mainly used by radio* stuff.
  */
 
 #include <string.h>
 
-
-
-#if defined (__USE_LPCOPEN)
-#if defined(NO_BOARD_LIB)
-#include "chip.h"
-#else
-#include "board.h"
-#endif
-#endif
-
-
 #include "spi.h"
-#include "../misc/misc.h"
 #include "../cpu/systick.h"
 
+
+/// @brief SPI configuration struct
 static SPI_CONFIG_FORMAT_T 	spi_format;
 
 
@@ -40,15 +32,14 @@ void SPI_Init(void)
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, SI_LIB_NSEL_PORT, SI_LIB_NSEL_PIN);
 	SPI_DeassertSSEL();  // assure that SSEL is HIGH and radio chip can relax
 
+
 	Chip_SPI_Init(LPC_SPI);
+	Chip_SPI_SetBitRate(LPC_SPI, 1000000);
+
 	spi_format.bits = SPI_BITS_8;				// one frame has 8 bits
 	spi_format.clockMode = SPI_CLOCK_MODE0;		// standard clock mode
 	spi_format.dataOrder = SPI_DATA_MSB_FIRST;	// MSB first
 	Chip_SPI_SetFormat(LPC_SPI, &spi_format);
-
-
-	// TODO: setup GPIO0 port pin and handler
-	// TODO: set SPI speed?
 
 	DBG("SPI initialized.\n");
 }

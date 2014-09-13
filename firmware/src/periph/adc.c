@@ -3,6 +3,8 @@
  *
  * @date	28.06.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality for analog digital conversion, e.g. battery monitoring.
  */
 
 #if defined (__USE_LPCOPEN)
@@ -16,8 +18,12 @@
 #include "adc.h"
 #include "../cpu/systick.h"
 
+/// @brief Buffer for holding setup data returned from Chip_ADC_Init().
 static ADC_CLOCK_SETUP_T ADCSetup;
+
+/// @brief Last value that was read from ADC in buffered measure mode.
 static volatile uint16_t adc_buffered_value = 0xFFF; // 4095
+
 
 void adc_init(void) {
 	// init pwr pin

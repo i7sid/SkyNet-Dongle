@@ -16,9 +16,15 @@
 #include "si446x_defs.h"
 
 #include "../misc/misc.h"
-#include "../skynet.h"
 #include "../spi/spi.h"
 #include "../cpu/systick.h"
+
+
+//const uint8_t Radio_Configuration_Data_Custom_Long_Payload_Array[] =
+//		RADIO_CONFIGURATION_DATA_CUSTOM_LONG_PAYLOAD;
+
+uint8_t bPositionInPayload = 0u;
+uint8_t* pPositionInPayload;
 
 uint8_t Radio_Configuration_Data_Array[] = RADIO_CONFIGURATION_DATA_ARRAY;
 
@@ -26,6 +32,7 @@ tRadioConfiguration RadioConfiguration = RADIO_CONFIGURATION_DATA;
 tRadioConfiguration *pRadioConfiguration = &RadioConfiguration;
 
 uint8_t customRadioPacket[RADIO_MAX_PACKET_LENGTH];
+
 
 /*!
  *  Power up the Radio.
@@ -177,6 +184,32 @@ void vRadio_StartRX(U8 channel, U8 packetLenght)
 }
 
 /*!
+ *  Set Radio to RX mode. .
+ *
+ *  @param channel Freq. Channel,  packetLength : 0 Packet handler fields are used , nonzero: only Field1 is used
+ *
+ *  @note
+ *
+ */
+void vRadio_StartRXlong(U8 channel)
+{
+	// Read ITs, clear pending ones
+	si446x_get_int_status(0u, 0u, 0u);
+
+	// Reset the Rx Fifo
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
+
+	/* Start Receiving packet, channel 0, START immediately, Packet length used or not according to packetLength */
+	si446x_start_rx(channel, 0u, 0x00,
+            SI446X_CMD_START_RX_ARG_RXTIMEOUT_STATE_ENUM_NOCHANGE,
+            SI446X_CMD_START_RX_ARG_RXVALID_STATE_ENUM_READY,
+            SI446X_CMD_START_RX_ARG_RXINVALID_STATE_ENUM_RX);
+}
+
+
+
+
+/*!
  *  Set Radio to TX mode, variable packet length.
  *
  *  @param channel Freq. Channel, Packet to be sent length of of the packet sent to TXFIFO
@@ -203,6 +236,47 @@ void vRadio_StartTx_Variable_Packet(U8 channel, U8 *pioRadioPacket, U8 length)
 
 }
 
+/*!
+ *  Set Radio to TX mode, fixed packet length.
+ *
+ *  @param channel Freq. Channel, Packet to be sent
+ *
+ *  @note
+ *
+ */
+void  vRadio_StartTx(U8 channel, U8 *pioFixRadioPacket)
+{
+  /* Reset TX FIFO */
+  si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+
+  // Read ITs, clear pending ones
+  si446x_get_int_status(0u, 0u, 0u);
+
+  /* Position to the very beginning of the custom long payload */
+  pPositionInPayload = pioFixRadioPacket;
+
+  /* Fill the TX fifo with datas */
+  if( RADIO_MAX_PACKET_LENGTH < RadioConfiguration.Radio_PacketLength)
+  {
+    /* Data to be sent is more than the size of TX FIFO */
+    si446x_write_tx_fifo(RADIO_MAX_PACKET_LENGTH, pPositionInPayload);
+
+    /* Calculate how many bytes are sent to TX FIFO */
+    bPositionInPayload += RADIO_MAX_PACKET_LENGTH;
+
+    /* Position to the next first byte that can be sent to TX FIFO in next round */
+    pPositionInPayload += RADIO_MAX_PACKET_LENGTH;
+  }
+  else
+  {
+    // Data to be sent is less or equal than the size of TX FIFO
+    si446x_write_tx_fifo(RadioConfiguration.Radio_PacketLength, pioFixRadioPacket);
+  }
+
+
+  /* Start sending packet, channel 0, START immediately, Packet length according to PH, go READY when done */
+  si446x_start_tx(channel, 0x30,  0x00);
+}
 
 void vRadio_Change_PwrLvl(uint8_t lvl)
 {

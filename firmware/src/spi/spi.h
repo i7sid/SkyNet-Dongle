@@ -3,10 +3,15 @@
  *
  * @date	26.04.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to SPI port, mainly used by radio* stuff.
  */
 
 #ifndef SPI_H_
 #define SPI_H_
+
+#include "../misc/misc.h"
+
 
 /// @brief	Initialize SPI port pins and SPI module.
 void SPI_Init(void);

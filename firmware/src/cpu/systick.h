@@ -3,12 +3,24 @@
  *
  * @date	11.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains the public interface to several delay functionalities.
  */
 
 #ifndef SYSTICK_H_
 #define SYSTICK_H_
 
 #include "../misc/misc.h"
+
+
+/**
+ * @brief	The maximum amount of events that can be enqueued in parallel.
+ *
+ * This value is used to instantiate the queue, so be aware that a high value
+ * may consume unnecessarily much memory.
+ */
+#define MAX_DELAYED_EVENTS (32)
+
 
 /**
  * @brief	Handle interrupt from SysTick timer
@@ -35,6 +47,7 @@ void remove_delayed_event(void* f);
  * CPU can sleep in this time or handle incoming interrupts.
  *
  * @warning		Do not use this function in interrupt handlers!
+ * 				<b>This will break your code!</b>
  * 				Use \ref register_delayed_event() or \ref events_enqueue() for delaying in ISRs.
  */
 void msDelay(uint32_t ms);
@@ -46,17 +59,21 @@ void msDelay(uint32_t ms);
  * CPU can handle incoming interrupts.
  *
  * @warning		Do not use this function in interrupt handlers!
+ * 				This will prevent regular code and possibly
+ * 				other interrupt routines from being executed.
  * 				Use \ref register_delayed_event() or \ref events_enqueue() for delaying in ISRs.
  */
 void msDelayActive(uint32_t ms);
 
 /**
  * @brief		Blocks for a specific amount of time (actively).
- * @param	ms	Microseconds to block.
+ * @param	us	Microseconds to block.
  *
  * CPU can handle incoming interrupts.
  *
  * @warning		Do not use this function in interrupt handlers!
+ * 				This will prevent regular code and possibly
+ * 				other interrupt routines from being executed.
  * 				Use \ref register_delayed_event() or \ref events_enqueue() for delaying in ISRs.
  */
 void msDelayActiveUs(uint32_t us);
@@ -73,6 +90,9 @@ void disable_systick(void);
 
 /**
  *  @brief	Callback function for msDelay function.
+ *
+ *  Not to be called from outside unless you know \b exactly what you're doing
+ *  (and if you read this you probably don't).
  */
 void msDelayCallback(void);
 

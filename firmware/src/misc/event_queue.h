@@ -3,6 +3,8 @@
  *
  * @date	14.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to event queue / cyclic buffer.
  */
 
 
@@ -36,7 +38,7 @@ void events_enqueue(event_types);
 /**
  * @brief	Take an event from the queue.
  */
-event_types events_dequeue();
+event_types events_dequeue(void);
 
 
 

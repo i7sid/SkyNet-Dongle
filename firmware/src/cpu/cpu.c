@@ -3,6 +3,8 @@
  *
  * @date	10.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains the functionalities for CPU power management.
  */
 
 
@@ -15,6 +17,7 @@
 #include "../periph/adc.h"
 #include "../periph/input.h"
 #include "../periph/led.h"
+#include "../periph/dcdc.h"
 
 
 volatile bool cpu_powered_down = false;
@@ -63,8 +66,9 @@ void cpu_powerdown() {
 
 
 	adc_deinit();
-	bt_shutdown();
-	radio_shutdown();
+	//bt_shutdown();
+	//radio_shutdown();
+	dcdc_set_powersave(true);
 
 	while (cpu_powered_down) {
 		disable_systick();
@@ -83,8 +87,9 @@ void cpu_powerdown() {
 		while (Chip_Clock_IsMainPLLEnabled()) {} // Wait to be disabled
 
 		// And now go to sleep!
-		Chip_PMU_PowerDownState(LPC_PMU);
+		//Chip_PMU_PowerDownState(LPC_PMU);
 		//Chip_PMU_SleepState(LPC_PMU);
+		Chip_PMU_DeepSleepState(LPC_PMU);
 
 		SystemInit(); // restore IOCON and clocks (important for msDelay!)
 		SystemCoreClockUpdate();
@@ -106,9 +111,10 @@ void cpu_powerdown() {
 	skynet_led_green(false);
 	skynet_led_blue(false);
 
+	dcdc_set_powersave(false);
 	adc_init();
-	bt_init();
-	radio_init();
+	//bt_init();
+	//radio_init();
 
 	adc_start_buffered_measure();
 

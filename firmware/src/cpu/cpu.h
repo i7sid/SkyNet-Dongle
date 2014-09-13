@@ -3,6 +3,8 @@
  *
  * @date	10.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains the public interface to CPU power management.
  */
 
 
@@ -40,19 +42,6 @@ void cpu_sleep();
  * sleep state, waiting for a long press to input button.
  */
 void cpu_powerdown();
-
-/**
- * @brief			Reenters power down mode.
- *
- * Powers down CPU without caring about peripherals (radio, bluetooth).
- * Reenables RTC interrupts etc.
- */
-void cpu_repowerdown();
-
-/**
- * @brief			Called after a successful wakeup from poweroff state.
- */
-void cpu_wakeup();
 
 
 #endif /* PM_H_ */

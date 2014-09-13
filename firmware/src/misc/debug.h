@@ -3,6 +3,8 @@
  *
  * @date	26.04.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Configures debugging stuff.
  */
 
 
@@ -17,22 +19,8 @@
 #endif
 
 
+/// @brief For compatibility with legacy SkyNet code.
 #define uart0_puts_P uart0_puts
 
-/*
-INLINE void uart0_puts_P(char* str) {
-	DBG(str);
-}
 
-INLINE void uart0_puts(char* str) {
-	DBG(str);
-}
-
-INLINE void uart0_putc(char c) {
-	char str[2];
-	str[0] = c;
-	str[1] = '\0';
-	DBG(str);
-}
-*/
 #endif /* DEBUG_H_ */

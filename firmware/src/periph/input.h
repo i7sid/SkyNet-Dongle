@@ -3,6 +3,8 @@
  *
  * @date	01.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to input switch.
  */
 
 #ifndef INPUT_H_

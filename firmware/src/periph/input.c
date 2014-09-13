@@ -3,11 +3,22 @@
  *
  * @date	01.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality of input switch.
  */
+
+
 #include "input.h"
 #include "../cpu/cpu.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
+
+/// @brief Amount of times switch has been checked in current action
+volatile int switch_checked_times = 0;
+
+/// @brief Current state of finite state machine
+switch_check_state switch_state = SWITCH_FSM_NOT_PRESSED;
+
 
 void input_init() {
 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, INPUT_SWITCH_PORT, INPUT_SWITCH_PIN);
@@ -37,10 +48,6 @@ void input_pressed(switch_pressed_type type) {
 			break;
 	}
 }
-
-
-volatile int switch_checked_times = 0;
-switch_check_state switch_state = SWITCH_FSM_NOT_PRESSED;
 
 void recheck_switch_state() {
 	switch (switch_state) {

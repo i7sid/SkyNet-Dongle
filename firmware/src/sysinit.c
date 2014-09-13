@@ -78,6 +78,9 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{LED_G_PORT,  LED_G_PIN,					IOCON_MODE_INACT | IOCON_FUNC0},
 	{LED_B_PORT,  LED_B_PIN,					IOCON_MODE_INACT | IOCON_FUNC0},
 
+	// DCDC
+	{DCDC_PS_PORT,	DCDC_PS_PIN,				IOCON_MODE_INACT | IOCON_FUNC0},
+
 	// reset unused pins
 	// (By default they are set as inputs with pull up. See: AN11096
 	//  To reduce current consumption, we disable the pull up.)
@@ -86,7 +89,6 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{0,	6,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	7,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	8,										IOCON_MODE_INACT | IOCON_FUNC0},
-	{0,	9,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	10,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	24,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0, 25,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -136,7 +138,7 @@ void Board_SetupMuxing(void)
 	Chip_IOCON_SetPinMuxing(LPC_IOCON, pinmuxing, sizeof(pinmuxing) / sizeof(PINMUX_GRP_T));
 }
 /* Setup system clocking */
-STATIC void SystemSetupClocking(void)
+void SystemSetupClocking(void)
 {
   /* CPU clock source starts with IRC */
   Chip_Clock_SetMainPLLSource(SYSCTL_PLLCLKSRC_IRC);

@@ -3,14 +3,59 @@
  *
  * @date	25.04.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to bluetooth module.
  */
 
 #ifndef BLUETOOTH_H_
 #define BLUETOOTH_H_
 
-#define BLUETOOTH_UART_INT_MASK 	(UART_IER_RBRINT /*| UART_IER_RLSINT*/)
-
 #include "../misc/misc.h"
+
+
+/**
+ * @brief	Bluetooth enabled interrupt mask
+ *
+ * \b UART_IER_RBRINT   for Data Interrupts
+ * \b UART_IER_RLSINT	for Line Status Interrupts
+ *
+ * for example to enable both: UART_IER_RBRINT | UART_IER_RLSINT
+ */
+#define BLUETOOTH_UART_INT_MASK 	(UART_IER_RBRINT)
+
+/// @brief 	Milliseconds waited \b before a AT/data mode switch is performed
+#define BLUETOOTH_AT_PRESWITCH_DELAY	(100)
+
+/// @brief 	Milliseconds waited \b after a AT/data mode switch is performed
+#define BLUETOOTH_AT_POSTSWITCH_DELAY	(250)
+
+/**
+ * @brief 	Milliseconds waited \b before module is shut down
+ *
+ * Needed to assure that all previously sent commands are executed and
+ * all previously sent data is processed/transferred.
+ */
+#define BLUETOOTH_BEFORE_SHUTDOWN_DELAY	(100)
+
+
+/**
+ * @brief 	Milliseconds waited \b after module is shut down
+ *
+ * Assure that module is fully shutdown and all registers are empty
+ * to provide a fully clean startup next time (that can be possibly right
+ * \b now after the post-shutdown delay).
+ */
+#define BLUETOOTH_AFTER_SHUTDOWN_DELAY	(1500)
+
+
+/**
+ * @brief 	Milliseconds waited \b after module is woken up
+ *
+ * Assure that module is fully up and running, for example to transmit data
+ * or to execute an AT command.
+ */
+#define BLUETOOTH_AFTER_WAKEUP_DELAY	(1500)
+
 
 /**
  * @brief	Initializes chip pins and UART.

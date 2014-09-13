@@ -3,6 +3,8 @@
  *
  * @date	29.06.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to charger configuration.
  */
 
 #ifndef CHARGER_H_
@@ -60,4 +62,4 @@ bool charger_external_power();
 void charger_set_mode(charge_mode mode);
 
 
-#endif /* CHARGER_H_ */
+#endif // CHARGER_H_

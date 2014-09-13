@@ -3,6 +3,8 @@
  *
  * @date	11.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains several delay-methods.
  */
 
 #include "systick.h"
@@ -10,12 +12,14 @@
 
 #include "stopwatch.h"
 
-
-#define MAX_DELAYED_EVENTS (32)
+/// @brief Temporary variable to determine if really a tick occurred while waiting passively.
 volatile bool tick_occured = false;
-volatile uint32_t tick_counter = 0;
+
+/// @brief Array holding remaining times for delayed events.
 uint32_t tick_events_t[MAX_DELAYED_EVENTS];
-void (*tick_events_f[MAX_DELAYED_EVENTS])(); // array of function pointers
+
+/// @brief Array holding function pointers for delayed events.
+void (*tick_events_f[MAX_DELAYED_EVENTS])();
 
 
 void SysTick_Handler(void) {
@@ -74,7 +78,6 @@ void msDelayCallback(void) {
 
 void msDelay(uint32_t ms)
 {
-	//tick_counter = ms;
 	tick_occured = false;
 
 	register_delayed_event(ms, msDelayCallback);
@@ -98,12 +101,10 @@ void msDelayActiveUs(uint32_t us)
 void enable_systick(void) {
 	SystemCoreClockUpdate(); // Generic Initialization
 	SysTick_Config(SystemCoreClock/1000); // Enable and setup SysTick Timer at 0.001 HZ
-	//NVIC_EnableIRQ(SysTick_IRQn);
 }
 
 INLINE void disable_systick(void) {
-	SysTick->CTRL  = 0; // disable Systick if not needed any more
-	//NVIC_DisableIRQ(SysTick_IRQn);
+	SysTick->CTRL  = 0;
 }
 
 

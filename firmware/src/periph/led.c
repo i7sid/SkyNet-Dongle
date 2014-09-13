@@ -3,6 +3,8 @@
  *
  * @date	29.06.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality to control the on-board LED.
  */
 
 #if defined (__USE_LPCOPEN)

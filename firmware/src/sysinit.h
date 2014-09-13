@@ -13,7 +13,7 @@ void Board_SetupMuxing(void);
  * @brief	Setup system clocking
  * @author	NXT B.V.
  */
-STATIC void SystemSetupClocking(void);
+void SystemSetupClocking(void);
 
 
 /**

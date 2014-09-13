@@ -3,6 +3,8 @@
  *
  * @date	01.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains public interface to RF module.
  */
 
 #ifndef SKYNET_RADIO_H_
@@ -41,12 +43,14 @@ void radio_enable_irq(void);
  */
 void radio_disable_irq(void);
 
+
 /**
- * @brief			Sends a packet of variable length
- * @param	pkt		byte array to transmit
- * @param	length	number of bytes to send
+ * @brief			Sends an packet of variable length via RF.
+ * @param	packet	Bytes to send
+ * @param	length	Number of bytes to send
  */
-void send_variable_packet(uint8_t *pkt, uint8_t length);
+void radio_send_variable_packet(uint8_t *packet, uint16_t length);
+
 
 
 /**

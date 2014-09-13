@@ -26,8 +26,8 @@
 #define INPUT_SWITCH_HANDLER	EINT1_IRQHandler
 #define INPUT_SWITCH_IRQn		EINT1_IRQn
 #define INPUT_SWITCH_IRQ		EINT1
-#define INPUT_SWITCH_PORT		2
-#define INPUT_SWITCH_PIN		11
+#define INPUT_SWITCH_PORT		2	///< PORT and PIN where input switch is connected
+#define INPUT_SWITCH_PIN		11	///< @copydoc  INPUT_SWITCH_PORT
 
 
 // defines for radio communication (some for SI lib)
@@ -69,6 +69,11 @@
 #define CHARGER_SEL_L_PIN			4
 
 
+// DCDC configuration
+#define DCDC_PS_PORT				0
+#define DCDC_PS_PIN					9
+
+
 // LED configuration
 #define LED_R_PORT					2
 #define LED_R_PIN					2
@@ -99,7 +104,10 @@
 #define EINT2	0x4	///< @copydoc EINT0
 #define EINT3	0x8	///< @copydoc EINT0
 
-/// Let _delay_ms point to an active waiting routine as expected.
-#define _delay_ms msDelayActive
 
-#endif /* MISC_H_ */
+/// @brief  Let _delay_ms point to an active waiting routine as expected.
+#define _delay_ms 	msDelayActive
+
+#define SI446X_PATCH_CMDS
+
+#endif // MISC_H_

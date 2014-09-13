@@ -3,6 +3,8 @@
  *
  * @date	01.07.2014
  * @author	Michael Zapf <michael.zapf@fau.de>
+ *
+ * @brief	Contains functionality for communication with RF module.
  */
 
 #include <string.h>
@@ -30,6 +32,9 @@ void radio_init(void) {
 	Chip_GPIOINT_Init(LPC_GPIOINT);
 	vRadio_Init();	// intialize radio chip
 
+	//uint8_t ret = si446x_apply_patch();
+	//DBG("patched: %d\n", ret);
+
     si446x_part_info();
     si446x_func_info();
 
@@ -52,7 +57,8 @@ void radio_init(void) {
     radio_enable_irq();
 
     // start receiving...
-	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
+	//vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
+	vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
 	DBG("Radio RX started.\n");
 }
 
@@ -74,77 +80,195 @@ void radio_disable_irq(void) {
 	NVIC_DisableIRQ(EINT3_IRQn);
 }
 
-//TODO
-void send_variable_packet(uint8_t *pkt, uint8_t length) {
-	pwrLvlIdx = 0;
-	DBG("txPKT\n");
 
-	for (uint8_t pos = 0u; pos < pRadioConfiguration->Radio_PacketLength; pos++) {
-		if (pos < length)
-			customRadioPacket[pos+1] = pkt[pos];
-		else
-			customRadioPacket[pos+1] = 0;
+void radio_send_variable_packet(uint8_t *packet, uint16_t length)
+{
+	uint8_t data[length+3];
+	uint8_t status_ph[0xfff];
+	uint8_t status_mod[0xfff];
+	uint8_t status_chip[0xfff];
+	uint16_t i = 0;
+	memset(status_ph, 0, 0xfff);
+	memset(status_mod, 0, 0xfff);
+	memset(status_chip, 0, 0xfff);
+
+	++length; // last byte gets damaged, so transmit one more than needed...
+
+	radio_disable_irq();
+
+	// Leave RX state
+	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
+
+	// Read ITs, clear pending ones
+	si446x_get_int_status(0u, 0u, 0u);
+
+	// Reset the Tx Fifo
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+
+	// copy payload data to send buffer
+	memcpy(data+2, packet, length+1);
+
+	// Field 1 length
+	Si446xCmd.GET_PROPERTY.DATA0 = 0x0;
+	Si446xCmd.GET_PROPERTY.DATA1 = 0x1;
+	si446x_set_property_lpc(0x12, 2, 0x0D);
+
+	// Field 2 length
+	Si446xCmd.GET_PROPERTY.DATA0 = length >> 8;
+	Si446xCmd.GET_PROPERTY.DATA1 = length & 0xFF;
+	si446x_set_property_lpc(0x12, 2, 0x11);
+
+	data[0] = length >> 8;
+	data[1] = length & 0xFF;
+
+	int16_t remaining = length+2;
+	uint8_t* ptr = data;
+	volatile bool first_run = true;
+	while(remaining > 0) {
+		uint8_t nowLength;
+		if (first_run) {
+			nowLength = RADIO_MAX_PACKET_LENGTH;
+		}
+		else if (RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
+			nowLength = RADIO_TX_ALMOST_EMPTY_THRESHOLD;
+		}
+		else {
+			nowLength = remaining;
+		}
+
+		// Fill the TX fifo with datas
+		si446x_write_tx_fifo(nowLength, ptr);
+		ptr += nowLength;
+		remaining -= nowLength;
+
+		if (first_run) {
+			si446x_start_tx(pRadioConfiguration->Radio_ChannelNumber, 0x80, 0x0);
+			first_run = false;
+		}
+
+		while (true) {
+			si446x_get_int_status(0u, 0u, 0u);
+
+			// DEBUG
+			if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
+				status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
+				status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
+				status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
+				++i;
+			}
+
+			if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
+				if (remaining > 0) {
+					// ERROR CASE! PACKET_SENT interrupt occurred,
+					// even if not all remaining bytes have been put to FIFO
+					DBG("[ERROR] PACKET_SENT, but remaining: %d\n", remaining);
+
+					// clear remaining bytes to avoid pushing further bytes to FIFO
+					remaining = 0;
+				}
+
+				break;
+			}
+			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_TX_FIFO_ALMOST_EMPTY_MASK) {
+				if (remaining > 0) break;
+			}
+		}
+
+
+	}
+	DBG("remaining: %d\n", remaining);
+
+	for (int j = 0; j < i; ++j) {
+		DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+	}
+	radio_enable_irq();
+}
+
+
+
+void radio_packet_handler(void) {
+	uint8_t status_ph[0xfff];
+	uint8_t status_mod[0xfff];
+	uint8_t status_chip[0xfff];
+	uint16_t i = 0;
+	memset(status_ph, 0, 0xfff);
+	memset(status_mod, 0, 0xfff);
+	memset(status_chip, 0, 0xfff);
+
+	si446x_get_int_status(0u, 0u, 0u);
+	status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
+	status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
+	status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
+	++i;
+
+	radio_disable_irq();
+
+
+	// Packet beginning or completely received
+	if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
+				Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
+		uint16_t length_low;
+		uint16_t length_high;
+		uint16_t length;
+
+		si446x_get_packet_info(0x0, 0x0, 0x0);
+		length_low = Si446xCmd.PACKET_INFO.LENGTH_7_0;
+		length_high = (Si446xCmd.PACKET_INFO.LENGTH_15_8 & 0xFF);
+		length = (length_high << 8) + length_low;
+
+		uint8_t data[length+1];
+		data[length] = 0;		// terminate with null character
+		uint8_t* ptr = data;
+
+		uint16_t remaining = length;
+		while (remaining > 0) {
+			uint8_t nowLength;
+			if (remaining > 0xFF || RADIO_RX_ALMOST_FULL_THRESHOLD < remaining) {
+				nowLength = RADIO_RX_ALMOST_FULL_THRESHOLD;
+			}
+			else {
+				nowLength = remaining;
+			}
+
+			// read current data from RX FIFO
+			si446x_read_rx_fifo(nowLength, ptr);
+			ptr += nowLength;
+			remaining -= nowLength;
+
+			while (true) {
+				si446x_get_int_status(0u, 0u, 0u);
+				if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
+					++i;
+					status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
+					status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
+					status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
+				}
+				if (Si446xCmd.GET_INT_STATUS.PH_STATUS & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
+					DBG("RECEIVED, remaining: %d\n", remaining);
+					break;
+				}
+				else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT) {
+					break;
+				}
+
+			}
+		}
+
+		ptr = data;
+		DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
+		// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
+
+		for (int j = 0; j < i; ++j) {
+			DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+		}
+
+		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 	}
 
-	vRadio_Change_PwrLvl(pwrLvl[pwrLvlIdx]);
-	customRadioPacket[0] = pwrLvl[pwrLvlIdx];
-
-	vRadio_StartTx_Variable_Packet(pRadioConfiguration->Radio_ChannelNumber, &customRadioPacket[0], pRadioConfiguration->Radio_PacketLength);
+	radio_enable_irq();
 }
 
-//TODO
-void radio_packet_handler(void) {
-	bMain_IT_Status = bRadio_Check_Tx_RX();
 
-	switch (bMain_IT_Status)
-	{
-	case SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_PEND_BIT:
-
-		// Message "ACK" sent successfully
-		DBG("txPKTk\n");
-
-		if(++pwrLvlIdx < sizeof(pwrLvl))
-		{
-			vRadio_Change_PwrLvl(pwrLvl[pwrLvlIdx]);
-			customRadioPacket[0] = pwrLvl[pwrLvlIdx];
-			msDelayActive(10);					//just to be sure
-
-			vRadio_StartTx_Variable_Packet(pRadioConfiguration->Radio_ChannelNumber, &customRadioPacket[0], pRadioConfiguration->Radio_PacketLength);
-		}
-		else
-		{
-			// Start RX with radio packet length
-			vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
-			//ledOff(LED_RADIO);
-		}
-		break;
-
-	case SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_PEND_BIT:
-		/*
-		DBG("rxPKT: ");
-		for (uint8_t i = 0; i < pRadioConfiguration->Radio_PacketLength; i++)
-		{
-			DBG("%c", customRadioPacket[i]);
-		}
-		DBG("\n");
-		*/
-
-		memcpy(packet_rx_buf, customRadioPacket, pRadioConfiguration->Radio_PacketLength);
-		packet_rx_buf[pRadioConfiguration->Radio_PacketLength] = '\0';
-
-
-		uint8_t rssi = vRadio_getFFR_A();
-		DBG("RSSI: %i\n\n", rssi);
-
-		events_enqueue(EVENT_RF_GOT_PACKET);
-
-		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
-		break;
-
-	default:
-		break;
-	} /* switch */
-}
 
 
 INLINE bool radio_get_gpio0(void) {
@@ -166,25 +290,17 @@ void radio_config_for_clock_measurement() {
 
 
 void RADIO_IRQ_HANDLER(void) {
-	DBG("RADIO_IRQ_HANDLER\n");
-	// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
+	// WARNING: DO NOT MAKE ANY DEBUG OUTPUTS IN HERE!
+	// The timing receiving long packets is very fragile!
+	// Every DBG takes too much time and leads to broken packet reception!
 
 	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT0) & (1 << 19)) {
-
-		//DBG("RADIO packet received\n");
 		radio_packet_handler();
-
-//#ifndef SKYNET_TX_TEST	// DEBUG
-		si446x_get_int_status(0u, 0u, 0u);	// update IRQ state in radio CPU
-//#endif
-
 		Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
 	}
 
-	LPC_SYSCTL->EXTINT |= (1<<EINT3);	// reset IRQ state
+	//LPC_SYSCTL->EXTINT |= (1<<EINT3);	// reset IRQ state
 	NVIC_ClearPendingIRQ(EINT3_IRQn);
-	//DBG("Leave RADIO_IRQ_HANDLER\n");
-	//TODO???
 }
 
 
