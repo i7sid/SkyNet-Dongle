@@ -22,7 +22,7 @@ uint8_t pwrLvl[] = {8,12,19,35,127};	//0, 5, 10, 15, 20 dBm
 char timeStr[] = {0, 0, 0, 0, 0, 0};
 
 // should be greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
-uint8_t packet_rx_buf[RADIO_MAX_PACKET_LENGTH];
+uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 
 volatile bool radio_initialized = false;
 
@@ -187,6 +187,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 void radio_packet_handler(void) {
+#ifdef DEBUG
 	uint8_t status_ph[0xfff];
 	uint8_t status_mod[0xfff];
 	uint8_t status_chip[0xfff];
@@ -194,12 +195,16 @@ void radio_packet_handler(void) {
 	memset(status_ph, 0, 0xfff);
 	memset(status_mod, 0, 0xfff);
 	memset(status_chip, 0, 0xfff);
+#endif
 
 	si446x_get_int_status(0u, 0u, 0u);
+
+#ifdef DEBUG
 	status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
 	status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
 	status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
 	++i;
+#endif
 
 	radio_disable_irq();
 
@@ -237,12 +242,14 @@ void radio_packet_handler(void) {
 
 			while (true) {
 				si446x_get_int_status(0u, 0u, 0u);
+#ifdef DEBUG
 				if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
 					++i;
 					status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
 					status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
 					status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
 				}
+#endif
 				if (Si446xCmd.GET_INT_STATUS.PH_STATUS & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 					DBG("RECEIVED, remaining: %d\n", remaining);
 					break;
@@ -256,11 +263,22 @@ void radio_packet_handler(void) {
 
 		ptr = data;
 		DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
-		// TODO: Daten nicht weiterverarbeiten, sondern einqueuen und später weiterverarbeiten
 
+		if (SKYNET_RADIO_MAX_SIZE < length) {
+			memcpy(rf_packet_rx_buf, data, SKYNET_RADIO_MAX_SIZE);
+		}
+		else {
+			memcpy(rf_packet_rx_buf, data, length);
+		}
+		rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE] = 0; // terminating null byte
+		events_enqueue(EVENT_RF_GOT_PACKET);
+
+
+#ifdef DEBUG
 		for (int j = 0; j < i; ++j) {
 			DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 		}
+#endif
 
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 	}

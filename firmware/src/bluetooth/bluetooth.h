@@ -56,6 +56,9 @@
  */
 #define BLUETOOTH_AFTER_WAKEUP_DELAY	(1500)
 
+/// @brief	Packet reception buffer for bluetooth
+extern uint8_t bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
+
 
 /**
  * @brief	Initializes chip pins and UART.
@@ -206,6 +209,21 @@ void bt_uart_clear_rx(void);
  */
 int bt_request(char request[], char response[], int response_length);
 
+
+/**
+ * @brief			Checks if module is in AT command mode.
+ * @return			\b true for AT mode, \b false for transparent data mode
+ */
+bool bt_at_mode_active(void);
+
+/**
+ * @brief			Checks if module is paired and connected.
+ * @return			\b true if connected, \b false otherwise
+ *
+ * This is useful to check if a variometer / device is connected.
+ * If not, there should be no need to listen for radio packets.
+ */
+bool bt_is_connected(void);
 
 #define bt_uart_puts_P bt_uart_puts
 

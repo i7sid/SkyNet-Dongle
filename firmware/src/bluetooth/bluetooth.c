@@ -12,7 +12,9 @@
 
 #include "bluetooth.h"
 #include "../cpu/systick.h"
+#include "../misc/event_queue.h"
 
+uint8_t bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
 static volatile bool visible = false;
 
 void bt_init() {
@@ -265,17 +267,13 @@ int bt_request(char request[], char response[], int response_length) {
 
 void BLUETOOTH_UART_IRQ_HANDLER()
 {
-	static char buf[BLUETOOTH_BUFFER_SIZE];
+	static char buf[BLUETOOTH_BUFFER_SIZE+1];
 	int read = Chip_UART_Read(BLUETOOTH_UART, buf, sizeof(buf));
 
 	if (read > 0) {
 		buf[read] = '\0';
-
-		DBG("[BLUETOOTH_UART IRQ] read %d bytes: ", read);
-		for (int i=0; i<read; ++i) {
-			DBG("%c", buf[i], buf[i]);
-		}
-		DBG("\n");
+		memcpy(bt_packet_rx_buf, buf, read+1);
+		events_enqueue(EVENT_BT_GOT_PACKET);
 	}
 }
 
@@ -286,4 +284,24 @@ INLINE void bt_switch_at_pin(bool state) {
 
 INLINE void bt_switch_reset_pin(bool state) {
 	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, !state);
+}
+
+INLINE bool bt_at_mode_active(void) {
+	return Chip_GPIO_GetPinState(LPC_GPIO, BLUETOOTH_AT_PORT, BLUETOOTH_AT_PIN);
+}
+
+bool bt_is_connected(void) {
+	bt_enable_AT_mode();
+
+	char buf[25];
+	int read = bt_request("AT+STATE?\r\n", buf, 24);
+	buf[read] = '\0';
+	DBG("STATE from BT module: %s\n", buf);
+
+	bt_disable_AT_mode();
+
+	if (!strncmp(buf, "+STATE:CONNECTED", 16)) {
+		return true;
+	}
+	return false;
 }

@@ -132,10 +132,10 @@ int main(void) {
 
 
     DBG("Initialize Bluetooth module...\n");
-    //bt_init();	// initialize UART for bluetooth communication
+    bt_init();	// initialize UART for bluetooth communication
 
-    DBG("Initialize radio module...\n");
-    radio_init();
+    //DBG("Initialize radio module...\n");
+    //radio_init();
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
@@ -156,8 +156,14 @@ int main(void) {
 	skynet_led_green(false);
 
 
-	unsigned char data[8192];
-	data[8191] = 0;
+	uint32_t last_bt_check = StopWatch_Start();
+	bool bt_connected = false;
+
+#ifdef SKYNET_TX_TEST
+    DBG("Initialize radio module...\n");
+    radio_init();
+#endif
+
     volatile static int i = 0;
     while(1) {
 
@@ -165,6 +171,9 @@ int main(void) {
     	msDelay(1000);
 
     	skynet_led_red(true);
+
+    	unsigned char data[8192];
+    	data[8191] = 0;
 
 
     	for (int i=0; i < 8191; i += 2) {
@@ -184,8 +193,6 @@ int main(void) {
 
     	msDelay(2000);
 #else
-
-    	// TODO: RF modul nur einschalten, wenn BT verbunden
 
     	event_types event = events_dequeue();
     	switch (event) {
@@ -215,9 +222,8 @@ int main(void) {
 					if (!strncmp(buf, "+STATE:PAIRED", 13)) {
 						DBG("Yeah, user paired!\n");
 						connected = true;
+						last_bt_check = 0; // immediately active RF module
 					}
-
-					//TODO: Erkennen, dass nicht mehr verbunden
 				}
 				skynet_led_blue(false);
 				break;
@@ -230,14 +236,42 @@ int main(void) {
 				cpu_powerdown();
 				break;
 			case EVENT_RF_GOT_PACKET:
-				DBG("RF packet received: %s\n", packet_rx_buf);
-				//TODO send via bluetooth
+				DBG("RF packet received: %s\n", rf_packet_rx_buf);
+				if (!bt_at_mode_active()) {
+					bt_uart_puts(rf_packet_rx_buf);
+				}
 				break;
+			case EVENT_BT_GOT_PACKET:
+					DBG("BT packet received: %s\n", bt_packet_rx_buf);
+
+					if (bt_connected) {
+						radio_send_variable_packet(bt_packet_rx_buf, strlen(bt_packet_rx_buf));
+					}
+					break;
 			default:
 				break;
 		}
 
 
+    	// check if bluetooth device connected
+    	// if not - no radio required
+    	if (StopWatch_TicksToMs(StopWatch_Elapsed(last_bt_check)) > 10000) {
+    		DBG("Stopwatch: %d\n", last_bt_check);
+    		bool c = bt_is_connected();
+    		if (!bt_connected && c) {
+    			DBG("Initialize radio module...\n");
+    			radio_init();
+    		}
+    		else if (bt_connected && !c) {
+    			radio_shutdown();
+    		}
+    		bt_connected = c;
+
+    		// restart stopwatch
+    		last_bt_check = StopWatch_Start();
+    	}
+
+    	// DEBUG Outputs
     	if (i >= 100) {
     		i = 0;
     		skynet_led_green(true);

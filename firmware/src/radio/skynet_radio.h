@@ -20,7 +20,9 @@
 #include "radio_comm.h"
 #include "radio_config.h"
 
-extern uint8_t packet_rx_buf[RADIO_MAX_PACKET_LENGTH];
+#define SKYNET_RADIO_MAX_SIZE (1024)
+
+extern uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 extern volatile bool radio_initialized;
 
 /**
