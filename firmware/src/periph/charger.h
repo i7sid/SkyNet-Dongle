@@ -25,7 +25,7 @@ typedef enum charge_mode {
  * @brief	Initializes the pins the charger is attached to.
  * This functionality is for a MCP73871.
  */
-void charger_init();
+void charger_init(void);
 
 /**
  * @brief	Returns the value of STAT1.
@@ -36,7 +36,7 @@ void charger_init();
  * @returns	\b true: Shutdown, Charge Complete, No Battery Present, No Input Power Present;
  * 			\b false: Charging, Fault
  */
-bool charger_status1();
+bool charger_status1(void);
 
 /**
  * @brief	Returns the value of STAT2
@@ -47,13 +47,13 @@ bool charger_status1();
  * @returns	\b true: Shutdown, Charging, No Battery Present
  * 			\b false: Charge Complete, Fault
  */
-bool charger_status2();
+bool charger_status2(void);
 
 /**
  * @brief	Returns if an external power supply is attached.
  * @returns	\b true if external power supply is attached, \b false otherwise.
  */
-bool charger_external_power();
+bool charger_external_power(void);
 
 /**
  * @brief			Sets the maximum current the battery is charged with.
@@ -61,5 +61,14 @@ bool charger_external_power();
  */
 void charger_set_mode(charge_mode mode);
 
+/**
+ * @brief	Checks if a USB cable is connected and if it is a charging port.
+ */
+void charger_check_port(void);
+
+/**
+ * @brief	Interrupt handler
+ */
+void CHARGER_EXTPWR_HANDLER(void);
 
 #endif // CHARGER_H_

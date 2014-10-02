@@ -27,7 +27,6 @@ uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 volatile bool radio_initialized = false;
 
 
-
 void radio_init(void) {
 	Chip_GPIOINT_Init(LPC_GPIOINT);
 	vRadio_Init();	// intialize radio chip
@@ -53,11 +52,11 @@ void radio_init(void) {
     DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
     DBG("------ end radio chip version information ------\n");
 
-    NVIC_SetPriority(EINT3_IRQn, 1);
+    // This interrupt should have highest priority to assure that we do not miss packets
+    NVIC_SetPriority(EINT3_IRQn, 0);
     radio_enable_irq();
 
     // start receiving...
-	//vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, pRadioConfiguration->Radio_PacketLength);
 	vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
 	DBG("Radio RX started.\n");
 }
@@ -80,10 +79,17 @@ void radio_disable_irq(void) {
 	NVIC_DisableIRQ(EINT3_IRQn);
 }
 
+void radio_reset_packet_size(void) {
+	// Field 2 length
+	Si446xCmd.GET_PROPERTY.DATA0 = 0x1F;
+	Si446xCmd.GET_PROPERTY.DATA1 = 0xFF;
+	si446x_set_property_lpc(0x12, 2, 0x11);
+}
 
 void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 {
-	uint8_t data[length+3];
+	uint8_t data[length+2];
+#ifdef DEBUG
 	uint8_t status_ph[0xfff];
 	uint8_t status_mod[0xfff];
 	uint8_t status_chip[0xfff];
@@ -91,8 +97,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	memset(status_ph, 0, 0xfff);
 	memset(status_mod, 0, 0xfff);
 	memset(status_chip, 0, 0xfff);
-
-	++length; // last byte gets damaged, so transmit one more than needed...
+#endif
 
 	radio_disable_irq();
 
@@ -106,11 +111,11 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
 
 	// copy payload data to send buffer
-	memcpy(data+2, packet, length+1);
+	memcpy(data+2, packet, length);
 
 	// Field 1 length
 	Si446xCmd.GET_PROPERTY.DATA0 = 0x0;
-	Si446xCmd.GET_PROPERTY.DATA1 = 0x1;
+	Si446xCmd.GET_PROPERTY.DATA1 = 0x2;
 	si446x_set_property_lpc(0x12, 2, 0x0D);
 
 	// Field 2 length
@@ -149,6 +154,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 		while (true) {
 			si446x_get_int_status(0u, 0u, 0u);
 
+#ifdef DEBUG
 			// DEBUG
 			if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
 				status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
@@ -156,12 +162,28 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 				status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
 				++i;
 			}
+#endif
 
-			if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
+			if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+				DBG("[ERROR] RF chip reported error while sending.\n");
+				skynet_led_blink_red_passive(1000);
+
+				// reset chip to assure correct behaviour next time
+				radio_shutdown();
+				msDelayActive(50);
+				msDelay(100);
+				radio_init(); // also reenables interrupts
+				radio_reset_packet_size(); // reset size of Field 2
+				return;
+			}
+			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
 				if (remaining > 0) {
 					// ERROR CASE! PACKET_SENT interrupt occurred,
 					// even if not all remaining bytes have been put to FIFO
 					DBG("[ERROR] PACKET_SENT, but remaining: %d\n", remaining);
+					skynet_led_blink_red_passive(1000);
 
 					// clear remaining bytes to avoid pushing further bytes to FIFO
 					remaining = 0;
@@ -169,7 +191,8 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 				break;
 			}
-			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_TX_FIFO_ALMOST_EMPTY_MASK) {
+			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_TX_FIFO_ALMOST_EMPTY_BIT) {
+				// not all bytes sent yet, but chip is ready to receive more
 				if (remaining > 0) break;
 			}
 		}
@@ -178,9 +201,13 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	}
 	DBG("remaining: %d\n", remaining);
 
+#ifdef DEBUG
 	for (int j = 0; j < i; ++j) {
 		DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 	}
+#endif
+
+	radio_reset_packet_size(); // reset size of Field 2
 	radio_enable_irq();
 }
 
@@ -209,8 +236,19 @@ void radio_packet_handler(void) {
 	radio_disable_irq();
 
 
+	// error occurred
+	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+		DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		skynet_led_blink_red_passive(500);
+
+		// reset chip to assure correct behaviour next time
+		events_enqueue(EVENT_RADIO_RESTART);
+		return;
+	}
 	// Packet beginning or completely received
-	if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
+	else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
 				Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 		uint16_t length_low;
 		uint16_t length_high;
@@ -284,6 +322,18 @@ void radio_packet_handler(void) {
 	}
 
 	radio_enable_irq();
+
+#ifdef SKYNET_RX_TEST
+	if (!(strncmp(rf_packet_rx_buf, SKYNET_RADIO_TESTPATTERN, SKYNET_RADIO_TESTLENGTH))) {
+		skynet_led_blink_green_passive(250);
+		skynet_led_blink_red_passive(250);
+		skynet_led_blink_blue_passive(250);
+	}
+	else {
+		skynet_led_blink_red_passive(500);
+	}
+	memset(rf_packet_rx_buf, 0, SKYNET_RADIO_MAX_SIZE);
+#endif
 }
 
 

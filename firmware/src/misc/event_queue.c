@@ -20,11 +20,16 @@ uint8_t		events_queue_write_i = 0;
 uint8_t		events_queue_read_i = 0;
 
 
-void events_enqueue(event_types type) {
-	// TODO detect overflow
 
+// If there is more load (more packets per second etc.) some synchronisation will be needed!
+
+void events_enqueue(event_types type) {
 	events_queued[events_queue_write_i] = type;
 	events_queue_write_i = (events_queue_write_i + 1) % MAX_QUEUED_EVENTS;
+
+	if (events_queue_write_i == events_queue_read_i) {
+		DBG("[ERROR] EVENT QUEUE OVERFLOW!\n");
+	}
 }
 
 event_types events_dequeue(void) {

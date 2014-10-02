@@ -57,7 +57,7 @@
 #define BLUETOOTH_AFTER_WAKEUP_DELAY	(1500)
 
 /// @brief	Packet reception buffer for bluetooth
-extern uint8_t bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
+extern char bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
 
 
 /**
@@ -143,7 +143,7 @@ void bt_shutdown(void);
 /**
  * @brief	Wake up bluetooth module by stop pulling RESET.
  */
-void bt_wakeup();
+void bt_wakeup(void);
 
 /**
  * @brief	Send's the AT command to make the bluetooth module visible to clients.
@@ -203,11 +203,16 @@ void bt_uart_clear_rx(void);
 
 /**
  * @brief			Sends a command to BT module without raising RX interrupt.
+ * @param	request			Request string, null-terminated string.
+ * @param	response 		Buffer answer will be written to.
  *
  * Disables the UART interrupt to receiving an answer from BT module blocking.
+ * Only the first line of the answer is written into \b request.
  * After answer is received interrupt is enabled.
+ *
+ * @info			This method does \b not activate and deactivate AT mode!
  */
-int bt_request(char request[], char response[], int response_length);
+int bt_request(char request[], char response[]);
 
 
 /**
@@ -229,6 +234,24 @@ bool bt_is_connected(void);
 
 void bt_do_read(int len, char* data);
 
+
+// defines for communication with bluetooth module
+
+#define BLUETOOTH_AT_ANSWER 		("OK\r\n")
+
+// This might look somewhat "hacky". But it's more efficient than using snprintf.
+// Don't worry about too many quotes. GCC can deal with them.
+#define BLUETOOTH_NAME_ANSWER_PRE	"+NAME:"
+#define BLUETOOTH_NAME_ANSWER_POST	"\r\n"
+#define BLUETOOTH_NAME_ANSWER		BLUETOOTH_NAME_ANSWER_PRE BLUETOOTH_DEVICE_NAME BLUETOOTH_NAME_ANSWER_POST
+
+#define BLUETOOTH_SETNAME_PRE		"AT+NAME:"
+#define BLUETOOTH_SETNAME_POST		"\r\n"
+#define BLUETOOTH_SETNAME			BLUETOOTH_SETNAME_PRE BLUETOOTH_DEVICE_NAME BLUETOOTH_SETNAME_POST
+
+#define BLUETOOTH_SETPIN_PRE		"AT+PSWD:"
+#define BLUETOOTH_SETPIN_POST		"\r\n"
+#define BLUETOOTH_SETPIN			BLUETOOTH_SETPIN_PRE BLUETOOTH_DEVICE_PIN BLUETOOTH_SETPIN_POST
 
 
 #endif /* BLUETOOTH_H_ */

@@ -37,34 +37,6 @@ const uint32_t OscRateIn = 12000000; // 12 MHz
 const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
-extern uint8_t pwrLvlIdx;
-extern uint8_t pwrLvl[];
-//extern char* packet_rx_buf;
-
-/**
- * @brief	Sends a packet via radio.
- * @author	Jürgen Eckert
- */
-void sendVariablePacket(uint8_t *pkt, uint8_t length)
-{
-	pwrLvlIdx = 0;
-	DBG("txPKT\n");
-
-	for (uint8_t pos = 0u; pos < pRadioConfiguration->Radio_PacketLength; pos++)
-	{
-		if (pos < length)
-			customRadioPacket[pos+1] = pkt[pos];
-		else
-			customRadioPacket[pos+1] = 0;
-	}
-
-	vRadio_Change_PwrLvl(pwrLvl[pwrLvlIdx]);
-	customRadioPacket[0] = pwrLvl[pwrLvlIdx];
-
-	vRadio_StartTx_Variable_Packet(pRadioConfiguration->Radio_ChannelNumber, &customRadioPacket[0], pRadioConfiguration->Radio_PacketLength);
-}
-
-
 
 int main(void) {
 
@@ -78,7 +50,7 @@ int main(void) {
 
     SystemCoreClockUpdate();
 
-    cpu_set_speed(SPEED_120MHz);
+    cpu_set_speed(SPEED_60MHz);
 
 	StopWatch_Init();
 
@@ -102,14 +74,7 @@ int main(void) {
 	skynet_led_green(false);
 	skynet_led_red(false);
 	charger_init();
-	charger_set_mode(USB_HIGH); // USB_CHARGE
 	dcdc_init();
-
-
-
-	// DEBUG
-	//Chip_USB_Init();
-
 
 
 	// give visual feedback that program started
@@ -132,7 +97,7 @@ int main(void) {
 
 
     DBG("Initialize Bluetooth module...\n");
-    bt_init();	// initialize UART for bluetooth communication
+    bt_init();	// initialize bluetooth module communication
 
     //DBG("Initialize radio module...\n");
     //radio_init();
@@ -159,7 +124,25 @@ int main(void) {
 	uint32_t last_bt_check = StopWatch_Start();
 	bool bt_connected = false;
 
+
+
 #ifdef SKYNET_TX_TEST
+    DBG("Initialize radio module...\n");
+    radio_init();
+
+	unsigned char data[8192];
+	data[8191] = 0;
+
+	for (int i=0; i < 8191; i += 2) {
+		//data[i] = (i % 10) + 48;
+		data[i] = (i/60) + 48;
+		data[i+1] = (i % 60) + 65;
+		//DBG("write data: %c at %d\n", data[i], i);
+	}
+
+
+#endif
+#ifdef SKYNET_RX_TEST
     DBG("Initialize radio module...\n");
     radio_init();
 #endif
@@ -172,21 +155,12 @@ int main(void) {
 
     	skynet_led_red(true);
 
-    	unsigned char data[8192];
-    	data[8191] = 0;
-
-
-    	for (int i=0; i < 8191; i += 2) {
-    		//data[i] = (i % 10) + 48;
-    		data[i] = (i/60) + 48;
-    		data[i+1] = (i % 60) + 65;
-    		//DBG("write data: %c at %d\n", data[i], i);
-    	}
-
     	DBG("Sending packet: %s\n", data);
     	//sendVariablePacket(data, 76);
     	//sendLongPacket(data, 76);
-    	radio_send_variable_packet(data, 4096);
+    	vRadio_Change_PwrLvl(127);
+    	radio_send_variable_packet(SKYNET_RADIO_TESTPATTERN, SKYNET_RADIO_TESTLENGTH);
+    	//radio_send_variable_packet(data, 4096);
     	DBG("Packet sent.\n");
 
     	skynet_led_red(false);
@@ -200,7 +174,7 @@ int main(void) {
 				break;
 			case EVENT_SWITCH_SINGLE:
 				skynet_led_blue(true);
-				bt_make_visible(); 		//TODO
+				bt_make_visible();
 
 				int timeout_cnt = 0;
 				bool connected = false;
@@ -215,14 +189,15 @@ int main(void) {
 					msDelayActive(1000);		// give user time to pair
 
 					char buf[25];
-					int read = bt_request("AT+STATE?\r\n", buf, 24);
+					int read = bt_request("AT+STATE?\r\n", buf);
 					DBG("STATE from BT module: %s\n", buf);
 					buf[read] = '\0';
 
-					if (!strncmp(buf, "+STATE:PAIRED", 13)) {
+					if (!strncmp(buf, "+STATE:PAIRED", 13) ||
+						!strncmp(buf, "+STATE:CONNECTED", 16)) {
 						DBG("Yeah, user paired!\n");
 						connected = true;
-						last_bt_check = 0; // immediately active RF module
+						last_bt_check = 0; // immediately activate RF module
 					}
 				}
 				skynet_led_blue(false);
@@ -242,12 +217,21 @@ int main(void) {
 				}
 				break;
 			case EVENT_BT_GOT_PACKET:
-					DBG("BT packet received: %s\n", bt_packet_rx_buf);
+				DBG("BT packet received: %s\n", bt_packet_rx_buf);
 
-					if (bt_connected) {
-						radio_send_variable_packet(bt_packet_rx_buf, strlen(bt_packet_rx_buf));
-					}
-					break;
+				if (bt_connected) {
+					radio_send_variable_packet(bt_packet_rx_buf, strlen(bt_packet_rx_buf));
+				}
+				break;
+			case EVENT_LOW_BATTERY:
+				skynet_led_blink_red_passive(100);
+				break;
+			case EVENT_RADIO_RESTART:
+				radio_shutdown();
+				msDelayActive(50);
+				msDelay(100);
+				radio_init();
+				break;
 			default:
 				break;
 		}
@@ -264,6 +248,9 @@ int main(void) {
     		}
     		else if (bt_connected && !c) {
     			radio_shutdown();
+
+    			// and switch back to hidden low speed UART mode
+    			bt_make_invisible();
     		}
     		bt_connected = c;
 
@@ -271,6 +258,7 @@ int main(void) {
     		last_bt_check = StopWatch_Start();
     	}
 
+#ifdef DEBUG
     	// DEBUG Outputs
     	if (i >= 100) {
     		i = 0;
@@ -284,9 +272,13 @@ int main(void) {
 			skynet_led_green(false);
     	}
 
-
-    	//ledOff(LED_RADIO);
     	msDelay(10);
+#else
+    	if (i >= 1000000) {
+    		i = 0;
+    		skynet_led_blink_green_passive(100);
+    	}
+#endif
 #endif
 
         i++ ;

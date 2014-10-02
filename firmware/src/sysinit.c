@@ -66,9 +66,11 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	// charger (outputs OPEN DRAIN !)
 	{CHARGER_STAT1_PORT, CHARGER_STAT1_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
 	{CHARGER_STAT2_PORT, CHARGER_STAT2_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
-	{CHARGER_EXTPWR_PORT, CHARGER_EXTPWR_PIN, 	IOCON_MODE_PULLDOWN | IOCON_FUNC0},
+	{CHARGER_EXTPWR_PORT, CHARGER_EXTPWR_PIN, 	IOCON_MODE_PULLDOWN | IOCON_FUNC1},
 	{CHARGER_SEL_H_PORT, CHARGER_SEL_H_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
 	{CHARGER_SEL_L_PORT, CHARGER_SEL_L_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
+	{CHARGER_USBDP_PORT, CHARGER_USBDP_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
+	{CHARGER_USBDM_PORT, CHARGER_USBDM_PIN,		IOCON_MODE_PULLDOWN | IOCON_FUNC0},
 
 	// input button
 	{INPUT_SWITCH_PORT,  INPUT_SWITCH_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC1},
@@ -82,7 +84,7 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{DCDC_PS_PORT,	DCDC_PS_PIN,				IOCON_MODE_INACT | IOCON_FUNC0},
 
 	// reset unused pins
-	// (By default they are set as inputs with pull up. See: AN11096
+	// (By default they are set as inputs with pull up. See: AN10915
 	//  To reduce current consumption, we disable the pull up.)
 	{0,	4,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	5,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -136,6 +138,90 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 void Board_SetupMuxing(void)
 {
 	Chip_IOCON_SetPinMuxing(LPC_IOCON, pinmuxing, sizeof(pinmuxing) / sizeof(PINMUX_GRP_T));
+
+
+	// now set unused pins to output, state LOW
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 4);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 5);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 6);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 7);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 8);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 10);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 24);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 25);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 26);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 1);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 4);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 8);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 9);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 10);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 14);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 15);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 16);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 17);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 18);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 19);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 20);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 21);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 22);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 23);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 24);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 25);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 26);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 27);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 28);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 29);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 30);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 31);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 5);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 6);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 7);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 3, 25);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 3, 26);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 4, 28);
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 4, 29);
+
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 4, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 5, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 6, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 7, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 8, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 10, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 24, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 25, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 0, 26, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 1, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 4, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 8, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 9, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 10, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 14, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 15, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 16, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 17, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 18, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 19, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 20, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 21, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 22, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 23, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 24, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 25, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 26, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 27, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 28, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 29, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 30, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 1, 31, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 2, 5, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 2, 6, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 2, 7, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 3, 25, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 3, 26, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 4, 28, false);
+	Chip_GPIO_SetPinState(LPC_GPIO, 4, 29, false);
+
+
 }
 /* Setup system clocking */
 void SystemSetupClocking(void)
@@ -211,6 +297,11 @@ void SystemInit(void)
 	Board_SetupMuxing();
 
 	SystemSetupClocking();
+
+	// We do not need BOD, so think green and disable this power consumer
+	Chip_SYSCTL_DisableBODReset();
+	Chip_SYSCTL_DisableBOD();
+
 
 #ifndef NO_BOARD_LIB
 	/* Board specific SystemInit */

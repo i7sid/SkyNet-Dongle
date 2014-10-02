@@ -19,8 +19,7 @@ static SPI_CONFIG_FORMAT_T 	spi_format;
 
 void SPI_Init(void)
 {
-	/* Set up clock and muxing for SPI (aka SSP0) interface */
-	Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_SPI);
+	// Set up clock and muxing for SPI (aka SSP0) interface
 
 	/*
 	 * Initialize SSP0 pins connect
@@ -48,7 +47,6 @@ void SPI_Deinit(void)
 {
 	SPI_DeassertSSEL();  // assure that SSEL is HIGH and radio chip can relax
 	Chip_SPI_DeInit(LPC_SPI);
-	Chip_Clock_DisablePeriphClock(SYSCTL_CLOCK_SPI);
 }
 
 uint8_t SPI_Trans(uint8_t data)

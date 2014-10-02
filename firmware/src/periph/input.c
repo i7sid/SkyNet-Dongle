@@ -23,10 +23,12 @@ switch_check_state switch_state = SWITCH_FSM_NOT_PRESSED;
 void input_init() {
 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, INPUT_SWITCH_PORT, INPUT_SWITCH_PIN);
 
-	NVIC_SetPriority(INPUT_SWITCH_IRQn, 1); //TODO priority?
+	LPC_SYSCTL->EXTMODE |= 0x2;	// edge sensitive
+	LPC_SYSCTL->EXTINT |= 0x2;
+
+	NVIC_SetPriority(INPUT_SWITCH_IRQn, 4);
 	NVIC_EnableIRQ(INPUT_SWITCH_IRQn);
 
-	LPC_SYSCTL->EXTMODE |= 0x2;
 }
 
 bool input_state() {

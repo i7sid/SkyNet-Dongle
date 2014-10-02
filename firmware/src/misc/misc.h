@@ -39,13 +39,13 @@
 #define SI_LIB_NSEL_PIN		16	///< @copydoc  SI_LIB_NSEL_PORT
 #define SI_LIB_GPIO0_PORT	0	///< PORT and PIN where GPIO0 from radio chip is connected
 #define SI_LIB_GPIO0_PIN	20	///< @copydoc  SI_LIB_GPIO0_PORT
-//TODO: IRQ handler anpassen (müsste EINT3 oder so sein)
 #define RADIO_IRQ_HANDLER	EINT3_IRQ_HANDLER
-//#define RADIO_IRQ_HANDLER	radio_irq_sub_handler
 #define RADIO_IRQ_SOURCE	EINT3
 
 
 // Bluetooth configuration
+#define BLUETOOTH_DEVICE_NAME		"SKYNET3"			// alphanumeric (max. 31 characters)
+#define BLUETOOTH_DEVICE_PIN		"2014"    			// alphanumeric (max. 16 characters)
 #define BLUETOOTH_BUFFER_SIZE		512
 #define BLUETOOTH_UART 				LPC_UART3
 #define BLUETOOTH_UART_IRQn			UART3_IRQn
@@ -67,6 +67,15 @@
 #define CHARGER_SEL_H_PIN			3
 #define CHARGER_SEL_L_PORT			2
 #define CHARGER_SEL_L_PIN			4
+#define CHARGER_EXTPWR_HANDLER		EINT2_IRQHandler
+#define CHARGER_EXTPWR_IRQn			EINT2_IRQn
+#define CHARGER_EXTPWR_IRQ			EINT2
+#define CHARGER_USBDP_PORT			0
+#define CHARGER_USBDP_PIN			29
+#define CHARGER_USBDM_PORT			0
+#define CHARGER_USBDM_PIN			30
+#define CHARGER_USBCON_PORT			2
+#define CHARGER_USBCON_PIN			9
 
 
 // DCDC configuration

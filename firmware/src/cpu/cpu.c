@@ -66,13 +66,13 @@ void cpu_powerdown() {
 
 
 	adc_deinit();
-	//bt_shutdown();
-	//radio_shutdown();
+	bt_shutdown();
+	radio_shutdown();
 	dcdc_set_powersave(true);
+
 
 	while (cpu_powered_down) {
 		disable_systick();
-		// TODO: abort all running switch pressing handlers
 		NVIC_EnableIRQ(INPUT_SWITCH_IRQn); 		// enable switch IRQ for wakeup
 		NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
 
@@ -86,18 +86,16 @@ void cpu_powerdown() {
 		Chip_Clock_DisablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE);
 		while (Chip_Clock_IsMainPLLEnabled()) {} // Wait to be disabled
 
-		// And now go to sleep!
-		//Chip_PMU_PowerDownState(LPC_PMU);
-		//Chip_PMU_SleepState(LPC_PMU);
-		Chip_PMU_DeepSleepState(LPC_PMU);
+		// And now go to bed!
+		Chip_PMU_PowerDownState(LPC_PMU);
 
 		SystemInit(); // restore IOCON and clocks (important for msDelay!)
 		SystemCoreClockUpdate();
-		cpu_set_speed(SPEED_30MHz);
+		cpu_set_speed(SPEED_120MHz);
 		enable_systick(); // reenable SysTick functionality (updates clock)
 
 		msDelay(2000);
-		if (input_state()) {
+		if (input_state() || charger_external_power()) {
 			cpu_powered_down = false;
 		}
 	}
@@ -113,15 +111,16 @@ void cpu_powerdown() {
 
 	dcdc_set_powersave(false);
 	adc_init();
-	//bt_init();
-	//radio_init();
+	bt_init();
+
+#ifdef SKYNET_RX_TEST
+	radio_init();
+#endif
 
 	adc_start_buffered_measure();
 
 	skynet_led_green(true);
 	msDelay(1000);
 	skynet_led_green(false);
-
-	//TODO: Stromverbrauch prüfen
 }
 

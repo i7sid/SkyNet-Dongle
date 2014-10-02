@@ -28,14 +28,59 @@ void skynet_led_init() {
 }
 
 
-void skynet_led_red(bool on) {
+INLINE void skynet_led_red(bool on) {
 	Chip_GPIO_SetPinState(LPC_GPIO, LED_R_PORT, LED_R_PIN, !on);
 }
 
-void skynet_led_green(bool on) {
+INLINE void skynet_led_green(bool on) {
 	Chip_GPIO_SetPinState(LPC_GPIO, LED_G_PORT, LED_G_PIN, !on);
 }
 
-void skynet_led_blue(bool on) {
+INLINE void skynet_led_blue(bool on) {
 	Chip_GPIO_SetPinState(LPC_GPIO, LED_B_PORT, LED_B_PIN, !on);
+}
+
+STATIC void skynet_led_red_off() {
+	skynet_led_red(false);
+}
+
+STATIC void skynet_led_green_off() {
+	skynet_led_green(false);
+}
+
+STATIC void skynet_led_blue_off() {
+	skynet_led_blue(false);
+}
+
+void skynet_led_blink_red_passive(uint32_t ms) {
+	skynet_led_red(true);
+	register_delayed_event(ms, skynet_led_red_off);
+}
+
+void skynet_led_blink_green_passive(uint32_t ms) {
+	skynet_led_green(true);
+	register_delayed_event(ms, skynet_led_green_off);
+}
+
+void skynet_led_blink_blue_passive(uint32_t ms) {
+	skynet_led_blue(true);
+	register_delayed_event(ms, skynet_led_blue_off);
+}
+
+void skynet_led_blink_red_active(uint32_t ms) {
+	skynet_led_red(true);
+	msDelayActive(ms);
+	skynet_led_red(false);
+}
+
+void skynet_led_blink_green_active(uint32_t ms) {
+	skynet_led_green(true);
+	msDelayActive(ms);
+	skynet_led_green(false);
+}
+
+void skynet_led_blink_blue_active(uint32_t ms) {
+	skynet_led_blue(true);
+	msDelayActive(ms);
+	skynet_led_blue(false);
 }

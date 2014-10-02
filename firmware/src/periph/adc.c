@@ -17,6 +17,7 @@
 
 #include "adc.h"
 #include "../cpu/systick.h"
+#include "../misc/event_queue.h"
 
 /// @brief Buffer for holding setup data returned from Chip_ADC_Init().
 static ADC_CLOCK_SETUP_T ADCSetup;
@@ -39,7 +40,6 @@ void adc_deinit(void) {
 	adc_stop_buffered_measure();
 	adc_deactivate();
 	Chip_ADC_DeInit(LPC_ADC);
-	//TODO: Preiph Clock trennen möglich?
 }
 
 void adc_start_buffered_measure(void) {
@@ -49,6 +49,9 @@ void adc_start_buffered_measure(void) {
 void adc_read_buffered_measure(void) {
 	adc_buffered_value = adc_measure();
 	adc_start_buffered_measure();
+	if (adc_buffered_value < 1900) { // aprox. <3V
+		events_enqueue(EVENT_LOW_BATTERY);
+	}
 }
 
 INLINE uint16_t adc_get_buffered_value(void) {

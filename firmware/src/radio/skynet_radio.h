@@ -22,6 +22,10 @@
 
 #define SKYNET_RADIO_MAX_SIZE (1024)
 
+#define SKYNET_RADIO_TESTPATTERN 	"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
+#define SKYNET_RADIO_TESTLENGTH 		80
+
+
 extern uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 extern volatile bool radio_initialized;
 
@@ -45,6 +49,10 @@ void radio_enable_irq(void);
  */
 void radio_disable_irq(void);
 
+/**
+ * @brief	Resets the length of field 2 to standard.
+ */
+void radio_reset_packet_size(void);
 
 /**
  * @brief			Sends an packet of variable length via RF.
