@@ -9966,6 +9966,13 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <label x="205.74" y="78.74" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
+<net name="DCDCPS" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[9]/I2STX_SDA/MOSI1/MAT2[3]"/>
+<wire x1="71.12" y1="142.24" x2="68.58" y2="142.24" width="0.1524" layer="91"/>
+<label x="68.58" y="142.24" size="1.27" layer="95" rot="MR0" xref="yes"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>
@@ -10163,12 +10170,12 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <instance part="GND27" gate="1" x="129.54" y="63.5"/>
 <instance part="FRAME3" gate="G$1" x="0" y="0"/>
 <instance part="IC5" gate="G$1" x="48.26" y="22.86"/>
-<instance part="P+14" gate="VCC" x="20.32" y="48.26"/>
+<instance part="P+14" gate="VCC" x="15.24" y="48.26"/>
 <instance part="+3V8" gate="G$1" x="73.66" y="48.26"/>
 <instance part="C8" gate="G$1" x="73.66" y="22.86"/>
 <instance part="GND28" gate="1" x="63.5" y="10.16"/>
 <instance part="GND29" gate="1" x="27.94" y="10.16"/>
-<instance part="C7" gate="G$1" x="20.32" y="22.86"/>
+<instance part="C7" gate="G$1" x="15.24" y="22.86" rot="MR0"/>
 <instance part="P+15" gate="1" x="58.42" y="116.84"/>
 <instance part="BAT+5" gate="1" x="187.96" y="101.6"/>
 <instance part="GND30" gate="1" x="187.96" y="38.1"/>
@@ -10222,11 +10229,11 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="IC5" gate="G$1" pin="VIN"/>
 <wire x1="35.56" y1="27.94" x2="33.02" y2="27.94" width="0.1524" layer="91"/>
 <pinref part="P+14" gate="VCC" pin="VCC"/>
-<wire x1="33.02" y1="27.94" x2="20.32" y2="27.94" width="0.1524" layer="91"/>
-<wire x1="20.32" y1="27.94" x2="20.32" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="33.02" y1="27.94" x2="15.24" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="15.24" y1="27.94" x2="15.24" y2="45.72" width="0.1524" layer="91"/>
 <pinref part="C7" gate="G$1" pin="1"/>
-<wire x1="20.32" y1="25.4" x2="20.32" y2="27.94" width="0.1524" layer="91"/>
-<junction x="20.32" y="27.94"/>
+<wire x1="15.24" y1="25.4" x2="15.24" y2="27.94" width="0.1524" layer="91"/>
+<junction x="15.24" y="27.94"/>
 <pinref part="IC5" gate="G$1" pin="VINA"/>
 <wire x1="35.56" y1="25.4" x2="33.02" y2="25.4" width="0.1524" layer="91"/>
 <wire x1="33.02" y1="25.4" x2="33.02" y2="27.94" width="0.1524" layer="91"/>
@@ -10235,10 +10242,6 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <wire x1="35.56" y1="22.86" x2="33.02" y2="22.86" width="0.1524" layer="91"/>
 <wire x1="33.02" y1="22.86" x2="33.02" y2="25.4" width="0.1524" layer="91"/>
 <junction x="33.02" y="25.4"/>
-<pinref part="IC5" gate="G$1" pin="PS/SYNC"/>
-<wire x1="35.56" y1="20.32" x2="33.02" y2="20.32" width="0.1524" layer="91"/>
-<wire x1="33.02" y1="20.32" x2="33.02" y2="22.86" width="0.1524" layer="91"/>
-<junction x="33.02" y="22.86"/>
 </segment>
 <segment>
 <pinref part="SJ1" gate="1" pin="2"/>
@@ -10288,10 +10291,10 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <wire x1="27.94" y1="12.7" x2="27.94" y2="15.24" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="GND"/>
 <wire x1="27.94" y1="15.24" x2="35.56" y2="15.24" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="15.24" x2="20.32" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="15.24" x2="15.24" y2="15.24" width="0.1524" layer="91"/>
 <junction x="27.94" y="15.24"/>
 <pinref part="C7" gate="G$1" pin="2"/>
-<wire x1="20.32" y1="15.24" x2="20.32" y2="17.78" width="0.1524" layer="91"/>
+<wire x1="15.24" y1="15.24" x2="15.24" y2="17.78" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC5" gate="G$1" pin="PGND"/>
@@ -10632,6 +10635,13 @@ diameter 3 mm, horizontal, grid 12.7 mm</description>
 <pinref part="R12" gate="G$1" pin="1"/>
 <pinref part="Q3" gate="G$1" pin="D"/>
 <wire x1="187.96" y1="71.12" x2="187.96" y2="73.66" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="DCDCPS" class="0">
+<segment>
+<pinref part="IC5" gate="G$1" pin="PS/SYNC"/>
+<wire x1="35.56" y1="20.32" x2="33.02" y2="20.32" width="0.1524" layer="91"/>
+<label x="33.02" y="20.32" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 </nets>
