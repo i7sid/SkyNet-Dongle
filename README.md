@@ -2,7 +2,7 @@ SkyNet-Dongle
 =============
 
 Welcome to the SkyNet-Dongle git repository!
-The main work was done in the context of a bachelor thesis at the
+The initial work was done in the context of a bachelor thesis at the
 Friedrich-Alexander University Erlangen-Nürnberg.
 
 
@@ -18,7 +18,7 @@ Firmware
 --------
 The firmware for the LPC1769 is written entirely in C99 and can **basically**
 be compiled by a standard GNU GCC toolchain.
-Currently a Eclipse project is shipped that works with
+Currently an Eclipse project is shipped that works with
 [LPCXpresso](http://www.embeddedartists.com/products/lpcxpresso).
 Additionally you need the [LPCOpen chip library](http://www.lpcware.com/lpcopen).
 
@@ -36,7 +36,10 @@ Pinouts
 
 Flashing / Programming
 ----------------------
-TODO  /  TBA
+First flashing has to be done via ISP or JTAG.
+Flash RDB1768cmsis2_usb_bootloader/Release/RDB1768cmsis2_usb_bootloader.axf
+(or .bin) to the processor. Afterwards you should be able to flash new firmware files
+(.bin) via USB and mass storage emulation.
 
 
 

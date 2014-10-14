@@ -12,7 +12,10 @@
 firmware/core
 firmware/Release*
 firmware/Debug*
-
+RDB1768cmsis2_usb_bootloader/Release*
+RDB1768cmsis2_usb_bootloader/Debug*
+RDB1768cmsis2_usbstack/Release*
+RDB1768cmsis2_usbstack/Debug*
 
 # backups
 *~
