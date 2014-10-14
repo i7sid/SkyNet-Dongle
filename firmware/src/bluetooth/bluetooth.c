@@ -17,6 +17,7 @@
 
 char bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
 uint16_t bt_packet_rx_buf_pos = 0;
+uint16_t bt_packet_rx_buf_written = 0;
 static volatile bool visible = false;
 static volatile bool highspeed = false;
 static volatile bool waiting_for_answer = false;
@@ -296,6 +297,12 @@ void BLUETOOTH_UART_IRQ_HANDLER()
 	//buf[read] = '\0'; // not needed with this code
 	//DBG("BT rx raw (%d): %s\n", read, buf);
 
+	// reset length
+	if (bt_packet_rx_buf_pos == 0) {
+		bt_packet_rx_buf_written = 0;
+	}
+
+	// go through received bytes and look for newline character
 	int i;
 	for (i = 0; i < read; ++i) {
 		bt_packet_rx_buf[bt_packet_rx_buf_pos + i] = buf[i];
@@ -306,6 +313,7 @@ void BLUETOOTH_UART_IRQ_HANDLER()
 				events_enqueue(EVENT_BT_GOT_PACKET);
 			}
 			bt_packet_rx_buf[bt_packet_rx_buf_pos + i + 1] = 0; // write trailing null byte for C
+			bt_packet_rx_buf_written = bt_packet_rx_buf_pos; // save length
 			bt_packet_rx_buf_pos = 0;
 			return;
 		}

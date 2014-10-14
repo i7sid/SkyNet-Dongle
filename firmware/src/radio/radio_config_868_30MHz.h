@@ -49,8 +49,10 @@
 /*
 // Command:                  RF_GPIO_PIN_CFG
 // Description:              Configures the GPIO pins.
+ * 							  GPIO0 GPIO1 GPIO2 GPIO3 NIRQ  SDO   GEN_CONFIG
+ * 	GPIO0: default 0x18 means "HIGH after valid preamble, LOW after packet reception or SYNC timeout"
 */
-#define RF_GPIO_PIN_CFG 0x13, 0x21, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00
+#define RF_GPIO_PIN_CFG 0x13, 0x18, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00
 
 /*
 // Set properties:           RF_GLOBAL_XO_TUNE_1

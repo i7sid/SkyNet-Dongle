@@ -217,10 +217,10 @@ int main(void) {
 				}
 				break;
 			case EVENT_BT_GOT_PACKET:
-				DBG("BT packet received: %s\n", bt_packet_rx_buf);
+				DBG("BT packet received (size: %d): %s\n", bt_packet_rx_buf_written, bt_packet_rx_buf);
 
 				if (bt_connected) {
-					radio_send_variable_packet(bt_packet_rx_buf, strlen(bt_packet_rx_buf));
+					radio_send_variable_packet(bt_packet_rx_buf, bt_packet_rx_buf_written);
 				}
 				break;
 			case EVENT_LOW_BATTERY:

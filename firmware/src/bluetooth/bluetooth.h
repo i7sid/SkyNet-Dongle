@@ -59,6 +59,10 @@
 /// @brief	Packet reception buffer for bluetooth
 extern char bt_packet_rx_buf[BLUETOOTH_BUFFER_SIZE+1];
 
+/// @brief	Amount of bytes read from bluetooth last time
+extern uint16_t bt_packet_rx_buf_written;
+
+
 
 /**
  * @brief	Initializes chip pins and UART.
