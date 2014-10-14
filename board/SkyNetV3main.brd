@@ -134,11 +134,15 @@
 <wire x1="0.8018" y1="67.9594" x2="0.8018" y2="0.9594" width="0" layer="20"/>
 <rectangle x1="1.0922" y1="1.2954" x2="16.129" y2="9.2202" layer="41"/>
 <rectangle x1="1.0922" y1="1.2954" x2="16.129" y2="9.2202" layer="42"/>
-<hole x="33.8074" y="47.0154" drill="3.2"/>
+<hole x="33.7566" y="47.2694" drill="3.2"/>
 <text x="8.382" y="37.3634" size="2.032" layer="1" font="vector" ratio="0" distance="0" rot="R90">-</text>
 <text x="8.382" y="37.3888" size="2.032" layer="16" font="vector" ratio="0" distance="0" rot="MR270" align="bottom-right">-</text>
 <text x="30.3022" y="65.9638" size="1.27" layer="1" font="vector" ratio="10" distance="0" rot="SR270" align="top-left">1</text>
 <text x="36.2458" y="52.9082" size="1.27" layer="1" font="vector" ratio="10" distance="0" rot="SR0" align="top-left">1</text>
+<text x="33.0962" y="43.8658" size="1.27" layer="16" font="vector" ratio="10" distance="0" rot="SMR270" align="top-left">SkyNet
+Dongle</text>
+<text x="33.1724" y="37.5412" size="1.27" layer="1" font="vector" ratio="10" distance="0" rot="SR90" align="top-left">SkyNet
+Dongle</text>
 </plain>
 <libraries>
 <library name="lpc1xxx-v6">
@@ -2848,9 +2852,11 @@ design rules under a new name.</description>
 <wire x1="20.8026" y1="38.3286" x2="22.1488" y2="36.9824" width="0.1524" layer="1"/>
 <via x="22.1488" y="36.9824" extent="1-16" drill="0.3048"/>
 <wire x1="22.1488" y1="36.9824" x2="22.1488" y2="35.6108" width="0.1524" layer="16"/>
-<wire x1="22.1488" y1="35.6108" x2="33.4518" y2="24.3078" width="0.1524" layer="16"/>
+<wire x1="22.1488" y1="35.6108" x2="23.0886" y2="34.671" width="0.1524" layer="16"/>
+<wire x1="23.0886" y1="34.671" x2="23.3934" y2="34.671" width="0.1524" layer="16"/>
+<wire x1="23.3934" y1="34.671" x2="33.4518" y2="24.5872" width="0.1524" layer="16"/>
 <contactref element="IC2" pad="NSEL"/>
-<wire x1="33.4518" y1="24.3078" x2="33.433" y2="24.289" width="0.1524" layer="16"/>
+<wire x1="33.4518" y1="24.5872" x2="33.433" y2="24.289" width="0.1524" layer="16"/>
 <wire x1="33.433" y1="24.289" x2="33.433" y2="23.444775" width="0.1524" layer="16"/>
 </signal>
 <signal name="RF-SCLK">
@@ -3694,8 +3700,8 @@ design rules under a new name.</description>
 <approved hash="19,1,642cd98d8456726f"/>
 <approved hash="19,1,ab4bd8e9c73613b4"/>
 <approved hash="19,1,5a868ee7e3255c78"/>
-<approved hash="19,1,11f73d3fb22d2e61"/>
 <approved hash="19,1,b6f4e2567625a78a"/>
+<approved hash="19,1,11f73d3fb22d2e61"/>
 <approved hash="19,1,d099fc51724fee03"/>
 <approved hash="19,1,913c0651772a7c81"/>
 <approved hash="19,1,c24cb319318df5aa"/>
@@ -3707,4 +3713,10 @@ design rules under a new name.</description>
 </errors>
 </board>
 </drawing>
+<compatibility>
+<note version="6.3" minversion="6.2.2" severity="warning">
+Since Version 6.2.2 text objects can contain more than one line,
+which will not be processed correctly with this version.
+</note>
+</compatibility>
 </eagle>
