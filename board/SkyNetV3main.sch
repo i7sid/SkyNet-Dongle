@@ -54,6 +54,7 @@
 <layer number="54" name="bGND_GNDA" color="1" fill="9" visible="no" active="no"/>
 <layer number="56" name="wert" color="7" fill="1" visible="no" active="no"/>
 <layer number="57" name="tCAD" color="7" fill="1" visible="no" active="no"/>
+<layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
 <layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="93" name="Pins" color="2" fill="1" visible="no" active="yes"/>
@@ -8433,64 +8434,6 @@ http://www.bobstarr.net</description>
 </deviceset>
 </devicesets>
 </library>
-<library name="con-molex">
-<description>&lt;b&gt;Molex Connectors&lt;/b&gt;&lt;p&gt;
-&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
-<packages>
-<package name="22-23-2021">
-<description>.100" (2.54mm) Center Headers - 2 Pin</description>
-<wire x1="-2.54" y1="3.175" x2="2.54" y2="3.175" width="0.254" layer="21"/>
-<wire x1="2.54" y1="3.175" x2="2.54" y2="1.27" width="0.254" layer="21"/>
-<wire x1="2.54" y1="1.27" x2="2.54" y2="-3.175" width="0.254" layer="21"/>
-<wire x1="2.54" y1="-3.175" x2="-2.54" y2="-3.175" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="-3.175" x2="-2.54" y2="1.27" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="1.27" x2="-2.54" y2="3.175" width="0.254" layer="21"/>
-<wire x1="-2.54" y1="1.27" x2="2.54" y2="1.27" width="0.254" layer="21"/>
-<pad name="1" x="-1.27" y="0" drill="1" shape="long" rot="R90"/>
-<pad name="2" x="1.27" y="0" drill="1" shape="long" rot="R90"/>
-<text x="-2.54" y="3.81" size="1.016" layer="25" ratio="10">&gt;NAME</text>
-<text x="-2.54" y="-5.08" size="1.016" layer="27" ratio="10">&gt;VALUE</text>
-</package>
-</packages>
-<symbols>
-<symbol name="MV">
-<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
-<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
-<text x="-0.762" y="1.397" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
-</symbol>
-<symbol name="M">
-<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
-<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
-<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="22-23-2021" prefix="X">
-<description>.100" (2.54mm) Center Header - 2 Pin</description>
-<gates>
-<gate name="-1" symbol="MV" x="0" y="0" addlevel="always" swaplevel="1"/>
-<gate name="-2" symbol="M" x="0" y="-2.54" addlevel="always" swaplevel="1"/>
-</gates>
-<devices>
-<device name="" package="22-23-2021">
-<connects>
-<connect gate="-1" pin="S" pad="1"/>
-<connect gate="-2" pin="S" pad="2"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="MF" value="MOLEX" constant="no"/>
-<attribute name="MPN" value="22-23-2021" constant="no"/>
-<attribute name="OC_FARNELL" value="1462926" constant="no"/>
-<attribute name="OC_NEWARK" value="25C3832" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 <library name="diode">
 <description>&lt;b&gt;Diodes&lt;/b&gt;&lt;p&gt;
 Based on the following sources:
@@ -9376,6 +9319,112 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 </deviceset>
 </devicesets>
 </library>
+<library name="supply2">
+<description>&lt;b&gt;Supply Symbols&lt;/b&gt;&lt;p&gt;
+GND, VCC, 0V, +5V, -5V, etc.&lt;p&gt;
+Please keep in mind, that these devices are necessary for the
+automatic wiring of the supply signals.&lt;p&gt;
+The pin name defined in the symbol is identical to the net which is to be wired automatically.&lt;p&gt;
+In this library the device names are the same as the pin names of the symbols, therefore the correct signal names appear next to the supply symbols in the schematic.&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+</packages>
+<symbols>
+<symbol name="VDD">
+<circle x="0" y="1.27" radius="1.27" width="0.254" layer="94"/>
+<text x="-1.905" y="3.175" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="VDD" x="0" y="-2.54" visible="off" length="short" direction="sup" rot="R90"/>
+</symbol>
+<symbol name="VEE">
+<circle x="0" y="1.27" radius="1.27" width="0.254" layer="94"/>
+<text x="-1.905" y="3.175" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="VEE" x="0" y="-2.54" visible="off" length="short" direction="sup" rot="R90"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="VDD" prefix="SUPPLY">
+<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
+<gates>
+<gate name="G$1" symbol="VDD" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="VEE" prefix="SUPPLY">
+<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
+<gates>
+<gate name="G$1" symbol="VEE" x="0" y="0"/>
+</gates>
+<devices>
+<device name="">
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
+<library name="i7">
+<packages>
+<package name="PL503465">
+<wire x1="17.5" y1="0" x2="17.5" y2="67" width="0.127" layer="21"/>
+<wire x1="17.5" y1="67" x2="-17.5" y2="67" width="0.127" layer="21"/>
+<wire x1="-17.5" y1="67" x2="-17.5" y2="0" width="0.127" layer="21"/>
+<wire x1="-17.5" y1="0" x2="-11" y2="0" width="0.127" layer="21"/>
+<wire x1="-11" y1="0" x2="-6" y2="0" width="0.127" layer="21"/>
+<wire x1="-6" y1="0" x2="6" y2="0" width="0.127" layer="21"/>
+<wire x1="6" y1="0" x2="11" y2="0" width="0.127" layer="21"/>
+<wire x1="11" y1="0" x2="17.5" y2="0" width="0.127" layer="21"/>
+<wire x1="-11" y1="0" x2="-11" y2="1.5" width="0.127" layer="21"/>
+<wire x1="-6" y1="0" x2="-6" y2="1.5" width="0.127" layer="21"/>
+<wire x1="11" y1="0" x2="11" y2="1.5" width="0.127" layer="21"/>
+<wire x1="6" y1="0" x2="6" y2="1.5" width="0.127" layer="21"/>
+<smd name="P-" x="-8.5" y="2.5" dx="7" dy="3.2512" layer="16"/>
+<smd name="P+" x="8.5" y="2.5" dx="7" dy="3.2512" layer="16"/>
+<text x="-3" y="3" size="1.27" layer="25">&gt;NAME</text>
+<text x="-3" y="1" size="1.27" layer="27">&gt;VALUE</text>
+</package>
+</packages>
+<symbols>
+<symbol name="1CELL">
+<pin name="P+" x="0" y="5.08" visible="off" length="short" rot="R270"/>
+<pin name="P-" x="0" y="-5.08" visible="off" length="short" rot="R90"/>
+<wire x1="-5.08" y1="0.635" x2="0" y2="0.635" width="0.254" layer="94"/>
+<wire x1="0" y1="0.635" x2="5.08" y2="0.635" width="0.254" layer="94"/>
+<wire x1="-2.54" y1="-0.635" x2="0" y2="-0.635" width="0.6096" layer="94"/>
+<wire x1="0" y1="-0.635" x2="2.54" y2="-0.635" width="0.6096" layer="94"/>
+<wire x1="0" y1="-0.635" x2="0" y2="-2.54" width="0.254" layer="94"/>
+<wire x1="0" y1="2.54" x2="0" y2="0.635" width="0.254" layer="94"/>
+<text x="0.635" y="1.27" size="1.27" layer="94">+</text>
+<text x="1.905" y="-2.54" size="1.27" layer="95">&gt;NAME</text>
+<text x="1.905" y="-4.445" size="1.27" layer="96">&gt;VALUE</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="1S" prefix="B" uservalue="yes">
+<gates>
+<gate name="G$1" symbol="1CELL" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="PL503465">
+<connects>
+<connect gate="G$1" pin="P+" pad="P+"/>
+<connect gate="G$1" pin="P-" pad="P-"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -9402,13 +9451,11 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
-<part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 <part name="IC4" library="skynet_other" deviceset="BCX17" device=""/>
 <part name="R3" library="rcl" deviceset="R-EU_" device="R0603" value="1k"/>
 <part name="+3V9" library="supply1" deviceset="+3V3" device=""/>
 <part name="R4" library="rcl" deviceset="R-EU_" device="R0603" value="1k5"/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
-<part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="R19" library="rcl" deviceset="R-EU_" device="R0603" value="68"/>
 <part name="R17" library="rcl" deviceset="R-EU_" device="R0603" value="100"/>
@@ -9455,7 +9502,6 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <part name="P+19" library="supply1" deviceset="VCC" device=""/>
 <part name="L1" library="skynet_other" deviceset="LPS4012" device="" value="2u2"/>
 <part name="Q4" library="microbuilder" deviceset="MOSFET-N" device="WIDE" value="BSS138"/>
-<part name="X1" library="con-molex" deviceset="22-23-2021" device="" value="BAT"/>
 <part name="BAT+6" library="supply1" deviceset="V+" device=""/>
 <part name="GND34" library="supply1" deviceset="GND" device=""/>
 <part name="USB1" library="usb_con-update" deviceset="MOLEX-47346-0001" device=""/>
@@ -9492,7 +9538,6 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <part name="+3V18" library="supply1" deviceset="+3V3" device=""/>
 <part name="C11" library="rcl" deviceset="C-EU" device="C1206K" value="100n"/>
 <part name="GND20" library="supply1" deviceset="GND" device=""/>
-<part name="+3V21" library="supply1" deviceset="+3V3" device=""/>
 <part name="S1" library="switch-ck" deviceset="PTS645S???SMTR" device="" value="INPUT"/>
 <part name="BAT+1" library="supply1" deviceset="V+" device=""/>
 <part name="GND24" library="supply1" deviceset="GND" device=""/>
@@ -9507,13 +9552,11 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <part name="+3V19" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND18" library="supply1" deviceset="GND" device=""/>
 <part name="C13" library="microbuilder" deviceset="CAP_TANTALUM" device="C/6032_WAVE" value="100u"/>
-<part name="+3V20" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>
 <part name="GND21" library="supply1" deviceset="GND" device=""/>
 <part name="JP4" library="skynet_other" deviceset="PIN-HEAD-1X3" device="" value="EXT"/>
 <part name="FRAME4" library="frames" deviceset="A4L-LOC" device="" value="SkyNet Main"/>
 <part name="X2" library="SteveMarple" deviceset="CONN-SMA" device="THD"/>
-<part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="GND32" library="supply1" deviceset="GND" device=""/>
 <part name="GND33" library="supply1" deviceset="GND" device=""/>
@@ -9524,6 +9567,20 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <part name="GND39" library="supply1" deviceset="GND" device=""/>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
 <part name="GND41" library="supply1" deviceset="GND" device=""/>
+<part name="SUPPLY1" library="supply2" deviceset="VDD" device=""/>
+<part name="SUPPLY2" library="supply2" deviceset="VEE" device=""/>
+<part name="+3V22" library="supply1" deviceset="+3V3" device=""/>
+<part name="+3V23" library="supply1" deviceset="+3V3" device=""/>
+<part name="SUPPLY3" library="supply2" deviceset="VEE" device=""/>
+<part name="SUPPLY4" library="supply2" deviceset="VEE" device=""/>
+<part name="SUPPLY5" library="supply2" deviceset="VDD" device=""/>
+<part name="Q5" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6402"/>
+<part name="Q6" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6402"/>
+<part name="SUPPLY6" library="supply2" deviceset="VEE" device=""/>
+<part name="SUPPLY7" library="supply2" deviceset="VDD" device=""/>
+<part name="C14" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
+<part name="C24" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
+<part name="B1" library="i7" deviceset="1S" device="" value="PL503465"/>
 </parts>
 <sheets>
 <sheet>
@@ -10045,36 +10102,57 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <label x="43.18" y="139.7" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
+<net name="/RF-ON" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P1[19]/MCOA0/USB_PPWR/CAP1[1]"/>
+<wire x1="160.02" y1="137.16" x2="223.52" y2="137.16" width="0.1524" layer="91"/>
+<label x="223.52" y="137.16" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="/BT-ON" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P1[18]/USB_UP_LED/PWM1[1]/CAP1[0]"/>
+<wire x1="160.02" y1="139.7" x2="223.52" y2="139.7" width="0.1524" layer="91"/>
+<label x="223.52" y="139.7" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>
 <description>Radio</description>
 <plain>
 <text x="165.1" y="20.32" size="1.778" layer="94">Radio Sheet</text>
-<text x="165.1" y="10.16" size="1.778" layer="94">TODO: Mosfet for power control</text>
-<text x="165.1" y="7.62" size="1.778" layer="94">TODO: Connect GPIO1??</text>
+<wire x1="256.794" y1="89.408" x2="3.81" y2="89.408" width="0.1524" layer="94"/>
+<text x="7.62" y="93.98" size="1.778" layer="94">Bluetooth</text>
+<text x="7.62" y="7.62" size="1.778" layer="94">Sub-GHz</text>
 </plain>
 <instances>
 <instance part="FRAME4" gate="G$1" x="0" y="0"/>
-<instance part="IC2" gate="G$1" x="78.74" y="124.46"/>
-<instance part="GND10" gate="1" x="35.56" y="99.06"/>
-<instance part="+3V7" gate="G$1" x="58.42" y="152.4"/>
-<instance part="C1" gate="G$1" x="35.56" y="129.54" rot="MR0"/>
-<instance part="C13" gate="G$1" x="25.4" y="127" rot="MR0"/>
-<instance part="+3V20" gate="G$1" x="25.4" y="152.4"/>
-<instance part="GND19" gate="1" x="25.4" y="99.06"/>
-<instance part="IC1" gate="G$1" x="175.26" y="119.38" rot="MR0"/>
-<instance part="+3V6" gate="G$1" x="226.06" y="152.4"/>
-<instance part="GND1" gate="1" x="200.66" y="91.44"/>
-<instance part="C11" gate="G$1" x="242.824" y="121.92" rot="MR0"/>
-<instance part="GND20" gate="1" x="242.824" y="91.44"/>
-<instance part="+3V21" gate="G$1" x="242.824" y="152.4"/>
-<instance part="X2" gate="G$1" x="50.8" y="119.38" rot="MR0"/>
-<instance part="+3V3" gate="G$1" x="35.56" y="152.4"/>
-<instance part="GND9" gate="1" x="58.42" y="99.06"/>
-<instance part="GND32" gate="1" x="50.8" y="99.06"/>
-<instance part="GND33" gate="1" x="165.1" y="91.44"/>
-<instance part="GND35" gate="1" x="147.32" y="91.44"/>
+<instance part="IC2" gate="G$1" x="157.48" y="43.18"/>
+<instance part="GND10" gate="1" x="104.14" y="17.78"/>
+<instance part="C1" gate="G$1" x="104.14" y="48.26" rot="MR0"/>
+<instance part="C13" gate="G$1" x="93.98" y="45.72" rot="MR0"/>
+<instance part="GND19" gate="1" x="93.98" y="17.78"/>
+<instance part="IC1" gate="G$1" x="160.02" y="132.08" rot="MR0"/>
+<instance part="GND1" gate="1" x="185.42" y="104.14"/>
+<instance part="C11" gate="G$1" x="101.6" y="134.62" rot="MR0"/>
+<instance part="GND20" gate="1" x="101.6" y="104.14"/>
+<instance part="X2" gate="G$1" x="129.54" y="38.1" rot="MR0"/>
+<instance part="GND9" gate="1" x="137.16" y="17.78"/>
+<instance part="GND32" gate="1" x="129.54" y="17.78"/>
+<instance part="GND33" gate="1" x="149.86" y="104.14"/>
+<instance part="GND35" gate="1" x="132.08" y="104.14"/>
+<instance part="SUPPLY1" gate="G$1" x="101.6" y="157.48"/>
+<instance part="SUPPLY2" gate="G$1" x="93.98" y="71.12"/>
+<instance part="+3V22" gate="G$1" x="43.18" y="165.1"/>
+<instance part="+3V23" gate="G$1" x="43.18" y="78.74"/>
+<instance part="SUPPLY3" gate="G$1" x="104.14" y="71.12"/>
+<instance part="SUPPLY4" gate="G$1" x="137.16" y="71.12"/>
+<instance part="SUPPLY5" gate="G$1" x="185.42" y="157.48"/>
+<instance part="Q5" gate="G$1" x="55.88" y="147.32" rot="R90"/>
+<instance part="Q6" gate="G$1" x="55.88" y="63.5" rot="R90"/>
+<instance part="SUPPLY6" gate="G$1" x="66.04" y="71.12"/>
+<instance part="SUPPLY7" gate="G$1" x="68.58" y="157.48"/>
 </instances>
 <busses>
 </busses>
@@ -10083,173 +10161,217 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <segment>
 <pinref part="C1" gate="G$1" pin="2"/>
 <pinref part="GND10" gate="1" pin="GND"/>
-<wire x1="35.56" y1="101.6" x2="35.56" y2="124.46" width="0.1524" layer="91"/>
+<wire x1="104.14" y1="20.32" x2="104.14" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND19" gate="1" pin="GND"/>
 <pinref part="C13" gate="G$1" pin="-"/>
-<wire x1="25.4" y1="101.6" x2="25.4" y2="124.46" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="20.32" x2="93.98" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="G$1" pin="GND"/>
 <pinref part="GND1" gate="1" pin="GND"/>
-<wire x1="198.12" y1="104.14" x2="200.66" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="200.66" y1="104.14" x2="200.66" y2="93.98" width="0.1524" layer="91"/>
+<wire x1="182.88" y1="116.84" x2="185.42" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="185.42" y1="116.84" x2="185.42" y2="106.68" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND20" gate="1" pin="GND"/>
 <pinref part="C11" gate="G$1" pin="2"/>
-<wire x1="242.824" y1="93.98" x2="242.824" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="106.68" x2="101.6" y2="129.54" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC2" gate="G$1" pin="GND@1"/>
-<wire x1="58.42" y1="129.54" x2="63.5" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="129.54" x2="58.42" y2="127" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="48.26" x2="142.24" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="48.26" x2="137.16" y2="45.72" width="0.1524" layer="91"/>
 <pinref part="IC2" gate="G$1" pin="GND@2"/>
-<wire x1="58.42" y1="127" x2="63.5" y2="127" width="0.1524" layer="91"/>
-<wire x1="58.42" y1="127" x2="58.42" y2="124.46" width="0.1524" layer="91"/>
-<junction x="58.42" y="127"/>
+<wire x1="137.16" y1="45.72" x2="142.24" y2="45.72" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="45.72" x2="137.16" y2="43.18" width="0.1524" layer="91"/>
+<junction x="137.16" y="45.72"/>
 <pinref part="IC2" gate="G$1" pin="GND@3"/>
-<wire x1="58.42" y1="124.46" x2="63.5" y2="124.46" width="0.1524" layer="91"/>
-<junction x="58.42" y="124.46"/>
-<wire x1="58.42" y1="124.46" x2="58.42" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="137.16" y1="43.18" x2="142.24" y2="43.18" width="0.1524" layer="91"/>
+<junction x="137.16" y="43.18"/>
+<wire x1="137.16" y1="43.18" x2="137.16" y2="20.32" width="0.1524" layer="91"/>
 <pinref part="GND9" gate="1" pin="GND"/>
 </segment>
 <segment>
 <pinref part="X2" gate="G$1" pin="GND"/>
 <pinref part="GND32" gate="1" pin="GND"/>
-<wire x1="50.8" y1="101.6" x2="50.8" y2="114.3" width="0.1524" layer="91"/>
+<wire x1="129.54" y1="20.32" x2="129.54" y2="33.02" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="G$1" pin="GND1"/>
 <pinref part="GND33" gate="1" pin="GND"/>
-<wire x1="165.1" y1="93.98" x2="165.1" y2="96.52" width="0.1524" layer="91"/>
+<wire x1="149.86" y1="106.68" x2="149.86" y2="109.22" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="G$1" pin="GND2"/>
 <pinref part="GND35" gate="1" pin="GND"/>
-<wire x1="149.86" y1="104.14" x2="147.32" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="147.32" y1="104.14" x2="147.32" y2="93.98" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="+3V3" class="0">
-<segment>
-<pinref part="+3V7" gate="G$1" pin="+3V3"/>
-<wire x1="58.42" y1="149.86" x2="58.42" y2="134.62" width="0.1524" layer="91"/>
-<pinref part="IC2" gate="G$1" pin="VCC"/>
-<wire x1="58.42" y1="134.62" x2="63.5" y2="134.62" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="C13" gate="G$1" pin="+"/>
-<pinref part="+3V20" gate="G$1" pin="+3V3"/>
-<wire x1="25.4" y1="132.08" x2="25.4" y2="149.86" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="+3V6" gate="G$1" pin="+3V3"/>
-<wire x1="226.06" y1="149.86" x2="226.06" y2="106.68" width="0.1524" layer="91"/>
-<pinref part="IC1" gate="G$1" pin="3V3"/>
-<wire x1="226.06" y1="106.68" x2="198.12" y2="106.68" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="C11" gate="G$1" pin="1"/>
-<pinref part="+3V21" gate="G$1" pin="+3V3"/>
-<wire x1="242.824" y1="124.46" x2="242.824" y2="149.86" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<wire x1="35.56" y1="149.86" x2="35.56" y2="132.08" width="0.1524" layer="91"/>
-<pinref part="C1" gate="G$1" pin="1"/>
-<pinref part="+3V3" gate="G$1" pin="+3V3"/>
+<wire x1="134.62" y1="116.84" x2="132.08" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="132.08" y1="116.84" x2="132.08" y2="106.68" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="ANT" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="ANT"/>
-<wire x1="55.88" y1="119.38" x2="63.5" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="134.62" y1="38.1" x2="142.24" y2="38.1" width="0.1524" layer="91"/>
 <pinref part="X2" gate="G$1" pin="SIGNAL"/>
 </segment>
 </net>
 <net name="RF-GPIO0" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="GPIO0"/>
-<wire x1="93.98" y1="114.3" x2="99.06" y2="114.3" width="0.1524" layer="91"/>
-<label x="99.06" y="114.3" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="33.02" x2="177.8" y2="33.02" width="0.1524" layer="91"/>
+<label x="177.8" y="33.02" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-SDN" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="SDN"/>
-<wire x1="93.98" y1="121.92" x2="99.06" y2="121.92" width="0.1524" layer="91"/>
-<label x="99.06" y="121.92" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="40.64" x2="177.8" y2="40.64" width="0.1524" layer="91"/>
+<label x="177.8" y="40.64" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-NIRQ" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="NIRQ"/>
-<wire x1="93.98" y1="124.46" x2="99.06" y2="124.46" width="0.1524" layer="91"/>
-<label x="99.06" y="124.46" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="43.18" x2="177.8" y2="43.18" width="0.1524" layer="91"/>
+<label x="177.8" y="43.18" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-NSEL" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="NSEL"/>
-<wire x1="93.98" y1="127" x2="99.06" y2="127" width="0.1524" layer="91"/>
-<label x="99.06" y="127" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="45.72" x2="177.8" y2="45.72" width="0.1524" layer="91"/>
+<label x="177.8" y="45.72" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-SCLK" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="SCLK"/>
-<wire x1="93.98" y1="129.54" x2="99.06" y2="129.54" width="0.1524" layer="91"/>
-<label x="99.06" y="129.54" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="48.26" x2="177.8" y2="48.26" width="0.1524" layer="91"/>
+<label x="177.8" y="48.26" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-SDO" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="SDO"/>
-<wire x1="93.98" y1="132.08" x2="99.06" y2="132.08" width="0.1524" layer="91"/>
-<label x="99.06" y="132.08" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="50.8" x2="177.8" y2="50.8" width="0.1524" layer="91"/>
+<label x="177.8" y="50.8" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RF-SDI" class="0">
 <segment>
 <pinref part="IC2" gate="G$1" pin="SDI"/>
-<wire x1="93.98" y1="134.62" x2="99.06" y2="134.62" width="0.1524" layer="91"/>
-<label x="99.06" y="134.62" size="1.27" layer="95" xref="yes"/>
+<wire x1="172.72" y1="53.34" x2="177.8" y2="53.34" width="0.1524" layer="91"/>
+<label x="177.8" y="53.34" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="BT-RX" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="RX"/>
-<wire x1="198.12" y1="132.08" x2="200.66" y2="132.08" width="0.1524" layer="91"/>
-<label x="200.66" y="132.08" size="1.27" layer="95" rot="MR180" xref="yes"/>
+<wire x1="182.88" y1="144.78" x2="187.96" y2="144.78" width="0.1524" layer="91"/>
+<label x="187.96" y="144.78" size="1.27" layer="95" rot="MR180" xref="yes"/>
 </segment>
 </net>
 <net name="BT-AT" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="PIO11"/>
-<label x="147.32" y="134.62" size="1.27" layer="95" rot="R180" xref="yes"/>
-<wire x1="149.86" y1="134.62" x2="147.32" y2="134.62" width="0.1524" layer="91"/>
+<label x="129.54" y="147.32" size="1.27" layer="95" rot="R180" xref="yes"/>
+<wire x1="134.62" y1="147.32" x2="129.54" y2="147.32" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="BT-RESET" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="RST"/>
-<wire x1="198.12" y1="109.22" x2="200.66" y2="109.22" width="0.1524" layer="91"/>
-<label x="200.66" y="109.22" size="1.27" layer="95" xref="yes"/>
+<wire x1="182.88" y1="121.92" x2="187.96" y2="121.92" width="0.1524" layer="91"/>
+<label x="187.96" y="121.92" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="BT-TX" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="TX"/>
-<wire x1="198.12" y1="134.62" x2="200.66" y2="134.62" width="0.1524" layer="91"/>
-<label x="200.66" y="134.62" size="1.27" layer="95" rot="MR180" xref="yes"/>
+<wire x1="182.88" y1="147.32" x2="187.96" y2="147.32" width="0.1524" layer="91"/>
+<label x="187.96" y="147.32" size="1.27" layer="95" rot="MR180" xref="yes"/>
 </segment>
 </net>
 <net name="BT-CN" class="0">
 <segment>
 <pinref part="IC1" gate="G$1" pin="PIO9"/>
-<wire x1="149.86" y1="129.54" x2="147.32" y2="129.54" width="0.1524" layer="91"/>
-<label x="147.32" y="129.54" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="134.62" y1="142.24" x2="129.54" y2="142.24" width="0.1524" layer="91"/>
+<label x="129.54" y="142.24" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="VEE" class="0">
+<segment>
+<pinref part="C13" gate="G$1" pin="+"/>
+<wire x1="93.98" y1="50.8" x2="93.98" y2="68.58" width="0.1524" layer="91"/>
+<pinref part="SUPPLY2" gate="G$1" pin="VEE"/>
+</segment>
+<segment>
+<wire x1="104.14" y1="68.58" x2="104.14" y2="50.8" width="0.1524" layer="91"/>
+<pinref part="C1" gate="G$1" pin="1"/>
+<pinref part="SUPPLY3" gate="G$1" pin="VEE"/>
+</segment>
+<segment>
+<wire x1="137.16" y1="68.58" x2="137.16" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="IC2" gate="G$1" pin="VCC"/>
+<wire x1="137.16" y1="53.34" x2="142.24" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="SUPPLY4" gate="G$1" pin="VEE"/>
+</segment>
+<segment>
+<pinref part="Q6" gate="G$1" pin="D"/>
+<pinref part="SUPPLY6" gate="G$1" pin="VEE"/>
+<wire x1="60.96" y1="63.5" x2="66.04" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="66.04" y1="63.5" x2="66.04" y2="68.58" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="VDD" class="0">
+<segment>
+<pinref part="C11" gate="G$1" pin="1"/>
+<wire x1="101.6" y1="137.16" x2="101.6" y2="154.94" width="0.1524" layer="91"/>
+<pinref part="SUPPLY1" gate="G$1" pin="VDD"/>
+</segment>
+<segment>
+<wire x1="185.42" y1="154.94" x2="185.42" y2="119.38" width="0.1524" layer="91"/>
+<pinref part="IC1" gate="G$1" pin="3V3"/>
+<wire x1="185.42" y1="119.38" x2="182.88" y2="119.38" width="0.1524" layer="91"/>
+<pinref part="SUPPLY5" gate="G$1" pin="VDD"/>
+</segment>
+<segment>
+<pinref part="Q5" gate="G$1" pin="D"/>
+<pinref part="SUPPLY7" gate="G$1" pin="VDD"/>
+<wire x1="60.96" y1="147.32" x2="68.58" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="68.58" y1="147.32" x2="68.58" y2="154.94" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="+3V3" class="0">
+<segment>
+<pinref part="Q6" gate="G$1" pin="S"/>
+<pinref part="+3V23" gate="G$1" pin="+3V3"/>
+<wire x1="50.8" y1="63.5" x2="43.18" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="63.5" x2="43.18" y2="76.2" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="Q5" gate="G$1" pin="S"/>
+<pinref part="+3V22" gate="G$1" pin="+3V3"/>
+<wire x1="50.8" y1="147.32" x2="43.18" y2="147.32" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="147.32" x2="43.18" y2="162.56" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="Q5" gate="G$1" pin="G"/>
+<wire x1="53.34" y1="142.24" x2="53.34" y2="137.16" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="137.16" x2="43.18" y2="137.16" width="0.1524" layer="91"/>
+<label x="43.18" y="137.16" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
+<net name="N$4" class="0">
+<segment>
+<pinref part="Q6" gate="G$1" pin="G"/>
+<wire x1="53.34" y1="58.42" x2="53.34" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="53.34" y1="53.34" x2="43.18" y2="53.34" width="0.1524" layer="91"/>
+<label x="43.18" y="53.34" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 </nets>
@@ -10302,41 +10424,42 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <instance part="Q3" gate="G$1" x="190.5" y="142.24" rot="MR0"/>
 <instance part="R14" gate="G$1" x="218.44" y="152.4" rot="R270"/>
 <instance part="C15" gate="G$1" x="205.74" y="114.3"/>
-<instance part="C18" gate="G$1" x="132.08" y="60.96"/>
-<instance part="GND4" gate="1" x="132.08" y="50.8"/>
-<instance part="+3V1" gate="G$1" x="132.08" y="68.58"/>
-<instance part="C19" gate="G$1" x="132.08" y="33.02"/>
-<instance part="GND2" gate="1" x="132.08" y="22.86"/>
-<instance part="+3V4" gate="G$1" x="132.08" y="40.64"/>
-<instance part="C21" gate="G$1" x="144.78" y="33.02"/>
-<instance part="GND12" gate="1" x="144.78" y="22.86"/>
-<instance part="+3V10" gate="G$1" x="144.78" y="40.64"/>
-<instance part="C20" gate="G$1" x="144.78" y="60.96"/>
-<instance part="GND15" gate="1" x="144.78" y="50.8"/>
-<instance part="+3V16" gate="G$1" x="144.78" y="68.58"/>
-<instance part="C16" gate="G$1" x="119.38" y="60.96"/>
-<instance part="GND16" gate="1" x="119.38" y="50.8"/>
-<instance part="+3V17" gate="G$1" x="119.38" y="68.58"/>
-<instance part="C17" gate="G$1" x="119.38" y="33.02"/>
-<instance part="GND17" gate="1" x="119.38" y="22.86"/>
-<instance part="+3V18" gate="G$1" x="119.38" y="40.64"/>
+<instance part="C18" gate="G$1" x="139.7" y="60.96"/>
+<instance part="GND4" gate="1" x="139.7" y="50.8"/>
+<instance part="+3V1" gate="G$1" x="139.7" y="68.58"/>
+<instance part="C19" gate="G$1" x="139.7" y="33.02"/>
+<instance part="GND2" gate="1" x="139.7" y="22.86"/>
+<instance part="+3V4" gate="G$1" x="139.7" y="40.64"/>
+<instance part="C21" gate="G$1" x="152.4" y="33.02"/>
+<instance part="GND12" gate="1" x="152.4" y="22.86"/>
+<instance part="+3V10" gate="G$1" x="152.4" y="40.64"/>
+<instance part="C20" gate="G$1" x="152.4" y="60.96"/>
+<instance part="GND15" gate="1" x="152.4" y="50.8"/>
+<instance part="+3V16" gate="G$1" x="152.4" y="68.58"/>
+<instance part="C16" gate="G$1" x="127" y="60.96"/>
+<instance part="GND16" gate="1" x="127" y="50.8"/>
+<instance part="+3V17" gate="G$1" x="127" y="68.58"/>
+<instance part="C17" gate="G$1" x="127" y="33.02"/>
+<instance part="GND17" gate="1" x="127" y="22.86"/>
+<instance part="+3V18" gate="G$1" x="127" y="40.64"/>
 <instance part="BAT+1" gate="1" x="218.44" y="162.56"/>
 <instance part="GND24" gate="1" x="205.74" y="104.14"/>
 <instance part="P+3" gate="1" x="193.04" y="60.96"/>
 <instance part="R6" gate="G$1" x="203.2" y="53.34"/>
 <instance part="D1" gate="G$1" x="215.9" y="45.72" rot="R90"/>
 <instance part="GND31" gate="1" x="215.9" y="35.56"/>
-<instance part="SJ1" gate="1" x="124.46" y="137.16" rot="R90"/>
-<instance part="X1" gate="-1" x="129.54" y="124.46" rot="MR180"/>
-<instance part="X1" gate="-2" x="129.54" y="129.54" rot="MR180"/>
-<instance part="BAT+6" gate="1" x="124.46" y="165.1" rot="MR0"/>
-<instance part="GND34" gate="1" x="124.46" y="106.68" rot="MR0"/>
-<instance part="C12" gate="G$1" x="101.6" y="38.1"/>
-<instance part="+3V19" gate="G$1" x="101.6" y="68.58"/>
-<instance part="GND18" gate="1" x="101.6" y="22.86"/>
+<instance part="SJ1" gate="1" x="127" y="137.16" rot="R90"/>
+<instance part="BAT+6" gate="1" x="127" y="165.1" rot="MR0"/>
+<instance part="GND34" gate="1" x="127" y="106.68" rot="MR0"/>
+<instance part="C12" gate="G$1" x="111.76" y="38.1"/>
+<instance part="+3V19" gate="G$1" x="111.76" y="68.58"/>
+<instance part="GND18" gate="1" x="111.76" y="22.86"/>
 <instance part="GND36" gate="1" x="91.44" y="106.68"/>
 <instance part="GND37" gate="1" x="99.06" y="106.68"/>
 <instance part="GND38" gate="1" x="106.68" y="106.68"/>
+<instance part="C14" gate="G$1" x="99.06" y="40.64"/>
+<instance part="C24" gate="G$1" x="25.4" y="40.64" rot="MR0"/>
+<instance part="B1" gate="G$1" x="127" y="121.92"/>
 </instances>
 <busses>
 </busses>
@@ -10359,6 +10482,9 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <wire x1="53.34" y1="40.64" x2="50.8" y2="40.64" width="0.1524" layer="91"/>
 <wire x1="50.8" y1="40.64" x2="50.8" y2="43.18" width="0.1524" layer="91"/>
 <junction x="50.8" y="43.18"/>
+<wire x1="35.56" y1="45.72" x2="25.4" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="C24" gate="G$1" pin="1"/>
+<wire x1="25.4" y1="45.72" x2="25.4" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC6" gate="A" pin="OUT2"/>
@@ -10407,6 +10533,9 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <junction x="35.56" y="33.02"/>
 <pinref part="C7" gate="G$1" pin="2"/>
 <wire x1="35.56" y1="33.02" x2="35.56" y2="35.56" width="0.1524" layer="91"/>
+<pinref part="C24" gate="G$1" pin="2"/>
+<wire x1="25.4" y1="35.56" x2="25.4" y2="33.02" width="0.1524" layer="91"/>
+<wire x1="25.4" y1="33.02" x2="35.56" y2="33.02" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC5" gate="G$1" pin="PGND"/>
@@ -10416,6 +10545,9 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <pinref part="C8" gate="G$1" pin="2"/>
 <wire x1="88.9" y1="35.56" x2="88.9" y2="33.02" width="0.1524" layer="91"/>
 <junction x="88.9" y="33.02"/>
+<wire x1="88.9" y1="33.02" x2="99.06" y2="33.02" width="0.1524" layer="91"/>
+<pinref part="C14" gate="G$1" pin="2"/>
+<wire x1="99.06" y1="33.02" x2="99.06" y2="35.56" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND3" gate="1" pin="GND"/>
@@ -10425,32 +10557,32 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <segment>
 <pinref part="GND4" gate="1" pin="GND"/>
 <pinref part="C18" gate="G$1" pin="2"/>
-<wire x1="132.08" y1="53.34" x2="132.08" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="53.34" x2="139.7" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND2" gate="1" pin="GND"/>
 <pinref part="C19" gate="G$1" pin="2"/>
-<wire x1="132.08" y1="25.4" x2="132.08" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="25.4" x2="139.7" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND12" gate="1" pin="GND"/>
 <pinref part="C21" gate="G$1" pin="2"/>
-<wire x1="144.78" y1="25.4" x2="144.78" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="25.4" x2="152.4" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND15" gate="1" pin="GND"/>
 <pinref part="C20" gate="G$1" pin="2"/>
-<wire x1="144.78" y1="53.34" x2="144.78" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="53.34" x2="152.4" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND16" gate="1" pin="GND"/>
 <pinref part="C16" gate="G$1" pin="2"/>
-<wire x1="119.38" y1="53.34" x2="119.38" y2="55.88" width="0.1524" layer="91"/>
+<wire x1="127" y1="53.34" x2="127" y2="55.88" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND17" gate="1" pin="GND"/>
 <pinref part="C17" gate="G$1" pin="2"/>
-<wire x1="119.38" y1="25.4" x2="119.38" y2="27.94" width="0.1524" layer="91"/>
+<wire x1="127" y1="25.4" x2="127" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND27" gate="1" pin="GND"/>
@@ -10474,14 +10606,13 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 </segment>
 <segment>
 <pinref part="GND34" gate="1" pin="GND"/>
-<wire x1="124.46" y1="109.22" x2="124.46" y2="124.46" width="0.1524" layer="91"/>
-<pinref part="X1" gate="-1" pin="S"/>
-<wire x1="124.46" y1="124.46" x2="127" y2="124.46" width="0.1524" layer="91"/>
+<wire x1="127" y1="109.22" x2="127" y2="116.84" width="0.1524" layer="91"/>
+<pinref part="B1" gate="G$1" pin="P-"/>
 </segment>
 <segment>
 <pinref part="GND18" gate="1" pin="GND"/>
 <pinref part="C12" gate="G$1" pin="-"/>
-<wire x1="101.6" y1="25.4" x2="101.6" y2="35.56" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="25.4" x2="111.76" y2="35.56" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="R9" gate="G$1" pin="2"/>
@@ -10530,7 +10661,7 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <segment>
 <pinref part="SJ1" gate="1" pin="2"/>
 <pinref part="BAT+6" gate="1" pin="V+"/>
-<wire x1="124.46" y1="162.56" x2="124.46" y2="142.24" width="0.1524" layer="91"/>
+<wire x1="127" y1="162.56" x2="127" y2="142.24" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="+5V" class="0">
@@ -10586,41 +10717,44 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 <pinref part="C8" gate="G$1" pin="1"/>
 <wire x1="88.9" y1="45.72" x2="88.9" y2="43.18" width="0.1524" layer="91"/>
 <junction x="88.9" y="45.72"/>
+<wire x1="88.9" y1="45.72" x2="99.06" y2="45.72" width="0.1524" layer="91"/>
+<pinref part="C14" gate="G$1" pin="1"/>
+<wire x1="99.06" y1="45.72" x2="99.06" y2="43.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C18" gate="G$1" pin="1"/>
 <pinref part="+3V1" gate="G$1" pin="+3V3"/>
-<wire x1="132.08" y1="63.5" x2="132.08" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="63.5" x2="139.7" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C19" gate="G$1" pin="1"/>
 <pinref part="+3V4" gate="G$1" pin="+3V3"/>
-<wire x1="132.08" y1="35.56" x2="132.08" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="139.7" y1="35.56" x2="139.7" y2="38.1" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C21" gate="G$1" pin="1"/>
 <pinref part="+3V10" gate="G$1" pin="+3V3"/>
-<wire x1="144.78" y1="35.56" x2="144.78" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="35.56" x2="152.4" y2="38.1" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C20" gate="G$1" pin="1"/>
 <pinref part="+3V16" gate="G$1" pin="+3V3"/>
-<wire x1="144.78" y1="63.5" x2="144.78" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="152.4" y1="63.5" x2="152.4" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C16" gate="G$1" pin="1"/>
 <pinref part="+3V17" gate="G$1" pin="+3V3"/>
-<wire x1="119.38" y1="63.5" x2="119.38" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="127" y1="63.5" x2="127" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C17" gate="G$1" pin="1"/>
 <pinref part="+3V18" gate="G$1" pin="+3V3"/>
-<wire x1="119.38" y1="35.56" x2="119.38" y2="38.1" width="0.1524" layer="91"/>
+<wire x1="127" y1="35.56" x2="127" y2="38.1" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="C12" gate="G$1" pin="+"/>
 <pinref part="+3V19" gate="G$1" pin="+3V3"/>
-<wire x1="101.6" y1="43.18" x2="101.6" y2="66.04" width="0.1524" layer="91"/>
+<wire x1="111.76" y1="43.18" x2="111.76" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="PROG3" class="0">
@@ -10755,10 +10889,9 @@ This is a footprint for an edge mount RF antenna. Works pretty well with SMA typ
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="X1" gate="-2" pin="S"/>
 <pinref part="SJ1" gate="1" pin="1"/>
-<wire x1="127" y1="129.54" x2="124.46" y2="129.54" width="0.1524" layer="91"/>
-<wire x1="124.46" y1="129.54" x2="124.46" y2="132.08" width="0.1524" layer="91"/>
+<pinref part="B1" gate="G$1" pin="P+"/>
+<wire x1="127" y1="127" x2="127" y2="132.08" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
