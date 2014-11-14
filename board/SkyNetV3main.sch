@@ -9581,6 +9581,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="C14" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
 <part name="C24" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
 <part name="B1" library="i7" deviceset="1S" device="" value="PL503465"/>
+<part name="GND8" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -10358,7 +10359,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <wire x1="43.18" y1="147.32" x2="43.18" y2="162.56" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$3" class="0">
+<net name="/BT-ON" class="0">
 <segment>
 <pinref part="Q5" gate="G$1" pin="G"/>
 <wire x1="53.34" y1="142.24" x2="53.34" y2="137.16" width="0.1524" layer="91"/>
@@ -10366,7 +10367,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="43.18" y="137.16" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="N$4" class="0">
+<net name="/RF-ON" class="0">
 <segment>
 <pinref part="Q6" gate="G$1" pin="G"/>
 <wire x1="53.34" y1="58.42" x2="53.34" y2="53.34" width="0.1524" layer="91"/>
@@ -10460,6 +10461,8 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="C14" gate="G$1" x="99.06" y="40.64"/>
 <instance part="C24" gate="G$1" x="25.4" y="40.64" rot="MR0"/>
 <instance part="B1" gate="G$1" x="127" y="121.92"/>
+<instance part="IC5" gate="TH" x="48.26" y="27.94"/>
+<instance part="GND8" gate="1" x="43.18" y="22.86"/>
 </instances>
 <busses>
 </busses>
@@ -10628,6 +10631,12 @@ In this library the device names are the same as the pin names of the symbols, t
 <pinref part="R11" gate="G$1" pin="2"/>
 <wire x1="106.68" y1="119.38" x2="106.68" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="GND38" gate="1" pin="GND"/>
+</segment>
+<segment>
+<pinref part="GND8" gate="1" pin="GND"/>
+<wire x1="43.18" y1="25.4" x2="43.18" y2="27.94" width="0.1524" layer="91"/>
+<pinref part="IC5" gate="TH" pin="TH"/>
+<wire x1="43.18" y1="27.94" x2="45.72" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="V+" class="0">
