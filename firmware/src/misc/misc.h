@@ -44,7 +44,7 @@
 
 
 // Bluetooth configuration
-#define BLUETOOTH_DEVICE_NAME		"SKYNET3"			// alphanumeric (max. 31 characters)
+#define BLUETOOTH_DEVICE_NAME		"SKYNETm"			// alphanumeric (max. 31 characters)
 #define BLUETOOTH_DEVICE_PIN		"2014"    			// alphanumeric (max. 16 characters)
 #define BLUETOOTH_BUFFER_SIZE		512
 #define BLUETOOTH_UART 				LPC_UART3
@@ -54,6 +54,8 @@
 #define BLUETOOTH_AT_PIN			13
 #define BLUETOOTH_RESET_PORT		0
 #define BLUETOOTH_RESET_PIN			11
+#define BLUETOOTH_CONNECTED_PORT	0
+#define BLUETOOTH_CONNECTED_PIN		7
 
 
 // charger configuration

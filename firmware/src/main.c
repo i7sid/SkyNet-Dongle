@@ -188,16 +188,27 @@ int main(void) {
 
 					msDelayActive(1000);		// give user time to pair
 
-					char buf[25];
-					int read = bt_request("AT+STATE?\r\n", buf);
-					DBG("STATE from BT module: %s\n", buf);
-					buf[read] = '\0';
-
-					if (!strncmp(buf, "+STATE:PAIRED", 13) ||
-						!strncmp(buf, "+STATE:CONNECTED", 16)) {
-						DBG("Yeah, user paired!\n");
+					// now check if connection was opened immediately
+					// if yes, we connected/paired successfully,
+					// otherwise, pairing could have been successful, too,
+					// so even then check the state.
+					if (bt_is_connected()) {
+						DBG("Yeah, user paired and connected!\n");
 						connected = true;
 						last_bt_check = 0; // immediately activate RF module
+					}
+					else {
+						char buf[25];
+						int read = bt_request("AT+STATE?\r\n", buf);
+						DBG("STATE from BT module: %s\n", buf);
+						buf[read] = '\0';
+
+						if (!strncmp(buf, "+STATE:PAIRED", 13) ||
+							!strncmp(buf, "+STATE:CONNECTED", 16)) {
+							DBG("Yeah, user paired!\n");
+							connected = true;
+							last_bt_check = 0; // immediately activate RF module
+						}
 					}
 				}
 				skynet_led_blue(false);
@@ -237,16 +248,17 @@ int main(void) {
 		}
 
 
+
     	// check if bluetooth device connected
     	// if not - no radio required
-    	if (StopWatch_TicksToMs(StopWatch_Elapsed(last_bt_check)) > 10000) {
-    		DBG("Stopwatch: %d\n", last_bt_check);
+    	if (StopWatch_TicksToMs(StopWatch_Elapsed(last_bt_check)) > 1000) {
     		bool c = bt_is_connected();
     		if (!bt_connected && c) {
     			DBG("Initialize radio module...\n");
     			radio_init();
     		}
     		else if (bt_connected && !c) {
+    			DBG("Shutdown radio module...\n");
     			radio_shutdown();
 
     			// and switch back to hidden low speed UART mode
@@ -258,16 +270,17 @@ int main(void) {
     		last_bt_check = StopWatch_Start();
     	}
 
+
 #ifdef DEBUG
     	// DEBUG Outputs
     	if (i >= 100) {
     		i = 0;
     		skynet_led_green(true);
     		si446x_request_device_state();
-			DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i; input: %i; GPIO0: %i; state: %i\n",
+			DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i; input: %i; GPIO0: %i; state: %i; bt_connected: %i\n",
 					charger_status1(), charger_status2(), charger_external_power(),
 					true, adc_get_buffered_value(), input_state(), radio_get_gpio0(),
-					Si446xCmd.REQUEST_DEVICE_STATE.CURR_STATE);
+					Si446xCmd.REQUEST_DEVICE_STATE.CURR_STATE, bt_is_connected());
 			msDelay(15);
 			skynet_led_green(false);
     	}

@@ -32,6 +32,9 @@ void bt_init(void) {
 	// reset pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN);
 
+	// "connected" pin
+	Chip_GPIO_SetPinDIRInput(LPC_GPIO, BLUETOOTH_CONNECTED_PORT, BLUETOOTH_CONNECTED_PIN);
+
 
 	bt_hardreset();		// start in normal operation mode
 
@@ -335,17 +338,5 @@ INLINE bool bt_at_mode_active(void) {
 }
 
 bool bt_is_connected(void) {
-	bt_enable_AT_mode();
-
-	char buf[25];
-	int read = bt_request("AT+STATE?\r\n", buf);
-	buf[read] = '\0';
-	DBG("STATE from BT module: %s\n", buf);
-
-	bt_disable_AT_mode();
-
-	if (!strncmp(buf, "+STATE:CONNECTED", 16)) {
-		return true;
-	}
-	return false;
+	return Chip_GPIO_GetPinState(LPC_GPIO, BLUETOOTH_CONNECTED_PORT, BLUETOOTH_CONNECTED_PIN);
 }

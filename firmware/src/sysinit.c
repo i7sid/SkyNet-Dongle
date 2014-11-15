@@ -49,6 +49,7 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{0,  1,   IOCON_MODE_INACT | IOCON_FUNC2},		// RXD3
 	{BLUETOOTH_AT_PORT, BLUETOOTH_AT_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
 	{BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, IOCON_MODE_INACT | IOCON_FUNC0},
+	{BLUETOOTH_CONNECTED_PORT, BLUETOOTH_CONNECTED_PIN, IOCON_MODE_INACT | IOCON_FUNC0},
 
 	// radio
 	{SI_LIB_SDN_PORT,  SI_LIB_SDN_PIN,   		IOCON_MODE_INACT | IOCON_FUNC0},
@@ -89,7 +90,6 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{0,	4,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	5,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	6,										IOCON_MODE_INACT | IOCON_FUNC0},
-	{0,	7,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	8,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	10,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	24,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -144,7 +144,6 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 4);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 5);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 6);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 7);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 8);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 10);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 24);
@@ -184,7 +183,6 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 4, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 5, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 6, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 0, 7, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 8, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 10, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 24, false);
