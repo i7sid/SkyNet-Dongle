@@ -9992,13 +9992,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="43.18" y="17.78" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
-<net name="AD-PWR" class="0">
-<segment>
-<pinref part="IC3" gate="G$1" pin="P1[0]/ENET_TXD0"/>
-<wire x1="160.02" y1="165.1" x2="228.6" y2="165.1" width="0.1524" layer="91"/>
-<label x="228.6" y="165.1" size="1.27" layer="95" xref="yes"/>
-</segment>
-</net>
 <net name="JTAG-TRST" class="0">
 <segment>
 <pinref part="R1" gate="G$1" pin="1"/>
@@ -10089,13 +10082,6 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="226.06" y="104.14" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="DCDCPS" class="0">
-<segment>
-<pinref part="IC3" gate="G$1" pin="P0[9]/I2STX_SDA/MOSI1/MAT2[3]"/>
-<wire x1="71.12" y1="142.24" x2="45.72" y2="142.24" width="0.1524" layer="91"/>
-<label x="45.72" y="142.24" size="1.27" layer="95" rot="MR0" xref="yes"/>
-</segment>
-</net>
 <net name="BT-CN" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="P0[10]/TXD2/SDA2/MAT3[0]"/>
@@ -10103,18 +10089,32 @@ In this library the device names are the same as the pin names of the symbols, t
 <label x="43.18" y="139.7" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
+<net name="DCDCPS" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[8]/I2STX_WS/MISO1/MAT2[2]"/>
+<wire x1="71.12" y1="144.78" x2="45.72" y2="144.78" width="0.1524" layer="91"/>
+<label x="45.72" y="144.78" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+</net>
 <net name="/RF-ON" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[19]/MCOA0/USB_PPWR/CAP1[1]"/>
-<wire x1="160.02" y1="137.16" x2="223.52" y2="137.16" width="0.1524" layer="91"/>
-<label x="223.52" y="137.16" size="1.778" layer="95" xref="yes"/>
+<pinref part="IC3" gate="G$1" pin="P0[9]/I2STX_SDA/MOSI1/MAT2[3]"/>
+<wire x1="71.12" y1="142.24" x2="43.18" y2="142.24" width="0.1524" layer="91"/>
+<label x="43.18" y="142.24" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="/BT-ON" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[18]/USB_UP_LED/PWM1[1]/CAP1[0]"/>
-<wire x1="160.02" y1="139.7" x2="223.52" y2="139.7" width="0.1524" layer="91"/>
-<label x="223.52" y="139.7" size="1.778" layer="95" xref="yes"/>
+<pinref part="IC3" gate="G$1" pin="P1[0]/ENET_TXD0"/>
+<wire x1="160.02" y1="165.1" x2="228.6" y2="165.1" width="0.1524" layer="91"/>
+<label x="228.6" y="165.1" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="AD-PWR" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P1[17]/ENET_MDIO"/>
+<wire x1="160.02" y1="142.24" x2="228.6" y2="142.24" width="0.1524" layer="91"/>
+<label x="228.6" y="142.24" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
@@ -11190,31 +11190,6 @@ In this library the device names are the same as the pin names of the symbols, t
 </nets>
 </sheet>
 </sheets>
-<errors>
-<approved hash="104,3,60.96,15.24,IC5,PGND,GND,,,"/>
-<approved hash="202,4,30.48,147.32,USB1,4,,,,"/>
-<approved hash="208,1,27.94,73.66,+3V3,sup,,,,"/>
-<approved hash="208,1,63.5,78.74,+3V3,sup,,,,"/>
-<approved hash="208,1,241.3,111.76,+3V3,sup,,,,"/>
-<approved hash="208,1,198.12,111.76,+3V3,sup,,,,"/>
-<approved hash="208,1,12.7,73.66,+3V3,sup,,,,"/>
-<approved hash="208,2,58.42,149.86,+3V3,sup,,,,"/>
-<approved hash="208,2,20.32,149.86,+3V3,sup,,,,"/>
-<approved hash="208,2,226.06,149.86,+3V3,sup,,,,"/>
-<approved hash="208,2,242.824,149.86,+3V3,sup,,,,"/>
-<approved hash="208,3,60.96,27.94,+3V3,out,,,,"/>
-<approved hash="208,3,73.66,45.72,+3V3,sup,,,,"/>
-<approved hash="208,3,228.6,165.1,+3V3,sup,,,,"/>
-<approved hash="208,3,228.6,139.7,+3V3,sup,,,,"/>
-<approved hash="208,3,241.3,139.7,+3V3,sup,,,,"/>
-<approved hash="208,3,241.3,165.1,+3V3,sup,,,,"/>
-<approved hash="208,3,215.9,165.1,+3V3,sup,,,,"/>
-<approved hash="208,3,215.9,139.7,+3V3,sup,,,,"/>
-<approved hash="208,3,83.82,45.72,+3V3,sup,,,,"/>
-<approved hash="208,4,22.86,104.14,+3V3,sup,,,,"/>
-<approved hash="208,4,137.16,104.14,+3V3,sup,,,,"/>
-<approved hash="208,4,195.58,104.14,+3V3,sup,,,,"/>
-</errors>
 </schematic>
 </drawing>
 </eagle>
