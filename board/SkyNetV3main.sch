@@ -9425,6 +9425,166 @@ In this library the device names are the same as the pin names of the symbols, t
 </deviceset>
 </devicesets>
 </library>
+<library name="con-molex">
+<description>&lt;b&gt;Molex Connectors&lt;/b&gt;&lt;p&gt;
+&lt;author&gt;Created by librarian@cadsoft.de&lt;/author&gt;</description>
+<packages>
+<package name="52745-1290">
+<description>&lt;b&gt;FFC/FPC&lt;/b&gt;-to-Board  0.50mm (.020") SMT Top Contact&lt;p&gt;
+Right Angle, ZIF, Style Receptacle 52745 / 52435&lt;br&gt;
+Source: http://www.molex.com/product/ffc/52745.html</description>
+<wire x1="-5.95" y1="-3" x2="-5.95" y2="-3.5" width="0.2032" layer="21"/>
+<wire x1="-5.95" y1="-3.5" x2="-5.85" y2="-3.6" width="0.2032" layer="21"/>
+<wire x1="-5.85" y1="-3.6" x2="5.85" y2="-3.6" width="0.2032" layer="21"/>
+<wire x1="5.85" y1="-3.6" x2="5.95" y2="-3.5" width="0.2032" layer="21"/>
+<wire x1="5.95" y1="-3.5" x2="5.95" y2="-3" width="0.2032" layer="21"/>
+<wire x1="5.95" y1="-3" x2="-5.95" y2="-3" width="0.2032" layer="21"/>
+<wire x1="-5.05" y1="1.9" x2="5.05" y2="1.9" width="0.2032" layer="51"/>
+<wire x1="5.05" y1="1.9" x2="5.05" y2="-1.4" width="0.2032" layer="51"/>
+<wire x1="5.05" y1="-1.4" x2="-5.05" y2="-1.4" width="0.2032" layer="21"/>
+<wire x1="-5.05" y1="-1.4" x2="-5.05" y2="1.9" width="0.2032" layer="51"/>
+<wire x1="-4.5" y1="-1.5" x2="-4.5" y2="-2.9" width="0.2032" layer="21"/>
+<wire x1="4.5" y1="-1.5" x2="4.5" y2="-2.9" width="0.2032" layer="21"/>
+<wire x1="-3.05" y1="-3.1" x2="-3.05" y2="-3.5" width="0.1016" layer="21"/>
+<wire x1="-3.05" y1="-3.5" x2="-2.8" y2="-3.25" width="0.1016" layer="21"/>
+<wire x1="-2.8" y1="-3.25" x2="-2.8" y2="-3.1" width="0.1016" layer="21"/>
+<wire x1="2.8" y1="-3.1" x2="2.8" y2="-3.25" width="0.1016" layer="21"/>
+<wire x1="2.8" y1="-3.25" x2="3.05" y2="-3.5" width="0.1016" layer="21"/>
+<wire x1="3.05" y1="-3.5" x2="3.05" y2="-3.1" width="0.1016" layer="21"/>
+<wire x1="5.2" y1="1.95" x2="5.35" y2="1.95" width="0.1016" layer="51"/>
+<wire x1="5.35" y1="1.95" x2="5.35" y2="1.65" width="0.1016" layer="51"/>
+<wire x1="5.35" y1="1.65" x2="5.95" y2="1.65" width="0.1016" layer="51"/>
+<wire x1="5.95" y1="1.65" x2="5.95" y2="1.45" width="0.1016" layer="51"/>
+<wire x1="5.95" y1="1.45" x2="5.35" y2="1.45" width="0.1016" layer="51"/>
+<wire x1="5.35" y1="1.45" x2="5.35" y2="0.95" width="0.1016" layer="51"/>
+<wire x1="5.35" y1="0.95" x2="5.4" y2="0.9" width="0.1016" layer="51"/>
+<wire x1="5.4" y1="0.9" x2="5.95" y2="0.9" width="0.1016" layer="51"/>
+<wire x1="5.95" y1="0.9" x2="5.95" y2="0.7" width="0.1016" layer="51"/>
+<wire x1="5.95" y1="0.7" x2="5.2" y2="0.7" width="0.1016" layer="51"/>
+<wire x1="5.2" y1="0.7" x2="5.2" y2="1.9" width="0.1016" layer="51"/>
+<wire x1="-5.2" y1="1.95" x2="-5.35" y2="1.95" width="0.1016" layer="51"/>
+<wire x1="-5.35" y1="1.95" x2="-5.35" y2="1.65" width="0.1016" layer="51"/>
+<wire x1="-5.35" y1="1.65" x2="-5.95" y2="1.65" width="0.1016" layer="51"/>
+<wire x1="-5.95" y1="1.65" x2="-5.95" y2="1.45" width="0.1016" layer="51"/>
+<wire x1="-5.95" y1="1.45" x2="-5.35" y2="1.45" width="0.1016" layer="51"/>
+<wire x1="-5.35" y1="1.45" x2="-5.35" y2="0.95" width="0.1016" layer="51"/>
+<wire x1="-5.35" y1="0.95" x2="-5.4" y2="0.9" width="0.1016" layer="51"/>
+<wire x1="-5.4" y1="0.9" x2="-5.95" y2="0.9" width="0.1016" layer="51"/>
+<wire x1="-5.95" y1="0.9" x2="-5.95" y2="0.7" width="0.1016" layer="51"/>
+<wire x1="-5.95" y1="0.7" x2="-5.2" y2="0.7" width="0.1016" layer="51"/>
+<wire x1="-5.2" y1="0.7" x2="-5.2" y2="1.9" width="0.1016" layer="51"/>
+<wire x1="-3.65" y1="-1.25" x2="-3.65" y2="1" width="0.2032" layer="21"/>
+<wire x1="-3.65" y1="1" x2="-3.5" y2="1" width="0.2032" layer="21" curve="-180"/>
+<wire x1="-3.5" y1="1" x2="-3.5" y2="-1.25" width="0.2032" layer="21"/>
+<wire x1="3.5" y1="-1.25" x2="3.5" y2="1" width="0.2032" layer="21"/>
+<wire x1="3.5" y1="1" x2="3.65" y2="1" width="0.2032" layer="21" curve="-180"/>
+<wire x1="3.65" y1="1" x2="3.65" y2="-1.25" width="0.2032" layer="21"/>
+<smd name="1" x="-2.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="2" x="-2.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="3" x="-1.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="4" x="-1.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="5" x="-0.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="6" x="-0.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="7" x="0.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="8" x="0.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="9" x="1.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="10" x="1.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="11" x="2.25" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<smd name="12" x="2.75" y="2.5" dx="0.3" dy="0.8" layer="1"/>
+<text x="-6.08" y="3.27" size="1.27" layer="25">&gt;NAME</text>
+<text x="-6.08" y="-5.62" size="1.27" layer="27">&gt;VALUE</text>
+<rectangle x1="5.25" y1="-0.2" x2="6.4" y2="2" layer="29" rot="R180"/>
+<rectangle x1="4" y1="-1.05" x2="5.3" y2="2" layer="29" rot="R180"/>
+<rectangle x1="4.2" y1="-0.05" x2="6.2" y2="1.85" layer="31" rot="R180"/>
+<rectangle x1="-6.4" y1="-0.2" x2="-5.25" y2="2" layer="29"/>
+<rectangle x1="-5.3" y1="-1.05" x2="-4" y2="2" layer="29"/>
+<rectangle x1="-6.2" y1="-0.05" x2="-4.2" y2="1.85" layer="31"/>
+<rectangle x1="-2.85" y1="2" x2="-2.65" y2="2.7" layer="51"/>
+<rectangle x1="-2.35" y1="2" x2="-2.15" y2="2.7" layer="51"/>
+<rectangle x1="-1.85" y1="2" x2="-1.65" y2="2.7" layer="51"/>
+<rectangle x1="-1.35" y1="2" x2="-1.15" y2="2.7" layer="51"/>
+<rectangle x1="-0.85" y1="2" x2="-0.65" y2="2.7" layer="51"/>
+<rectangle x1="-0.35" y1="2" x2="-0.15" y2="2.7" layer="51"/>
+<rectangle x1="0.15" y1="2" x2="0.35" y2="2.7" layer="51"/>
+<rectangle x1="0.65" y1="2" x2="0.85" y2="2.7" layer="51"/>
+<rectangle x1="1.15" y1="2" x2="1.35" y2="2.7" layer="51"/>
+<rectangle x1="1.65" y1="2" x2="1.85" y2="2.7" layer="51"/>
+<rectangle x1="2.15" y1="2" x2="2.35" y2="2.7" layer="51"/>
+<rectangle x1="2.65" y1="2" x2="2.85" y2="2.7" layer="51"/>
+<rectangle x1="-6.4" y1="-0.2" x2="-4" y2="2" layer="1"/>
+<rectangle x1="-5.3" y1="-1.05" x2="-4" y2="-0.2" layer="1"/>
+<rectangle x1="4" y1="-0.2" x2="6.4" y2="2" layer="1"/>
+<rectangle x1="4" y1="-1.05" x2="5.3" y2="-0.2" layer="1"/>
+<polygon width="0.1016" layer="21">
+<vertex x="-3.25" y="-1.25"/>
+<vertex x="-3.25" y="-1.2"/>
+<vertex x="-3" y="-0.85"/>
+<vertex x="-2.75" y="-1.2"/>
+<vertex x="-2.75" y="-1.25"/>
+</polygon>
+</package>
+</packages>
+<symbols>
+<symbol name="MV">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<text x="-0.762" y="1.397" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+<symbol name="M">
+<wire x1="1.27" y1="0" x2="0" y2="0" width="0.6096" layer="94"/>
+<text x="2.54" y="-0.762" size="1.524" layer="95">&gt;NAME</text>
+<pin name="S" x="-2.54" y="0" visible="off" length="short" direction="pas"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="52745-1290" prefix="X">
+<description>&lt;b&gt;FFC/FPC&lt;/b&gt;-to-Board  0.50mm (.020") SMT Top Contact&lt;p&gt;
+Right Angle, ZIF, Style Receptacle 52745 / 52435&lt;br&gt;
+Source: http://www.molex.com/product/ffc/52745.html</description>
+<gates>
+<gate name="-1" symbol="MV" x="0" y="12.7" addlevel="always"/>
+<gate name="-2" symbol="M" x="0" y="10.16" addlevel="always"/>
+<gate name="-3" symbol="M" x="0" y="7.62" addlevel="always"/>
+<gate name="-4" symbol="M" x="0" y="5.08" addlevel="always"/>
+<gate name="-5" symbol="M" x="0" y="2.54" addlevel="always"/>
+<gate name="-6" symbol="M" x="0" y="0" addlevel="always"/>
+<gate name="-7" symbol="M" x="0" y="-2.54" addlevel="always"/>
+<gate name="-8" symbol="M" x="0" y="-5.08" addlevel="always"/>
+<gate name="-9" symbol="M" x="0" y="-7.62" addlevel="always"/>
+<gate name="-10" symbol="M" x="0" y="-10.16" addlevel="always"/>
+<gate name="-11" symbol="M" x="0" y="-12.7" addlevel="always"/>
+<gate name="-12" symbol="M" x="0" y="-15.24" addlevel="always"/>
+</gates>
+<devices>
+<device name="" package="52745-1290">
+<connects>
+<connect gate="-1" pin="S" pad="1"/>
+<connect gate="-10" pin="S" pad="10"/>
+<connect gate="-11" pin="S" pad="11"/>
+<connect gate="-12" pin="S" pad="12"/>
+<connect gate="-2" pin="S" pad="2"/>
+<connect gate="-3" pin="S" pad="3"/>
+<connect gate="-4" pin="S" pad="4"/>
+<connect gate="-5" pin="S" pad="5"/>
+<connect gate="-6" pin="S" pad="6"/>
+<connect gate="-7" pin="S" pad="7"/>
+<connect gate="-8" pin="S" pad="8"/>
+<connect gate="-9" pin="S" pad="9"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="" constant="no"/>
+<attribute name="MPN" value="52745-1290" constant="no"/>
+<attribute name="OC_FARNELL" value="unknown" constant="no"/>
+<attribute name="OC_NEWARK" value="92M6383" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -9452,7 +9612,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="IC4" library="skynet_other" deviceset="BCX17" device=""/>
-<part name="R3" library="rcl" deviceset="R-EU_" device="R0603" value="1k"/>
+<part name="1K" library="rcl" deviceset="R-EU_" device="R0603" value="330"/>
 <part name="+3V9" library="supply1" deviceset="+3V3" device=""/>
 <part name="R4" library="rcl" deviceset="R-EU_" device="R0603" value="1k5"/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
@@ -9582,6 +9742,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <part name="C24" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
 <part name="B1" library="i7" deviceset="1S" device="" value="PL503465"/>
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
+<part name="X1" library="con-molex" deviceset="52745-1290" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -9601,7 +9762,7 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="R5" gate="G$1" x="215.9" y="121.92" rot="R90"/>
 <instance part="+3V5" gate="G$1" x="215.9" y="172.72"/>
 <instance part="IC4" gate="G$1" x="195.58" y="124.46"/>
-<instance part="R3" gate="G$1" x="187.96" y="111.76" rot="R90"/>
+<instance part="1K" gate="G$1" x="187.96" y="111.76" rot="R90"/>
 <instance part="+3V9" gate="G$1" x="198.12" y="172.72"/>
 <instance part="R4" gate="G$1" x="198.12" y="111.76" rot="R90"/>
 <instance part="GND26" gate="1" x="66.04" y="7.62"/>
@@ -9863,13 +10024,13 @@ In this library the device names are the same as the pin names of the symbols, t
 <segment>
 <pinref part="IC3" gate="G$1" pin="P2[9]/USB_CONNECT/RXD2/ENET_MDIO"/>
 <wire x1="160.02" y1="78.74" x2="187.96" y2="78.74" width="0.1524" layer="91"/>
-<pinref part="R3" gate="G$1" pin="1"/>
+<pinref part="1K" gate="G$1" pin="1"/>
 <wire x1="187.96" y1="78.74" x2="187.96" y2="106.68" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="USB-CON-TRANS" class="0">
 <segment>
-<pinref part="R3" gate="G$1" pin="2"/>
+<pinref part="1K" gate="G$1" pin="2"/>
 <wire x1="187.96" y1="116.84" x2="187.96" y2="124.46" width="0.1524" layer="91"/>
 <pinref part="IC4" gate="G$1" pin="B"/>
 <wire x1="187.96" y1="124.46" x2="193.04" y2="124.46" width="0.1524" layer="91"/>
@@ -10943,6 +11104,18 @@ In this library the device names are the same as the pin names of the symbols, t
 <instance part="GND39" gate="1" x="43.18" y="114.3"/>
 <instance part="GND40" gate="1" x="68.58" y="114.3"/>
 <instance part="GND41" gate="1" x="78.74" y="114.3"/>
+<instance part="X1" gate="-1" x="-43.18" y="63.5"/>
+<instance part="X1" gate="-2" x="-43.18" y="60.96"/>
+<instance part="X1" gate="-3" x="-43.18" y="58.42"/>
+<instance part="X1" gate="-4" x="-43.18" y="55.88"/>
+<instance part="X1" gate="-5" x="-43.18" y="53.34"/>
+<instance part="X1" gate="-6" x="-43.18" y="50.8"/>
+<instance part="X1" gate="-7" x="-43.18" y="48.26"/>
+<instance part="X1" gate="-8" x="-43.18" y="45.72"/>
+<instance part="X1" gate="-9" x="-43.18" y="43.18"/>
+<instance part="X1" gate="-10" x="-43.18" y="40.64"/>
+<instance part="X1" gate="-11" x="-43.18" y="38.1"/>
+<instance part="X1" gate="-12" x="-43.18" y="35.56"/>
 </instances>
 <busses>
 </busses>
