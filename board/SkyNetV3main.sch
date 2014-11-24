@@ -9177,8 +9177,8 @@ In this library the device names are the same as the pin names of the symbols, t
 <wire x1="-6" y1="0" x2="-6" y2="1.5" width="0.127" layer="21"/>
 <wire x1="11" y1="0" x2="11" y2="1.5" width="0.127" layer="21"/>
 <wire x1="6" y1="0" x2="6" y2="1.5" width="0.127" layer="21"/>
-<smd name="P-" x="-8.5" y="2.5" dx="7" dy="3.2512" layer="16"/>
-<smd name="P+" x="8.5" y="2.5" dx="7" dy="3.2512" layer="16"/>
+<smd name="P+" x="-8.5" y="2.246" dx="7" dy="3.2512" layer="16"/>
+<smd name="P-" x="8.5" y="2.246" dx="7" dy="3.2512" layer="16"/>
 <text x="-3" y="3" size="1.27" layer="25">&gt;NAME</text>
 <text x="-3" y="1" size="1.27" layer="27">&gt;VALUE</text>
 </package>
@@ -10069,7 +10069,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="R10" library="rcl" deviceset="R-EU_" device="R0603" value="560"/>
 <part name="R9" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
 <part name="P+10" library="supply1" deviceset="+5V" device=""/>
-<part name="C6" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>
 <part name="GND23" library="supply1" deviceset="GND" device=""/>
 <part name="BAT+4" library="supply1" deviceset="V+" device=""/>
 <part name="P+12" library="supply1" deviceset="+5V" device=""/>
@@ -10172,6 +10171,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="TP1" library="testpad" deviceset="PTR1" device="B1,27"/>
 <part name="TP2" library="testpad" deviceset="PTR1" device="B1,27"/>
 <part name="+3V3" library="supply1" deviceset="+3V3" device=""/>
+<part name="C6" library="rcl" deviceset="C-EU" device="C0805" value="10u"/>
 </parts>
 <sheets>
 <sheet>
@@ -10996,7 +10996,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <instance part="R10" gate="G$1" x="99.06" y="124.46" rot="R270"/>
 <instance part="R9" gate="G$1" x="91.44" y="124.46" rot="R270"/>
 <instance part="P+10" gate="1" x="35.56" y="167.64"/>
-<instance part="C6" gate="G$1" x="35.56" y="127"/>
 <instance part="GND23" gate="1" x="35.56" y="106.68"/>
 <instance part="BAT+4" gate="1" x="114.3" y="165.1"/>
 <instance part="P+12" gate="1" x="43.18" y="167.64"/>
@@ -11062,6 +11061,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <instance part="B1" gate="G$1" x="127" y="121.92"/>
 <instance part="IC5" gate="TH" x="48.26" y="27.94"/>
 <instance part="GND8" gate="1" x="43.18" y="22.86"/>
+<instance part="C6" gate="G$1" x="35.56" y="127"/>
 </instances>
 <busses>
 </busses>
@@ -11124,8 +11124,8 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </segment>
 <segment>
 <pinref part="GND23" gate="1" pin="GND"/>
-<pinref part="C6" gate="G$1" pin="2"/>
 <wire x1="35.56" y1="109.22" x2="35.56" y2="121.92" width="0.1524" layer="91"/>
+<pinref part="C6" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="GND29" gate="1" pin="GND"/>
@@ -11294,9 +11294,9 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <junction x="68.58" y="157.48"/>
 </segment>
 <segment>
-<pinref part="C6" gate="G$1" pin="1"/>
 <pinref part="P+10" gate="1" pin="+5V"/>
 <wire x1="35.56" y1="129.54" x2="35.56" y2="165.1" width="0.1524" layer="91"/>
+<pinref part="C6" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <pinref part="IC6" gate="A" pin="VPCC"/>
