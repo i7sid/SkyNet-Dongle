@@ -61,10 +61,19 @@ module pcb()
 	}
 
 	color("violet")						//usb connector
-		translate([29-4,-1.5, -3])
-			cube([8,5,3]);
+	{
+		translate([29-4,-3.5, -3])
+			cube([8,10,3]);
+		translate([29-4.5,-4, -3-0.5])
+				cube([9,2.5,4]);
+	}
 	translate([29-4-3,-1.5-5, -3-3])
-		#cube([8+6,5,3+6]);
+		difference()
+		{
+			cube([8+6,5,3+6]);
+			translate([2,0,2])
+				cube([10,6,5]);
+		}
 
 	
 	translate([5.7,2,-6.3])				//antenne
@@ -149,10 +158,10 @@ module lowerCase()
 }
 
 //pcb();
-case();
+//case();
 
 //upperCase();
-//lowerCase();
+lowerCase();
 //button();
 
 
