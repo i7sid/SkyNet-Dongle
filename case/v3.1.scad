@@ -1,3 +1,10 @@
+//TODO: 
+//-Usb connector, 
+//-nut und feder mehr spiel (zwischen lower und upper), nicht so wichtig
+//button: auf einer seite abflachen oder mehr spiel (letzteres).verdickung duenner in Z, innenring mehr durchmesser
+//antennenfuehrung 0.75mm laenger, spiel erweitern
+
+
 $fn=32;
 
 module pcb()
