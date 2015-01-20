@@ -540,8 +540,8 @@ DIN A4, landscape with location and doc. field</description>
 <part name="JP1" library="pinhead" deviceset="PINHD-2X6" device="M" value="SKYNET"/>
 <part name="P+1" library="supply1" deviceset="VCC" device=""/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
-<part name="JP2" library="pinhead" deviceset="PINHD-1X8" device="" value="JTAG"/>
-<part name="JP3" library="pinhead" deviceset="PINHD-1X10" device=""/>
+<part name="JP2" library="pinhead" deviceset="PINHD-1X8" device="" value="JTAG_Bottom"/>
+<part name="JP3" library="pinhead" deviceset="PINHD-1X10" device="" value="Periph_Bottom"/>
 </parts>
 <sheets>
 <sheet>
@@ -569,9 +569,9 @@ DIN A4, landscape with location and doc. field</description>
 <wire x1="38.1" y1="127" x2="58.42" y2="127" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JP3" gate="A" pin="2"/>
-<wire x1="203.2" y1="63.5" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
-<label x="198.12" y="63.5" size="1.27" layer="95" rot="MR0" xref="yes"/>
+<pinref part="JP3" gate="A" pin="4"/>
+<wire x1="203.2" y1="58.42" x2="198.12" y2="58.42" width="0.1524" layer="91"/>
+<label x="198.12" y="58.42" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -587,9 +587,9 @@ DIN A4, landscape with location and doc. field</description>
 <label x="195.58" y="124.46" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP3" gate="A" pin="1"/>
-<wire x1="203.2" y1="66.04" x2="198.12" y2="66.04" width="0.1524" layer="91"/>
-<label x="198.12" y="66.04" size="1.27" layer="95" rot="MR0" xref="yes"/>
+<pinref part="JP3" gate="A" pin="3"/>
+<wire x1="203.2" y1="60.96" x2="198.12" y2="60.96" width="0.1524" layer="91"/>
+<label x="198.12" y="60.96" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="TX" class="0">
@@ -599,9 +599,9 @@ DIN A4, landscape with location and doc. field</description>
 <label x="71.12" y="132.08" size="1.27" layer="95" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP3" gate="A" pin="3"/>
-<wire x1="203.2" y1="60.96" x2="198.12" y2="60.96" width="0.1524" layer="91"/>
-<label x="198.12" y="60.96" size="1.27" layer="95" rot="MR0" xref="yes"/>
+<pinref part="JP3" gate="A" pin="1"/>
+<wire x1="203.2" y1="66.04" x2="198.12" y2="66.04" width="0.1524" layer="91"/>
+<label x="198.12" y="66.04" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="JTAG_TDO" class="0">
@@ -717,9 +717,9 @@ DIN A4, landscape with location and doc. field</description>
 <label x="71.12" y="129.54" size="1.27" layer="95" xref="yes"/>
 </segment>
 <segment>
-<pinref part="JP3" gate="A" pin="4"/>
-<wire x1="203.2" y1="58.42" x2="198.12" y2="58.42" width="0.1524" layer="91"/>
-<label x="198.12" y="58.42" size="1.27" layer="95" rot="MR0" xref="yes"/>
+<pinref part="JP3" gate="A" pin="2"/>
+<wire x1="203.2" y1="63.5" x2="198.12" y2="63.5" width="0.1524" layer="91"/>
+<label x="198.12" y="63.5" size="1.27" layer="95" rot="MR0" xref="yes"/>
 </segment>
 </net>
 <net name="N$8" class="0">
