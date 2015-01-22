@@ -29,6 +29,11 @@ volatile bool radio_initialized = false;
 
 void radio_init(void) {
 	Chip_GPIOINT_Init(LPC_GPIOINT);
+
+	// "on/off" pin
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN);
+	Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, false);
+
 	vRadio_Init();	// intialize radio chip
 
 	//uint8_t ret = si446x_apply_patch();
@@ -65,6 +70,8 @@ void radio_shutdown(void) {
 	radio_disable_irq();
 	radio_hal_AssertShutdown();
 	SPI_Deinit();
+
+	Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, true);
 }
 
 void radio_enable_irq(void) {

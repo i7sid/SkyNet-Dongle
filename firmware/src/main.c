@@ -180,36 +180,12 @@ int main(void) {
 				bool connected = false;
 				while (!connected) {
 					timeout_cnt++;
-					if (timeout_cnt > 10) {
+					if (timeout_cnt > 15) {
 						bt_make_invisible();
 						break;
 					}
-					bt_enable_AT_mode();
-
-					msDelayActive(1000);		// give user time to pair
-
-					// now check if connection was opened immediately
-					// if yes, we connected/paired successfully,
-					// otherwise, pairing could have been successful, too,
-					// so even then check the state.
-					if (bt_is_connected()) {
-						DBG("Yeah, user paired and connected!\n");
-						connected = true;
-						last_bt_check = 0; // immediately activate RF module
-					}
-					else {
-						char buf[25];
-						int read = bt_request("AT+STATE?\r\n", buf);
-						DBG("STATE from BT module: %s\n", buf);
-						buf[read] = '\0';
-
-						if (!strncmp(buf, "+STATE:PAIRED", 13) ||
-							!strncmp(buf, "+STATE:CONNECTED", 16)) {
-							DBG("Yeah, user paired!\n");
-							connected = true;
-							last_bt_check = 0; // immediately activate RF module
-						}
-					}
+					msDelay(1000);	// give user time to pair
+					connected = bt_is_connected();
 				}
 				skynet_led_blue(false);
 				break;

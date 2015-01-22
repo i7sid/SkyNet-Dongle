@@ -41,6 +41,8 @@
 #define SI_LIB_GPIO0_PIN	20	///< @copydoc  SI_LIB_GPIO0_PORT
 #define RADIO_IRQ_HANDLER	EINT3_IRQ_HANDLER
 #define RADIO_IRQ_SOURCE	EINT3
+#define RADIO_ON_PORT		0
+#define RADIO_ON_PIN		9
 
 
 // Bluetooth configuration
@@ -50,13 +52,14 @@
 #define BLUETOOTH_UART 				LPC_UART3
 #define BLUETOOTH_UART_IRQn			UART3_IRQn
 #define BLUETOOTH_UART_IRQ_HANDLER	UART3_IRQHandler
-#define BLUETOOTH_AT_PORT			2
-#define BLUETOOTH_AT_PIN			13
-#define BLUETOOTH_RESET_PORT		0
-#define BLUETOOTH_RESET_PIN			11
+#define BLUETOOTH_AT_PORT			0
+#define BLUETOOTH_AT_PIN			25
+#define BLUETOOTH_RESET_PORT		3
+#define BLUETOOTH_RESET_PIN			25
 #define BLUETOOTH_CONNECTED_PORT	0
-#define BLUETOOTH_CONNECTED_PIN		7
-
+#define BLUETOOTH_CONNECTED_PIN		24
+#define BLUETOOTH_ON_PORT			3
+#define BLUETOOTH_ON_PIN			26
 
 // charger configuration
 #define CHARGER_STAT1_PORT			0
@@ -82,24 +85,27 @@
 
 // DCDC configuration
 #define DCDC_PS_PORT				0
-#define DCDC_PS_PIN					9
+#define DCDC_PS_PIN					8
 
 
 // LED configuration
-#define LED_R_PORT					2
-#define LED_R_PIN					2
-#define LED_G_PORT					2
-#define LED_G_PIN					1
-#define LED_B_PORT					2
-#define LED_B_PIN					0
+#define LED_R_PORT					1
+#define LED_R_PIN					21
+#define LED_G_PORT					1
+#define LED_G_PIN					20
+#define LED_B_PORT					1
+#define LED_B_PIN					18
 
 
 // ADC configuration
 #define ADC_PWR_PORT				1
-#define ADC_PWR_PIN					0
+#define ADC_PWR_PIN					17
 #define ADC_IN_PORT					0
 #define ADC_IN_PIN					23
+#define ADC_EXT_IN_PORT				0
+#define ADC_EXT_IN_PIN				26
 #define ADC_CHANNEL					ADC_CH0
+#define ADC_CHANNEL_EXT				ADC_CH0 	// AD0[3]
 
 
 // make some tasks more readable in code.
