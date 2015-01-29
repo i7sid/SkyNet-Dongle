@@ -105,7 +105,7 @@ module pcb()
 
 module button()
 {
-		cylinder(r=2.5, h=4);
+		cylinder(r=2.45, h=4);
 		cylinder(r=3.8, h=1.5);
 }
 
@@ -182,8 +182,8 @@ module lowerCase()
 //case();
 
 //upperCase();
-lowerCase();
-//button();
+//lowerCase();
+button();
 
 
 
