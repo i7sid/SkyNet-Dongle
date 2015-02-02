@@ -17,6 +17,16 @@
  *
  * Feel free to contribute at GitHub:
  * https://github.com/i7sid/SkyNet-Dongle
+ *
+ *
+ * \section Quickstart
+ *
+ * The most important methods are:
+ *  - \ref radio_send_variable_packet (uint8_t *packet, uint16_t length)
+ *  - \ref bt_uart_puts (char *str)
+ *  - \ref bt_uart_nputs (char *str, int count)
+ *
+ *  For reception of packets see main-function.
  */
 
 #endif /* DOC_H_ */

@@ -21,7 +21,7 @@ RDB1768cmsis2_usbstack/Debug*
 *~
 
 # doc
-firmware/doc/full/
+#firmware/doc/full/
 
 #other
 *.fuse_hidden*
