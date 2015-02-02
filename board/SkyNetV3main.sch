@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.5.0">
+<eagle version="7.1.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -10441,6 +10441,13 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <wire x1="187.96" y1="119.38" x2="193.04" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
+<net name="LED-R" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P1[20]/MCI0/PWM1[2]/SCK0"/>
+<wire x1="160.02" y1="134.62" x2="226.06" y2="134.62" width="0.1524" layer="91"/>
+<label x="226.06" y="134.62" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
 <net name="INPUT" class="0">
 <segment>
 <pinref part="IC3" gate="G$1" pin="P2[11]/EINT1/I2STX_CLK"/>
@@ -10570,9 +10577,9 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 </net>
 <net name="LED-G" class="0">
 <segment>
-<pinref part="IC3" gate="G$1" pin="P1[20]/MCI0/PWM1[2]/SCK0"/>
-<wire x1="160.02" y1="134.62" x2="226.06" y2="134.62" width="0.1524" layer="91"/>
-<label x="226.06" y="134.62" size="1.778" layer="95" xref="yes"/>
+<pinref part="IC3" gate="G$1" pin="P1[21]/MCABORT/PWM1[3]/SSEL0"/>
+<wire x1="160.02" y1="132.08" x2="226.06" y2="132.08" width="0.1524" layer="91"/>
+<label x="226.06" y="132.08" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="RTCX2" class="0">
@@ -10683,13 +10690,6 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <pinref part="IC3" gate="G$1" pin="P3[26]/STCLK/MAT0[1]/PWM1[3]"/>
 <wire x1="160.02" y1="60.96" x2="223.52" y2="60.96" width="0.1524" layer="91"/>
 <label x="223.52" y="60.96" size="1.778" layer="95" xref="yes"/>
-</segment>
-</net>
-<net name="LED-R" class="0">
-<segment>
-<pinref part="IC3" gate="G$1" pin="P1[21]/MCABORT/PWM1[3]/SSEL0"/>
-<wire x1="160.02" y1="132.08" x2="226.06" y2="132.08" width="0.1524" layer="91"/>
-<label x="226.06" y="132.08" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
