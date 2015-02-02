@@ -199,15 +199,19 @@ int main(void) {
 				break;
 			case EVENT_RF_GOT_PACKET:
 				DBG("RF packet received: %s\n", rf_packet_rx_buf);
-				if (!bt_at_mode_active()) {
+				skynet_led_blink_blue_passive(50);
+				skynet_led_blink_green_passive(50);
+				if (!bt_at_mode_active() && bt_is_connected()) {
 					bt_uart_puts(rf_packet_rx_buf);
 				}
 				break;
 			case EVENT_BT_GOT_PACKET:
 				DBG("BT packet received (size: %d): %s\n", bt_packet_rx_buf_written, bt_packet_rx_buf);
 
-				if (bt_connected) {
+				if (bt_is_connected()) {
 					radio_send_variable_packet(bt_packet_rx_buf, bt_packet_rx_buf_written);
+					bt_uart_nputs(bt_packet_rx_buf, bt_packet_rx_buf_written);
+					skynet_led_blink_blue_passive(100);
 				}
 				break;
 			case EVENT_LOW_BATTERY:
