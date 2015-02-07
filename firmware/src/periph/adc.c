@@ -43,7 +43,8 @@ void adc_deinit(void) {
 }
 
 void adc_start_buffered_measure(void) {
-	register_delayed_event(5000, adc_read_buffered_measure);
+	//register_delayed_event(5000, adc_read_buffered_measure); // TODO
+	register_delayed_event(1000, adc_read_buffered_measure);
 }
 
 void adc_read_buffered_measure(void) {
@@ -52,6 +53,7 @@ void adc_read_buffered_measure(void) {
 	if (adc_buffered_value < 1900) { // aprox. <3V
 		events_enqueue(EVENT_LOW_BATTERY);
 	}
+	// TODO kleiner 1700 abschalten! (ca. 2,7V)
 }
 
 INLINE uint16_t adc_get_buffered_value(void) {
@@ -75,7 +77,7 @@ uint16_t adc_measure(void) {
 	Chip_ADC_ReadValue(LPC_ADC, ADC_CHANNEL, &data);
 
 	// deactivate
-	adc_deactivate();
+	//adc_deactivate(); // DEBUG
 
 	return data;
 }

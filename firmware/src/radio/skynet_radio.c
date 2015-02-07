@@ -15,6 +15,7 @@
 #include "../spi/spi.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
+#include "../periph/led.h"
 
 uint8_t bMain_IT_Status;
 uint8_t pwrLvlIdx = 0;
@@ -22,16 +23,21 @@ uint8_t pwrLvl[] = {8,12,19,35,127};	//0, 5, 10, 15, 20 dBm
 char timeStr[] = {0, 0, 0, 0, 0, 0};
 
 // should be greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
-uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
+char rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 
 volatile bool radio_initialized = false;
 
+void radio_pin_init(void) {
+	// "on/off" pin
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN);
+	Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, true);
+	//Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, false);
+}
 
 void radio_init(void) {
 	Chip_GPIOINT_Init(LPC_GPIOINT);
 
 	// "on/off" pin
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN);
 	Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, false);
 
 	vRadio_Init();	// intialize radio chip
@@ -72,6 +78,7 @@ void radio_shutdown(void) {
 	SPI_Deinit();
 
 	Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, true);
+	//Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, false);
 }
 
 void radio_enable_irq(void) {
@@ -398,10 +405,10 @@ void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PR
     Pro2Cmd[13] = Si446xCmd.GET_PROPERTY.DATA9;
     Pro2Cmd[14] = Si446xCmd.GET_PROPERTY.DATA10;
     Pro2Cmd[15] = Si446xCmd.GET_PROPERTY.DATA11;
-    Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
+    /*Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
     Pro2Cmd[17] = Si446xCmd.GET_PROPERTY.DATA13;
     Pro2Cmd[18] = Si446xCmd.GET_PROPERTY.DATA14;
-    Pro2Cmd[19] = Si446xCmd.GET_PROPERTY.DATA15;
+    Pro2Cmd[19] = Si446xCmd.GET_PROPERTY.DATA15;*/
 
     radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
 }

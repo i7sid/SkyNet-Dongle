@@ -18,6 +18,7 @@
 #include "radio_comm.h"
 #include "radio_hal.h"
 #include "si446x_patch.h"
+#include "../cpu/systick.h"
 
 
 union si446x_cmd_reply_union Si446xCmd;

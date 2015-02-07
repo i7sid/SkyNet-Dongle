@@ -26,8 +26,14 @@
 #define SKYNET_RADIO_TESTLENGTH 		80
 
 
-extern uint8_t rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
+extern char rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 extern volatile bool radio_initialized;
+
+
+/**
+ * @brief	Initiliaze peripheral pin(s).
+ */
+void radio_pin_init(void);
 
 /**
  * @brief	Initialize radio communication chip and wakes it up.

@@ -1,6 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"si446x__defs_8h.html#a3c4de7a1e3a21d9278f10d9a2cb85f10":[2,0,0,4,14,3911],
 "si446x__defs_8h.html#a3c5376ceea97cbc4141e15365ef0321f":[2,0,0,4,14,3623],
 "si446x__defs_8h.html#a3c638ea155aab8cbd22c171dd178c0f7":[2,0,0,4,14,1221],
 "si446x__defs_8h.html#a3c656db04b8549ce875685b2049c2b6a":[2,0,0,4,14,5367],
@@ -249,5 +248,6 @@ var NAVTREEINDEX9 =
 "si446x__defs_8h.html#a45be67c02076edaecd0b40f860d44573":[2,0,0,4,14,2805],
 "si446x__defs_8h.html#a45dab36556fdfde7ef727075ee57693f":[2,0,0,4,14,1813],
 "si446x__defs_8h.html#a45ddb29986ddbe33aeef996c4b0e53e9":[2,0,0,4,14,1055],
-"si446x__defs_8h.html#a45e73fe5a0aa6ee3f4d3018fcf767e9d":[2,0,0,4,14,1348]
+"si446x__defs_8h.html#a45e73fe5a0aa6ee3f4d3018fcf767e9d":[2,0,0,4,14,1348],
+"si446x__defs_8h.html#a45f48879989bb241c8b7604d076e8559":[2,0,0,4,14,1919]
 };

@@ -16,6 +16,7 @@
 #endif
 
 #include "led.h"
+#include "../cpu/systick.h"
 
 void skynet_led_init() {
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, LED_R_PORT, LED_R_PIN);

@@ -18,6 +18,7 @@
 #include "../periph/input.h"
 #include "../periph/led.h"
 #include "../periph/dcdc.h"
+#include "../periph/charger.h"
 
 
 volatile bool cpu_powered_down = false;
@@ -57,11 +58,11 @@ void cpu_powerdown() {
 	skynet_led_red(true);
 	skynet_led_green(true);
 	skynet_led_blue(true);
-	msDelay(500);
+	msDelay(250);
 	skynet_led_green(false);
-	msDelay(500);
+	msDelay(250);
 	skynet_led_red(false);
-	msDelay(500);
+	msDelay(250);
 	skynet_led_blue(false);
 
 
@@ -69,6 +70,7 @@ void cpu_powerdown() {
 	bt_shutdown();
 	radio_shutdown();
 	dcdc_set_powersave(true);
+	msDelayActive(50);
 
 
 	while (cpu_powered_down) {
@@ -87,11 +89,14 @@ void cpu_powerdown() {
 		while (Chip_Clock_IsMainPLLEnabled()) {} // Wait to be disabled
 
 		// And now go to bed!
-		Chip_PMU_PowerDownState(LPC_PMU);
+		//Chip_PMU_PowerDownState(LPC_PMU);
+		//Chip_PMU_DeepSleepState(LPC_PMU);
+		//Chip_PMU_DeepPowerDownState(LPC_PMU);
+		Chip_PMU_SleepState(LPC_PMU);
 
 		SystemInit(); // restore IOCON and clocks (important for msDelay!)
 		SystemCoreClockUpdate();
-		cpu_set_speed(SPEED_120MHz);
+		cpu_set_speed(SPEED_60MHz);
 		enable_systick(); // reenable SysTick functionality (updates clock)
 
 		msDelay(2000);
@@ -104,7 +109,7 @@ void cpu_powerdown() {
 	skynet_led_green(true);
 	skynet_led_red(true);
 	skynet_led_blue(true);
-	msDelayActive(2000);
+	msDelayActive(1000);
 	skynet_led_red(false);
 	skynet_led_green(false);
 	skynet_led_blue(false);

@@ -15,5 +15,7 @@ void dcdc_init(void) {
 }
 
 INLINE void dcdc_set_powersave(bool state) {
+	state = true; // DEBUG for testing: always LOW
+	Chip_GPIO_SetPinDIROutput(LPC_GPIO, DCDC_PS_PORT, DCDC_PS_PIN);
 	Chip_GPIO_SetPinState(LPC_GPIO, DCDC_PS_PORT, DCDC_PS_PIN, !state);
 }

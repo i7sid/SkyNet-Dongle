@@ -38,6 +38,7 @@ void bt_init(void) {
 
 	// "on/off" pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, BLUETOOTH_ON_PORT, BLUETOOTH_ON_PIN);
+	//Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_ON_PORT, BLUETOOTH_ON_PIN, false);
 
 
 	bt_hardreset();		// start in normal operation mode
@@ -170,6 +171,7 @@ void bt_shutdown() {
 	msDelayActive(BLUETOOTH_BEFORE_SHUTDOWN_DELAY);
 
 	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_ON_PORT, BLUETOOTH_ON_PIN, true);
+	//Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, false);
 
 	// wait for module to be fully shut down
 	msDelayActive(BLUETOOTH_AFTER_SHUTDOWN_DELAY);
@@ -185,7 +187,9 @@ void bt_wakeup() {
 		bt_uart_init(38400);	// configure UART for 38400 baud (fixed in AT mode)
 	}
 
+	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, true);
 	Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_ON_PORT, BLUETOOTH_ON_PIN, false);	// power up!
+	//Chip_GPIO_SetPinState(LPC_GPIO, BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, true);	// power up!
 
 	// the module needs some time to resume work,
 	// so wait  to guarantee functionality

@@ -101,6 +101,7 @@ int main(void) {
 
     //DBG("Initialize radio module...\n");
     //radio_init();
+    radio_pin_init();
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
@@ -269,7 +270,7 @@ int main(void) {
 #else
     	if (i >= 1000000) {
     		i = 0;
-    		skynet_led_blink_green_passive(100);
+    		skynet_led_blink_green_passive(20);
     	}
 #endif
 #endif

@@ -1,6 +1,5 @@
 var si446x__api__lib_8c =
 [
-    [ "SI446X_PATCH_CMDS", "si446x__api__lib_8c.html#a1d77089c07ead73d18235b082e6c91b7", null ],
     [ "si446x_agc_override", "si446x__api__lib_8c.html#af55f75ac9715605da156cbb649fb4840", null ],
     [ "si446x_apply_patch", "si446x__api__lib_8c.html#aa968f694161eab56900512a67bb4dcfa", null ],
     [ "si446x_change_state", "si446x__api__lib_8c.html#a55c65da6ee8ad506d8faa788771762dd", null ],

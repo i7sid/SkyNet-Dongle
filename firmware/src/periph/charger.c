@@ -8,6 +8,7 @@
  */
 
 #include "charger.h"
+#include "../cpu/systick.h"
 
 
 void charger_init() {
@@ -71,7 +72,8 @@ void charger_check_port(void) {
 	}
 	else {
 		DBG("TODO: Here the USB enumeration should be done, so that 500mA can be drawn.\n");
-		charger_set_mode(USB_LOW);
+		charger_set_mode(USB_HIGH);  // DEBUG
+		//charger_set_mode(USB_LOW);
 	}
 
 }
