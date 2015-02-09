@@ -101,6 +101,14 @@ module pcb()
 	translate([2,2,-9])
 		cube([20,64.99,9]);
 
+
+	translate([10,-10,-6.5])		//mount
+		rotate(a=-90, v=[1,0,0])
+			#cylinder(r=1.5,h=20);
+	translate([1.8,-10,-6.5])		//mount
+		rotate(a=-90, v=[1,0,0])
+			#cylinder(r=1.5,h=20);
+
 }
 
 module button()
@@ -178,12 +186,12 @@ module lowerCase()
 
 }
 
-//pcb();
+pcb();
 //case();
 
 //upperCase();
 //lowerCase();
-button();
+//button();
 
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.1.0">
+<eagle version="7.2.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -10084,7 +10084,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
 <part name="+3V10" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
-<part name="Q3" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6402"/>
+<part name="Q3" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6401"/>
 <part name="R14" library="rcl" deviceset="R-EU_" device="R0603" value="100k"/>
 <part name="C15" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
 <part name="+3V14" library="supply1" deviceset="+3V3" device=""/>
@@ -10134,8 +10134,8 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="SUPPLY3" library="supply2" deviceset="VEE" device=""/>
 <part name="SUPPLY4" library="supply2" deviceset="VEE" device=""/>
 <part name="SUPPLY5" library="supply2" deviceset="VDD" device=""/>
-<part name="Q5" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6402"/>
-<part name="Q6" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6402"/>
+<part name="Q5" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6401"/>
+<part name="Q6" library="microbuilder" deviceset="MOSFET-P" device="WIDE" value="IRLM6401"/>
 <part name="SUPPLY6" library="supply2" deviceset="VEE" device=""/>
 <part name="SUPPLY7" library="supply2" deviceset="VDD" device=""/>
 <part name="C14" library="rcl" deviceset="C-EU" device="C1206K" value="10u"/>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.1.0">
+<eagle version="7.2.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
-<grid distance="1" unitdist="mil" unit="mil" style="lines" multiple="1" display="no" altdistance="0.25" altunitdist="mil" altunit="mil"/>
+<grid distance="1" unitdist="mil" unit="mm" style="lines" multiple="1" display="no" altdistance="0.25" altunitdist="mil" altunit="mil"/>
 <layers>
 <layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
 <layer number="2" name="Route2" color="1" fill="3" visible="no" active="no"/>
@@ -140,7 +140,6 @@
 <wire x1="2.794" y1="1.016" x2="2.794" y2="67.818" width="0.1" layer="51"/>
 <wire x1="2.794" y1="67.818" x2="13.97" y2="67.818" width="0.1" layer="51"/>
 <wire x1="13.97" y1="67.818" x2="13.97" y2="1.016" width="0.1" layer="51"/>
-<text x="52.832" y="36.5506" size="1.778" layer="1">q2: 2 freie pins</text>
 <text x="40.64" y="50.419" size="0.9652" layer="1" font="vector" ratio="18">SkyNet v3.1</text>
 <text x="43.8912" y="1.4986" size="1.27" layer="1" font="vector" ratio="15">+</text>
 </plain>
@@ -2340,7 +2339,7 @@ design rules under a new name.</description>
 <element name="C23" library="rcl" package="C0603" value="18p" x="19.5326" y="32.5882" rot="R180"/>
 <element name="C19" library="rcl" package="C0603" value="100n" x="31.623" y="43.2308" rot="R90"/>
 <element name="C21" library="rcl" package="C0603" value="100n" x="19.5326" y="30.5562" rot="R180"/>
-<element name="Q3" library="microbuilder" package="SOT23-WIDE" value="IRLM6402" x="45.21835" y="31.57855" rot="R90"/>
+<element name="Q3" library="microbuilder" package="SOT23-WIDE" value="IRLM6401" x="45.21835" y="31.57855" rot="R90"/>
 <element name="R14" library="rcl" package="R0603" value="100k" x="47.88535" y="31.62935" rot="R270"/>
 <element name="C15" library="rcl" package="C0603" value="100n" x="44.58335" y="28.30195" rot="R270"/>
 <element name="C20" library="rcl" package="C0603" value="100n" x="40.513" y="28.2956" rot="R270"/>
@@ -2358,8 +2357,8 @@ design rules under a new name.</description>
 <element name="C12" library="microbuilder" package="EIA6032-28/C-W" value="100u" x="44.3742" y="23.3858" rot="R180"/>
 <element name="C13" library="microbuilder" package="EIA6032-28/C-W" value="100u" x="33.16145" y="17.8312" rot="R270"/>
 <element name="X2" library="SteveMarple" package="SMA-THD" value="CONN-SMATHD" x="8.3566" y="6.7818" rot="MR0"/>
-<element name="Q5" library="microbuilder" package="SOT23-WIDE" value="IRLM6402" x="16.3068" y="58.5978" rot="R270"/>
-<element name="Q6" library="microbuilder" package="SOT23-WIDE" value="IRLM6402" x="39.7256" y="19.6342" rot="R90"/>
+<element name="Q5" library="microbuilder" package="SOT23-WIDE" value="IRLM6401" x="16.3068" y="58.5978" rot="R270"/>
+<element name="Q6" library="microbuilder" package="SOT23-WIDE" value="IRLM6401" x="39.7256" y="19.6342" rot="R90"/>
 <element name="C14" library="rcl" package="C1206K" value="10u" x="44.83735" y="18.06575"/>
 <element name="C24" library="rcl" package="C1206K" value="10u" x="44.78655" y="9.22655"/>
 <element name="B1" library="i7" package="PL503465" value="PL503465" x="31.623" y="0.9652" rot="MR0"/>
