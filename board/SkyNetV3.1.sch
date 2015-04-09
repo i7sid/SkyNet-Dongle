@@ -11175,7 +11175,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="C5" library="rcl" deviceset="C-EU" device="C0603" value="18p"/>
 <part name="R5" library="rcl" deviceset="R-EU_" device="R0603" value="10K"/>
 <part name="IC2" library="RF4436PRO" deviceset="RF4463PRO" device=""/>
-<part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="IC4" library="skynet_other" deviceset="BCX17" device=""/>
@@ -11194,7 +11193,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="+3V13" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V15" library="supply1" deviceset="+3V3" device=""/>
 <part name="R1" library="rcl" deviceset="R-EU_" device="R0603" value="10k"/>
-<part name="C1" library="rcl" deviceset="C-EU" device="C1206K" value="100n"/>
 <part name="P+10" library="supply1" deviceset="+5V" device=""/>
 <part name="GND23" library="supply1" deviceset="GND" device=""/>
 <part name="FRAME3" library="frames" deviceset="A4L-LOC" device="" value="Power Supply"/>
@@ -11237,7 +11235,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="TP2" library="testpad" deviceset="PTR1" device="B1,27"/>
 <part name="C6" library="rcl" deviceset="C-EU" device="C0805" value="10u"/>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
-<part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V11" library="supply1" deviceset="+3V3" device=""/>
 <part name="JP3" library="microbuilder" deviceset="HEADER-2X5" device="1.27MM" value="JTAG"/>
 <part name="+3V12" library="supply1" deviceset="+3V3" device=""/>
@@ -11246,7 +11243,7 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="U1" library="skynet_other" deviceset="MCP16301T-I/CHY" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
-<part name="C7" library="rcl" deviceset="C-EU" device="C0603"/>
+<part name="C7" library="rcl" deviceset="C-EU" device="C0603" value="100n"/>
 <part name="D1" library="microbuilder" deviceset="DIODE" device="SOD-323" value="1N4148 WS"/>
 <part name="B140F" library="diode" deviceset="DIODE-" device="DO214AC"/>
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
@@ -11674,26 +11671,18 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <instances>
 <instance part="FRAME4" gate="G$1" x="0" y="0"/>
 <instance part="IC2" gate="G$1" x="152.4" y="106.68"/>
-<instance part="GND10" gate="1" x="99.06" y="81.28"/>
-<instance part="C1" gate="G$1" x="99.06" y="111.76" rot="MR0"/>
 <instance part="C13" gate="G$1" x="88.9" y="109.22" rot="MR0"/>
 <instance part="GND19" gate="1" x="88.9" y="81.28"/>
 <instance part="X2" gate="G$1" x="124.46" y="101.6" rot="MR0"/>
 <instance part="GND9" gate="1" x="132.08" y="81.28"/>
 <instance part="GND32" gate="1" x="124.46" y="81.28"/>
 <instance part="+3V6" gate="G$1" x="88.9" y="132.08"/>
-<instance part="+3V7" gate="G$1" x="99.06" y="132.08"/>
 <instance part="+3V11" gate="G$1" x="132.08" y="132.08"/>
 </instances>
 <busses>
 </busses>
 <nets>
 <net name="GND" class="0">
-<segment>
-<pinref part="C1" gate="G$1" pin="2"/>
-<pinref part="GND10" gate="1" pin="GND"/>
-<wire x1="99.06" y1="83.82" x2="99.06" y2="106.68" width="0.1524" layer="91"/>
-</segment>
 <segment>
 <pinref part="GND19" gate="1" pin="GND"/>
 <pinref part="C13" gate="G$1" pin="-"/>
@@ -11780,11 +11769,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <pinref part="C13" gate="G$1" pin="+"/>
 <pinref part="+3V6" gate="G$1" pin="+3V3"/>
 <wire x1="88.9" y1="129.54" x2="88.9" y2="114.3" width="0.1524" layer="91"/>
-</segment>
-<segment>
-<pinref part="C1" gate="G$1" pin="1"/>
-<pinref part="+3V7" gate="G$1" pin="+3V3"/>
-<wire x1="99.06" y1="129.54" x2="99.06" y2="114.3" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="IC2" gate="G$1" pin="VCC"/>
