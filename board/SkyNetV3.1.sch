@@ -11194,7 +11194,6 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="JP3" library="microbuilder" deviceset="HEADER-2X5" device="1.27MM" value="JTAG"/>
 <part name="+3V12" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
-<part name="TP3" library="testpad" deviceset="PTR1" device="B1,27"/>
 <part name="GND1" library="supply1" deviceset="GND" device=""/>
 <part name="U1" library="skynet_other" deviceset="MCP16301T-I/CHY" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
@@ -11214,6 +11213,14 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <part name="JP1" library="jumper" deviceset="JP1E" device=""/>
 <part name="TP6" library="testpad" deviceset="PTR1" device="B2,54"/>
 <part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
+<part name="TP7" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP8" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP9" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP10" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP11" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP12" library="testpad" deviceset="PTR1" device="B1,27"/>
+<part name="TP3" library="testpad" deviceset="PTR1" device="B2,54"/>
+<part name="TP13" library="testpad" deviceset="PTR1" device="B1,27"/>
 </parts>
 <sheets>
 <sheet>
@@ -11245,6 +11252,13 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <instance part="+3V15" gate="G$1" x="60.96" y="172.72"/>
 <instance part="R1" gate="G$1" x="60.96" y="40.64" rot="R90"/>
 <instance part="SJ2" gate="1" x="215.9" y="45.72" rot="R90"/>
+<instance part="TP7" gate="G$1" x="167.64" y="99.06" rot="R90"/>
+<instance part="TP8" gate="G$1" x="167.64" y="101.6" rot="R90"/>
+<instance part="TP9" gate="G$1" x="45.72" y="142.24" rot="R270"/>
+<instance part="TP10" gate="G$1" x="45.72" y="144.78" rot="R270"/>
+<instance part="TP11" gate="G$1" x="45.72" y="139.7" rot="R270"/>
+<instance part="TP12" gate="G$1" x="45.72" y="137.16" rot="R270"/>
+<instance part="TP13" gate="G$1" x="167.64" y="68.58" rot="R90"/>
 </instances>
 <busses>
 </busses>
@@ -11604,6 +11618,55 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <wire x1="198.12" y1="101.6" x2="198.12" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="198.12" y1="99.06" x2="223.52" y2="99.06" width="0.1524" layer="91"/>
 <label x="223.52" y="99.06" size="1.27" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="N$3" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P2[0]/PWM1[1]/TXD1"/>
+<pinref part="TP8" gate="G$1" pin="TP"/>
+<wire x1="165.1" y1="101.6" x2="160.02" y2="101.6" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[9]/I2STX_SDA/MOSI1/MAT2[3]"/>
+<pinref part="TP9" gate="G$1" pin="TP"/>
+<wire x1="48.26" y1="142.24" x2="71.12" y2="142.24" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$6" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[8]/I2STX_WS/MISO1/MAT2[2]"/>
+<pinref part="TP10" gate="G$1" pin="TP"/>
+<wire x1="48.26" y1="144.78" x2="71.12" y2="144.78" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$7" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P2[1]/PWM1[2]/RXD1"/>
+<pinref part="TP7" gate="G$1" pin="TP"/>
+<wire x1="165.1" y1="99.06" x2="160.02" y2="99.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$8" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[11]/RXD2/SCL2/MAT3[1]"/>
+<pinref part="TP12" gate="G$1" pin="TP"/>
+<wire x1="48.26" y1="137.16" x2="71.12" y2="137.16" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$9" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P0[10]/TXD2/SDA2/MAT3[0]"/>
+<pinref part="TP11" gate="G$1" pin="TP"/>
+<wire x1="48.26" y1="139.7" x2="71.12" y2="139.7" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$10" class="0">
+<segment>
+<pinref part="IC3" gate="G$1" pin="P2[13]/EINT3/I2STX_SDA"/>
+<pinref part="TP13" gate="G$1" pin="TP"/>
+<wire x1="165.1" y1="68.58" x2="160.02" y2="68.58" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
@@ -11971,13 +12034,13 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <instance part="JP3" gate="A" x="58.42" y="48.26"/>
 <instance part="+3V12" gate="G$1" x="45.72" y="71.12"/>
 <instance part="GND14" gate="1" x="45.72" y="33.02"/>
-<instance part="TP3" gate="G$1" x="195.58" y="48.26" rot="R270"/>
 <instance part="GND1" gate="1" x="203.2" y="40.64"/>
 <instance part="TP4" gate="G$1" x="35.56" y="139.7" rot="R270"/>
 <instance part="TP5" gate="G$1" x="35.56" y="137.16" rot="R270"/>
 <instance part="JP1" gate="A" x="33.02" y="129.54" rot="R90"/>
 <instance part="TP6" gate="G$1" x="200.66" y="106.68" rot="R90"/>
 <instance part="+3V7" gate="G$1" x="195.58" y="106.68" rot="MR270"/>
+<instance part="TP3" gate="G$1" x="195.58" y="48.26" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -12014,10 +12077,10 @@ Source: http://www.diodes.com/datasheets/ds23001.pdf</description>
 <pinref part="GND14" gate="1" pin="GND"/>
 </segment>
 <segment>
-<pinref part="TP3" gate="G$1" pin="TP"/>
 <pinref part="GND1" gate="1" pin="GND"/>
 <wire x1="198.12" y1="48.26" x2="203.2" y2="48.26" width="0.1524" layer="91"/>
 <wire x1="203.2" y1="48.26" x2="203.2" y2="43.18" width="0.1524" layer="91"/>
+<pinref part="TP3" gate="G$1" pin="TP"/>
 </segment>
 </net>
 <net name="+5V" class="0">
