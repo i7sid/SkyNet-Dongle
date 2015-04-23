@@ -153,11 +153,11 @@
 <text x="34.1376" y="54.229" size="0.8128" layer="113" ratio="20">-</text>
 <text x="20.2438" y="53.6448" size="0.8128" layer="113" ratio="20">-</text>
 <text x="20.2946" y="59.7154" size="0.8128" layer="113" ratio="20">+5V</text>
-<text x="33.3248" y="29.2354" size="0.8128" layer="114" ratio="20" rot="MR0">D+</text>
-<text x="33.3248" y="28.0416" size="0.8128" layer="114" ratio="20" rot="MR0">D-</text>
-<text x="33.3248" y="26.1874" size="0.8128" layer="114" ratio="20" rot="MR0">P2_13</text>
-<text x="33.2994" y="24.9428" size="0.8128" layer="114" ratio="20" rot="MR0">SCL2</text>
-<text x="33.2994" y="23.6728" size="0.8128" layer="114" ratio="20" rot="MR0">SDA2</text>
+<text x="37.3634" y="51.689" size="0.8128" layer="114" ratio="20" rot="MR0">D+</text>
+<text x="37.3634" y="50.3682" size="0.8128" layer="114" ratio="20" rot="MR0">D-</text>
+<text x="33.2994" y="29.2354" size="0.8128" layer="114" ratio="20" rot="MR0">P2_13</text>
+<text x="33.2994" y="28.0162" size="0.8128" layer="114" ratio="20" rot="MR0">SCL2</text>
+<text x="33.2994" y="26.7716" size="0.8128" layer="114" ratio="20" rot="MR0">SDA2</text>
 <text x="37.1094" y="24.3332" size="0.8128" layer="114" ratio="20" rot="MR0">Prog</text>
 <text x="37.9476" y="14.4526" size="0.8128" layer="114" ratio="20" rot="MR0">SkyNet
 v3.1 i7</text>

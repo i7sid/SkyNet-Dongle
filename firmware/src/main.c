@@ -218,6 +218,9 @@ int main(void) {
 			case EVENT_LOW_BATTERY:
 				skynet_led_blink_red_passive(100);
 				break;
+			case EVENT_CRITICAL_BATTERY:
+				cpu_powerdown();
+				break;
 			case EVENT_RADIO_RESTART:
 				radio_shutdown();
 				msDelayActive(50);

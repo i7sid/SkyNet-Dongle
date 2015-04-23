@@ -46,8 +46,8 @@
 
 
 // Bluetooth configuration
-#define BLUETOOTH_DEVICE_NAME		"SKYNET3v1a"			// alphanumeric (max. 31 characters)
-#define BLUETOOTH_DEVICE_PIN		"2014"    			// alphanumeric (max. 16 characters)
+#define BLUETOOTH_DEVICE_NAME		"SKYNET3v1b"			// alphanumeric (max. 31 characters)
+#define BLUETOOTH_DEVICE_PIN		"1234"    			// alphanumeric (max. 16 characters)
 #define BLUETOOTH_BUFFER_SIZE		512
 #define BLUETOOTH_UART 				LPC_UART3
 #define BLUETOOTH_UART_IRQn			UART3_IRQn
