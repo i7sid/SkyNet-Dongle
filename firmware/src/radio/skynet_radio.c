@@ -45,29 +45,29 @@ void radio_init(void) {
 	//uint8_t ret = si446x_apply_patch();
 	//DBG("patched: %d\n", ret);
 
-    si446x_part_info();
-    si446x_func_info();
+	si446x_part_info();
+	si446x_func_info();
 
-    DBG("--- radio chip version information following ---\n");
-    DBG("CHIPREV:   0x%x\n", Si446xCmd.PART_INFO.CHIPREV);
-    DBG("CUSTOMER:  0x%x\n", Si446xCmd.PART_INFO.CUSTOMER);
-    DBG("ID:        0x%x\n", Si446xCmd.PART_INFO.ID);
-    DBG("PART:      0x%x\n", Si446xCmd.PART_INFO.PART);
-    DBG("PBUILD:    0x%x\n", Si446xCmd.PART_INFO.PBUILD);
-    DBG("ROMID:     0x%x\n", Si446xCmd.PART_INFO.ROMID);
+	DBG("--- radio chip version information following ---\n");
+	DBG("CHIPREV:   0x%x\n", Si446xCmd.PART_INFO.CHIPREV);
+	DBG("CUSTOMER:  0x%x\n", Si446xCmd.PART_INFO.CUSTOMER);
+	DBG("ID:        0x%x\n", Si446xCmd.PART_INFO.ID);
+	DBG("PART:      0x%x\n", Si446xCmd.PART_INFO.PART);
+	DBG("PBUILD:    0x%x\n", Si446xCmd.PART_INFO.PBUILD);
+	DBG("ROMID:     0x%x\n", Si446xCmd.PART_INFO.ROMID);
 
-    DBG("FUNC:      0x%x\n", Si446xCmd.FUNC_INFO.FUNC);
-    DBG("PATCH:     0x%x\n", Si446xCmd.FUNC_INFO.PATCH);
-    DBG("REVBRANCH: 0x%x\n", Si446xCmd.FUNC_INFO.REVBRANCH);
-    DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
-    DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
-    DBG("------ end radio chip version information ------\n");
+	DBG("FUNC:      0x%x\n", Si446xCmd.FUNC_INFO.FUNC);
+	DBG("PATCH:     0x%x\n", Si446xCmd.FUNC_INFO.PATCH);
+	DBG("REVBRANCH: 0x%x\n", Si446xCmd.FUNC_INFO.REVBRANCH);
+	DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
+	DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
+	DBG("------ end radio chip version information ------\n");
 
-    // This interrupt should have highest priority to assure that we do not miss packets
-    NVIC_SetPriority(EINT3_IRQn, 0);
-    radio_enable_irq();
+	// This interrupt should have highest priority to assure that we do not miss packets
+	NVIC_SetPriority(EINT3_IRQn, 0);
+	radio_enable_irq();
 
-    // start receiving...
+	// start receiving...
 	vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
 	DBG("Radio RX started.\n");
 }
@@ -263,7 +263,7 @@ void radio_packet_handler(void) {
 	}
 	// Packet beginning or completely received
 	else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
-				Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
+			Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 		uint16_t length_low;
 		uint16_t length_high;
 		uint16_t length;
@@ -350,9 +350,6 @@ void radio_packet_handler(void) {
 #endif
 }
 
-
-
-
 INLINE bool radio_get_gpio0(void) {
 	return Chip_GPIO_GetPinState(LPC_GPIO, SI_LIB_GPIO0_PORT, SI_LIB_GPIO0_PIN);
 }
@@ -364,51 +361,34 @@ void radio_config_for_clock_measurement() {
 	Si446xCmd.GET_PROPERTY.DATA0 = 0b01110000; // enable clock output and divide by 30
 	si446x_set_property_lpc(0x0, 1, 1);
 
-    si446x_get_property(0x0, 1, 1);
+	si446x_get_property(0x0, 1, 1);
 	DBG("GLOBAL_CLK_CFG: %x\n", Si446xCmd.GET_PROPERTY.DATA0);
 
 	si446x_gpio_pin_cfg(0x7, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0);
 }
 
-
-void RADIO_IRQ_HANDLER(void) {
-	// WARNING: DO NOT MAKE ANY DEBUG OUTPUTS IN HERE!
-	// The timing receiving long packets is very fragile!
-	// Every DBG takes too much time and leads to broken packet reception!
-
-	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT0) & (1 << 19)) {
-		radio_packet_handler();
-		Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
-	}
-
-	//LPC_SYSCTL->EXTINT |= (1<<EINT3);	// reset IRQ state
-	NVIC_ClearPendingIRQ(EINT3_IRQn);
-}
-
-
-
 void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP)
 {
-    Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
-    Pro2Cmd[1] = GROUP;
-    Pro2Cmd[2] = NUM_PROPS;
-    Pro2Cmd[3] = START_PROP;
-    Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
-    Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
-    Pro2Cmd[6] = Si446xCmd.GET_PROPERTY.DATA2;
-    Pro2Cmd[7] = Si446xCmd.GET_PROPERTY.DATA3;
-    Pro2Cmd[8] = Si446xCmd.GET_PROPERTY.DATA4;
-    Pro2Cmd[9] = Si446xCmd.GET_PROPERTY.DATA5;
-    Pro2Cmd[10] = Si446xCmd.GET_PROPERTY.DATA6;
-    Pro2Cmd[11] = Si446xCmd.GET_PROPERTY.DATA7;
-    Pro2Cmd[12] = Si446xCmd.GET_PROPERTY.DATA8;
-    Pro2Cmd[13] = Si446xCmd.GET_PROPERTY.DATA9;
-    Pro2Cmd[14] = Si446xCmd.GET_PROPERTY.DATA10;
-    Pro2Cmd[15] = Si446xCmd.GET_PROPERTY.DATA11;
-    /*Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
+	Pro2Cmd[0] = SI446X_CMD_ID_SET_PROPERTY;
+	Pro2Cmd[1] = GROUP;
+	Pro2Cmd[2] = NUM_PROPS;
+	Pro2Cmd[3] = START_PROP;
+	Pro2Cmd[4] = Si446xCmd.GET_PROPERTY.DATA0;
+	Pro2Cmd[5] = Si446xCmd.GET_PROPERTY.DATA1;
+	Pro2Cmd[6] = Si446xCmd.GET_PROPERTY.DATA2;
+	Pro2Cmd[7] = Si446xCmd.GET_PROPERTY.DATA3;
+	Pro2Cmd[8] = Si446xCmd.GET_PROPERTY.DATA4;
+	Pro2Cmd[9] = Si446xCmd.GET_PROPERTY.DATA5;
+	Pro2Cmd[10] = Si446xCmd.GET_PROPERTY.DATA6;
+	Pro2Cmd[11] = Si446xCmd.GET_PROPERTY.DATA7;
+	Pro2Cmd[12] = Si446xCmd.GET_PROPERTY.DATA8;
+	Pro2Cmd[13] = Si446xCmd.GET_PROPERTY.DATA9;
+	Pro2Cmd[14] = Si446xCmd.GET_PROPERTY.DATA10;
+	Pro2Cmd[15] = Si446xCmd.GET_PROPERTY.DATA11;
+	/*Pro2Cmd[16] = Si446xCmd.GET_PROPERTY.DATA12;
     Pro2Cmd[17] = Si446xCmd.GET_PROPERTY.DATA13;
     Pro2Cmd[18] = Si446xCmd.GET_PROPERTY.DATA14;
     Pro2Cmd[19] = Si446xCmd.GET_PROPERTY.DATA15;*/
 
-    radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
+	radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
 }

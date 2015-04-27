@@ -31,6 +31,7 @@
 #include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
+#include "skybase.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
@@ -39,6 +40,7 @@ const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 
 
 int main(void) {
+
 
 #if defined (__USE_LPCOPEN)
 #if !defined(NO_BOARD_LIB)
@@ -95,16 +97,17 @@ int main(void) {
 
 	SPI_Init();
 
-
     DBG("Initialize Bluetooth module...\n");
-    bt_init();	// initialize bluetooth module communication
+    //bt_init();	// initialize bluetooth module communication comment in for real hw
 
-    //DBG("Initialize radio module...\n");
+    DBG("Initialize radio module...\n");
     //radio_init();
-    radio_pin_init();
+    //radio_pin_init();//comment in for real hw
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
+    DBG("Initialize Basestation Module...\n");
+    baseinit();
 
     DBG("Initialization complete.\n");
 
@@ -150,6 +153,10 @@ int main(void) {
 
     volatile static int i = 0;
     while(1) {
+
+    	//if((i % 10) == 0){
+    		updateBaseData();
+    	//}
 
 #ifdef SKYNET_TX_TEST
     	msDelay(1000);
@@ -254,8 +261,10 @@ int main(void) {
 
 #ifdef DEBUG
     	// DEBUG Outputs
-    	if (i >= 100) {
+    	//if (i >= 100) { //comment in for real hw
+    	if (false) { //comment out for real hw
     		i = 0;
+    		DBG("Enter debug block\n");
     		skynet_led_green(true);
     		si446x_request_device_state();
 			DBG("Charger State: STAT1: %i; STAT2: %i; EXTPWR: %i; TRUE: %i; V: %i; input: %i; GPIO0: %i; state: %i; bt_connected: %i\n",

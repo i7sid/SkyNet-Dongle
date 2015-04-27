@@ -18,6 +18,7 @@
 #include "adc.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
+//#include "../skybase.h"
 
 /// @brief Buffer for holding setup data returned from Chip_ADC_Init().
 static ADC_CLOCK_SETUP_T ADCSetup;
@@ -78,6 +79,8 @@ uint16_t adc_measure(void) {
 
 	// deactivate
 	//adc_deactivate(); // DEBUG
+	//Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, DISABLE);
+	//getWindDirection();
 
 	return data;
 }
