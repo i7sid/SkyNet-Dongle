@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include "misc/debug.h"
 
 #define PI	3.141592653589793
 
@@ -36,7 +37,7 @@ int winddir_20min15sec_counter = 0;
 int winddir_20min15sec_changes = 0;
 
 int * out[7] =
-		{winddir_5sec,winddir_15sec,
+{winddir_5sec,winddir_15sec,
 		winddir_45sec,winddir_2min15sec,
 		winddir_6min45sec,winddir_20min15sec,
 		winddir_60min45sec};
@@ -47,7 +48,7 @@ void init_winddir_statistics(){
 	}
 }
 
-int addvec(int val1, int val2, int val3){
+int addvec3(int val1, int val2, int val3){
 
 	double val1x = cos(val1 *(PI/180));
 	double val1y = sin(val1 *(PI/180));
@@ -59,6 +60,37 @@ int addvec(int val1, int val2, int val3){
 	double val3y = sin(val3 *(PI/180));
 
 	return (int)(atan2(val1y+val2y+val3y,val1x+val2x+val3x));
+}
+
+int addvec2(int val1, int val2){
+
+	double val1x = cos(val1 *(PI/180));
+	double val1y = sin(val1 *(PI/180));
+
+	double val2x = cos(val2 *(PI/180));
+	double val2y = sin(val2 *(PI/180));
+
+	double degs = 0;
+
+	double x = val1x + val2x;
+	double y = val1y +val2y;
+
+	if(y > 0){
+		degs = 90-((atan(x/y))*180 / PI);
+	}
+
+	if(y < 0){
+		degs = 270 -((atan(x/y))*180 / PI);
+	}
+	if((y == 0) && (x < 0)){
+		degs = 180;
+	}
+
+	if((y == 0) && (x > 0)){
+		degs = 0;
+	}
+
+	return (int) degs;
 }
 
 void statistics_level7(int value){
@@ -78,7 +110,7 @@ void statistics_level6(int value){
 	}
 	if(winddir_20min15sec_changes == 2){
 		winddir_20min15sec_changes = 0;
-		int next = (1/3) * addvec(winddir_20min15sec[0],winddir_20min15sec[1],winddir_20min15sec[2]);
+		int next = (1/3) * addvec3(winddir_20min15sec[0],winddir_20min15sec[1],winddir_20min15sec[2]);
 		statistics_level7(next);
 	}
 }

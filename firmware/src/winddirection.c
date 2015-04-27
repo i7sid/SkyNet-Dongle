@@ -6,6 +6,7 @@
  */
 
 #include "winddirection.h"
+#include "winddirectionstatistics.h"
 #include "./misc/misc.h"
 #include "./periph/adc.h"
 #include "time.h"
@@ -38,14 +39,14 @@ int getWindDirection(){
 		Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
 		// Waiting for A/D conversion complete
 		while (Chip_ADC_ReadStatus(LPC_ADC, WINDVANE, ADC_DR_DONE_STAT) != SET) {
-			//DBG("Waiting for ADC val \n");
+			DBG("Waiting for ADC val \n");
 		}
 
 		// Read ADC value
 		uint16_t tmp = 0;
 		Chip_ADC_ReadValue(LPC_ADC, WINDVANE, &tmp);
-
-		ret += tmp; //overvlow !!
+		ret = addvec2(ret,(int)(tmp/11.37));
+		//ret += tmp;
 		cnt++;
 
 		Chip_RTC_GetFullTime(LPC_RTC, &curTimedir);
@@ -56,7 +57,7 @@ int getWindDirection(){
 	Chip_ADC_EnableChannel(LPC_ADC, WINDVANE, DISABLE);
 	PINCLR(ADC_PWR_PORT, ADC_PWR_PIN);
 
-	int dir = (ret/cnt)/11.37; //adc val to deg
+	int dir = (ret);
 	return dir;
 }
 
