@@ -18,7 +18,8 @@
 #include "adc.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
-//#include "../skybase.h"
+#include "../mutex.h"
+
 
 /// @brief Buffer for holding setup data returned from Chip_ADC_Init().
 static ADC_CLOCK_SETUP_T ADCSetup;
@@ -28,6 +29,7 @@ static volatile uint16_t adc_buffered_value = 0xFFF; // 4095
 
 
 void adc_init(void) {
+
 	// init pwr pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, ADC_PWR_PORT, ADC_PWR_PIN);
 
@@ -77,10 +79,11 @@ uint16_t adc_measure(void) {
 	// Read ADC value
 	Chip_ADC_ReadValue(LPC_ADC, ADC_CHANNEL, &data);
 
+	//DBG("Read out Charger! \n");
+
 	// deactivate
 	//adc_deactivate(); // DEBUG
 	//Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, DISABLE);
-	//getWindDirection();
 
 	return data;
 }

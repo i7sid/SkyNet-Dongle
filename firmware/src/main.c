@@ -32,6 +32,7 @@
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
 #include "skybase.h"
+#include "cmsis_175x_6x.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
