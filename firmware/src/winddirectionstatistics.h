@@ -10,10 +10,6 @@
 
 void init_winddir_statistics();
 
-int addvec2(int val1, int val2);
-
-int addvec3(int val1, int val2, int val3);
-
 void input_winddir_statistics(int value);
 
 int ** output_winddir_statistics();

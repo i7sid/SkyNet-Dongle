@@ -18,6 +18,10 @@
 
 int getWindDirection();
 
+void winvane_measure_start();
+
+void winvane_measure();
+
 void setupadc();
 
 

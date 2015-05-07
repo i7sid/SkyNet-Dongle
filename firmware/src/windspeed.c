@@ -18,7 +18,6 @@ RTC_TIME_T bufferedTimespeed;
 unsigned int cnttick = 0;
 
 int speed = 0;
-int timewindow = 5; //time window for speed measurement
 
 /*
  * you want to use this!
@@ -26,22 +25,18 @@ int timewindow = 5; //time window for speed measurement
 int calcwindspeed(){
 	Chip_RTC_GetFullTime(LPC_RTC, &curTimespeed);
 	int curtick = 0;
+	NVIC_DisableIRQ(WINDCUPS);
 	int curtimeh = timeAdd(&curTimespeed);
 	int buftimeh = timeAdd(&bufferedTimespeed);
+	curtimeh = timeAdd(&curTimespeed);
+	curtick = cnttick;
+	cnttick = 0;
+	NVIC_EnableIRQ(WINDCUPS);
 	int div =  curtimeh -buftimeh;
-	if(div >= timewindow){
-		NVIC_DisableIRQ(WINDCUPS);
-		Chip_RTC_GetFullTime(LPC_RTC, &curTimespeed);
-		curtimeh = timeAdd(&curTimespeed);
-		curtick = cnttick;
-		cnttick = 0;
-		NVIC_EnableIRQ(WINDCUPS);
-		div =  curtimeh -buftimeh;
-		bufferedTimespeed = curTimespeed;
-		speed =  curtick*(2.25/div); //mph
-		speed *= 1.609344; // to kmh
-		//input_windspeed_statistics(speed);
-	}
+	bufferedTimespeed = curTimespeed;
+	speed =  curtick*(2.25/div); //mph
+	speed *= 1.609344; // to kmh
+	//FIXME input_windspeed_statistics(speed);
 	return speed;
 }
 

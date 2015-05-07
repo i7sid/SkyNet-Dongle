@@ -20,4 +20,6 @@ void updateBaseData();
 
 void baseinit();
 
+void basedata_measure_start();
+
 #endif /* SKYBASE_H_ */

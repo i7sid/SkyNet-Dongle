@@ -103,7 +103,7 @@ int main(void) {
 
     DBG("Initialize radio module...\n");
     //radio_init();
-    //radio_pin_init();//comment in for real hw
+    radio_pin_init();//comment in for real hw
 
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
@@ -156,7 +156,7 @@ int main(void) {
     while(1) {
 
     	//if((i % 10) == 0){
-    		updateBaseData();
+    	//	updateBaseData();
     	//}
 
 #ifdef SKYNET_TX_TEST
@@ -262,8 +262,8 @@ int main(void) {
 
 #ifdef DEBUG
     	// DEBUG Outputs
-    	//if (i >= 100) { //comment in for real hw
-    	if (false) { //comment out for real hw
+    	if (i >= 100) { //comment in for real hw
+    	//if (false) { //comment out for real hw
     		i = 0;
     		DBG("Enter debug block\n");
     		skynet_led_green(true);
