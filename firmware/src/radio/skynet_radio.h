@@ -53,7 +53,10 @@ void radio_enable_irq(void);
 /**
  * @brief	Disables the IRQ reception.
  */
-void radio_disable_irq(void);
+void radio_set_irq(void);
+
+void radio_unset_irq(void);
+
 
 /**
  * @brief	Resets the length of field 2 to standard.

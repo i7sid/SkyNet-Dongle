@@ -104,7 +104,7 @@ int main(void) {
     DBG("Initialize radio module...\n");
     //radio_init();
     radio_pin_init();//comment in for real hw
-
+    radio_init();
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
     DBG("Initialize Basestation Module...\n");
@@ -262,8 +262,8 @@ int main(void) {
 
 #ifdef DEBUG
     	// DEBUG Outputs
-    	if (i >= 100) { //comment in for real hw
-    	//if (false) { //comment out for real hw
+    	//if (i >= 100) { //comment in for real hw
+    	if (false) { //comment out for real hw
     		i = 0;
     		DBG("Enter debug block\n");
     		skynet_led_green(true);

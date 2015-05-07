@@ -17,12 +17,15 @@
 #include "time.h"
 #include "compass.h"
 #include "windspeed.h"
+#include "periph/led.h"
 #include <math.h>
 #include <string.h>
 
 uint32_t updaterate = 5000;
 
 bool compassconnected = false;
+
+RTC_TIME_T Time;
 
 
 void baseinit(){
@@ -44,6 +47,7 @@ void basedata_measure_start(){
 	register_delayed_event(updaterate, (void*) updateBaseData);
 }
 
+
 void updateBaseData(){
 	int dir = getWindDirection();
 	if (compassconnected){//TODO use cpp
@@ -51,8 +55,7 @@ void updateBaseData(){
 		//TODO compass correction of wind direction
 	}
 	int speed = calcwindspeed();
-	DBG("Basedata:\n Winddirection: %d deg; "
-			"Windspeed: %d kmh \n", dir, speed);
+	//DBG("Basedata:\n Winddirection: %d deg; Windspeed: %d kmh \n", dir, speed);
 	/* //FIXME statistics
 	int** statdir = output_winddir_statistics();
 	int ** statspeed = output_windspeed_statistics();
@@ -65,9 +68,13 @@ void updateBaseData(){
 		}
 	*/
 	basedata_measure_start();
-	unsigned int packet[2] = {(unsigned int)dir,(unsigned int)speed}; //TODO send statisticsas well
-	DBG("Packet : %d %d \n",packet[0],packet[1]);
+	unsigned int packet[2] = {(unsigned int)dir,(unsigned int)speed}; //TODO send statistics as well
+	Chip_RTC_GetFullTime(LPC_RTC, &Time);
+	DBG("Packet : %d %d :: %d:%d:%d \n"
+	,packet[0],packet[1],Time.time[RTC_TIMETYPE_HOUR],Time.time[RTC_TIMETYPE_MINUTE],Time.time[RTC_TIMETYPE_SECOND]);
 	uint8_t packet_send [8];
-	memcpy(packet,packet_send,8);
+	memcpy(packet_send, packet, 8);
+	skynet_led_blue(true);
 	radio_send_variable_packet(packet_send, 8);
+	skynet_led_blue(false);
 }

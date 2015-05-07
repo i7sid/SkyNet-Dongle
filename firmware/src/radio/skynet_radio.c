@@ -65,7 +65,7 @@ void radio_init(void) {
 
 	// This interrupt should have highest priority to assure that we do not miss packets
 	NVIC_SetPriority(EINT3_IRQn, 0);
-	radio_enable_irq();
+	radio_set_irq();
 
 	// start receiving...
 	vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
@@ -73,7 +73,7 @@ void radio_init(void) {
 }
 
 void radio_shutdown(void) {
-	radio_disable_irq();
+	radio_unset_irq();
 	radio_hal_AssertShutdown();
 	SPI_Deinit();
 
@@ -81,16 +81,32 @@ void radio_shutdown(void) {
 	//Chip_GPIO_SetPinState(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN, false);
 }
 
-void radio_enable_irq(void) {
+void radio_set_irq(void) {
 	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
 	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
 	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_EnableIRQ(EINT3_IRQn);
+
+
 }
 
-void radio_disable_irq(void) {
+void radio_unset_irq(void) {
 	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_DisableIRQ(EINT3_IRQn);
+}
+
+void radio_disable_irq(void){
+	uint32_t irqmaskclear = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
+	irqmaskclear &= ~(1 << 19); // clear bit 19
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskclear); //disable radio irq
+
+
+}
+
+void radio_enable_irq(void){
+	uint32_t irqmaskset = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
+	irqmaskset |= (1 << 19); //set bit 19
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskset); //enable radio irq
 }
 
 void radio_reset_packet_size(void) {

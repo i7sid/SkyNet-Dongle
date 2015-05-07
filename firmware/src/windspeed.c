@@ -25,13 +25,19 @@ int speed = 0;
 int calcwindspeed(){
 	Chip_RTC_GetFullTime(LPC_RTC, &curTimespeed);
 	int curtick = 0;
-	NVIC_DisableIRQ(WINDCUPS);
+	//NVIC_DisableIRQ(WINDCUPS);
+	uint32_t irqmaskclear = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
+	irqmaskclear &= ~(1 << 3); // clear bit 3
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskclear); //disable windcup irq
 	int curtimeh = timeAdd(&curTimespeed);
 	int buftimeh = timeAdd(&bufferedTimespeed);
 	curtimeh = timeAdd(&curTimespeed);
 	curtick = cnttick;
 	cnttick = 0;
-	NVIC_EnableIRQ(WINDCUPS);
+	//NVIC_EnableIRQ(WINDCUPS);
+	uint32_t irqmaskset = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
+	irqmaskset |= (1 << 3); //set bit 3
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskset); //enable windcup irq
 	int div =  curtimeh -buftimeh;
 	bufferedTimespeed = curTimespeed;
 	speed =  curtick*(2.25/div); //mph
