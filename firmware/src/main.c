@@ -31,7 +31,7 @@
 #include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
-#include "skybase.h"
+#include "basestation/skybase.h"
 #include "cmsis_175x_6x.h"
 
 #if defined(NO_BOARD_LIB)
@@ -103,8 +103,8 @@ int main(void) {
 
     DBG("Initialize radio module...\n");
     //radio_init();
-    radio_pin_init();//comment in for real hw
-    radio_init();
+    //radio_pin_init();//comment in for real hw
+    //radio_init();
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
     DBG("Initialize Basestation Module...\n");

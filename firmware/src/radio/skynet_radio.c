@@ -16,6 +16,7 @@
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
 #include "../periph/led.h"
+#include "../gpio/gpio_irq.h"
 
 uint8_t bMain_IT_Status;
 uint8_t pwrLvlIdx = 0;
@@ -96,17 +97,11 @@ void radio_unset_irq(void) {
 }
 
 void radio_disable_irq(void){
-	uint32_t irqmaskclear = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
-	irqmaskclear &= ~(1 << 19); // clear bit 19
-	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskclear); //disable radio irq
-
-
+	disable_gpio_irq(19);
 }
 
 void radio_enable_irq(void){
-	uint32_t irqmaskset = Chip_GPIOINT_GetIntFalling(LPC_GPIOINT,GPIOINT_PORT0); // get gpio irq mask
-	irqmaskset |= (1 << 19); //set bit 19
-	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, irqmaskset); //enable radio irq
+	enable_gpio_irq(19);
 }
 
 void radio_reset_packet_size(void) {

@@ -63,6 +63,11 @@
 #define BLUETOOTH_ON_PORT			3
 #define BLUETOOTH_ON_PIN			26
 
+//GPS configuration
+#define GPS_UART LPC_UART0
+#define GPS_IRQn UART0_IRQn
+#define GPS_IRQHandler UART0_IRQHandler
+
 // charger configuration
 #define CHARGER_STAT1_PORT			0
 #define CHARGER_STAT1_PIN			22

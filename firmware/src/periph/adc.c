@@ -18,7 +18,6 @@
 #include "adc.h"
 #include "../cpu/systick.h"
 #include "../misc/event_queue.h"
-#include "../mutex.h"
 
 
 /// @brief Buffer for holding setup data returned from Chip_ADC_Init().
