@@ -18,7 +18,10 @@
 #define write_Addr 0x3C
 #define HMC5883L_Addr	0x1E // 0x3d or 0x3c >>1
 #define PI	3.141592653589793
-
+#define COMPASS_I2C	I2C2
+#define COMPASS_I2C_IRQn	I2C2_IRQn
+//#define COMPASS_I2C	I2C0
+//#define COMPASS_I2C_IRQn	I2C0_IRQn
 uint8_t Single_Mode[2] = {0x02,0x01};
 
 static uint32_t ticksPerSecond;
@@ -42,11 +45,11 @@ float readCompass(){
 	//Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,&reg,1);
 	//int ret =Chip_I2C_MasterRead(I2C0, HMC5883L_Addr, &buf, 6);
 	//Chip_I2C_MasterCmdRead(I2C0,HMC5883L_Addr,cmd,&readbuf,6);
-	if((Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,Single_Mode,2))!=2){
+	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,Single_Mode,2))!=2){
 		DBG("Error I2C setting Single Mode\n");
 	}
-	msDelay(10);
-	if((Chip_I2C_MasterRead(I2C0,HMC5883L_Addr,readbuf,6))!=6){
+	msDelayActive(10);
+	if((Chip_I2C_MasterRead(COMPASS_I2C,HMC5883L_Addr,readbuf,6))!=6){
 		DBG("Error I2C reading compass values\n");
 	}
 
@@ -103,31 +106,40 @@ float readCompass(){
 bool setupcompass(){
 	DBG("Initialize Compass Modul...\n");
 
-	//Board Setup
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 27, IOCON_MODE_INACT, IOCON_FUNC1);
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 28, IOCON_MODE_INACT, IOCON_FUNC1);
+
+	Chip_IOCON_PinMux(LPC_IOCON, 0, 10, IOCON_MODE_INACT, IOCON_FUNC2);
+	Chip_IOCON_PinMux(LPC_IOCON, 0, 11, IOCON_MODE_INACT, IOCON_FUNC2);
+
+	//Chip_IOCON_PinMux(LPC_IOCON, 0, 27, IOCON_MODE_INACT, IOCON_FUNC1);
+	//Chip_IOCON_PinMux(LPC_IOCON, 0, 28, IOCON_MODE_INACT, IOCON_FUNC1);
+
 	Chip_IOCON_SetI2CPad(LPC_IOCON, I2CPADCFG_STD_MODE);
 
-	Chip_I2C_Init(I2C0);
-	Chip_I2C_SetClockRate(I2C0,100000);
+	Chip_I2C_Init(COMPASS_I2C);
+	Chip_I2C_SetClockRate(COMPASS_I2C,100000);
 
-	NVIC_DisableIRQ(I2C0 == I2C0 ? I2C0_IRQn : I2C1_IRQn);
-	Chip_I2C_SetMasterEventHandler(I2C0, Chip_I2C_EventHandlerPolling);
+	NVIC_DisableIRQ(COMPASS_I2C == COMPASS_I2C ? COMPASS_I2C_IRQn : I2C1_IRQn);
+	Chip_I2C_SetMasterEventHandler(COMPASS_I2C, Chip_I2C_EventHandlerPolling);
 
 	//HMC5883L init
 	uint8_t test [2] = {0xFF,0xFF};
 	uint8_t Write_CRA [2]= {0x00,0x70};//default settings
 	uint8_t Write_CRB [2]= {0x07,0xA0};//highest gain level
 
-	if((Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,test,2))!=2){
+	/*
+	 * FIXME This sending test causes failure of commuication with compass on I2C2.
+	 * Works fine on I2C0.
+	 * not necessarily need, so skipped on board version 3.1
+	 *
+	 * if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,test,2))!=2){
 		DBG("Error sending test: Compass\n");
 		return false;
 	}
-
-	if((Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,Write_CRA,2))!=2){
+	*/
+	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,Write_CRA,2))!=2){
 		DBG("Error I2C setting control register A\n");
 	}
-	if((Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,Write_CRB,2))!=2){
+	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,Write_CRB,2))!=2){
 		DBG("Error I2C setting control register B\n");
 	}
 
@@ -148,11 +160,11 @@ void calibcompass(){
 	while((Chip_TIMER_ReadCount(LPC_TIMER2)/ticksPerSecond)< 60){
 
 		uint8_t readbuf[6]={0,0,0,0,0,0};
-		if((Chip_I2C_MasterSend(I2C0,HMC5883L_Addr,Single_Mode,2))!=2){
+		if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,Single_Mode,2))!=2){
 			DBG("Error I2C setting Single Mode\n");
 		}
 		msDelayActive(10);
-		if((Chip_I2C_MasterRead(I2C0,HMC5883L_Addr,readbuf,6))!=6){
+		if((Chip_I2C_MasterRead(COMPASS_I2C,HMC5883L_Addr,readbuf,6))!=6){
 			DBG("Error I2C reading compass values\n");
 		}
 

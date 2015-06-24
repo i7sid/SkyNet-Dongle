@@ -20,8 +20,8 @@
 
 void GPIO_IRQ_HANDLER(void);
 
-void enable_gpio_irq(int channel);
+void enable_gpio_irq(int port, int channel);
 
-void disable_gpio_irq(int channel);
+void disable_gpio_irq(int port, int channel);
 
 #endif /* GPIO_IRQ_H_ */

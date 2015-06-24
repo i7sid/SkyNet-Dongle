@@ -97,11 +97,11 @@ void radio_unset_irq(void) {
 }
 
 void radio_disable_irq(void){
-	disable_gpio_irq(19);
+	disable_gpio_irq(0,19);
 }
 
 void radio_enable_irq(void){
-	enable_gpio_irq(19);
+	enable_gpio_irq(0,19);
 }
 
 void radio_reset_packet_size(void) {

@@ -12,9 +12,7 @@
 #include "time.h"
 #include "../../gpio/gpio_irq.h"
 
-RTC_TIME_T curTimespeed;
-RTC_TIME_T bufferedTimespeed;
-int bufferedms;
+static uint32_t ticksPerSecond;
 
 unsigned int cnttick = 0;
 
@@ -23,22 +21,21 @@ unsigned int cnttick = 0;
  * you want to use this!
  */
 int calcwindspeed(){
-	Chip_RTC_GetFullTime(LPC_RTC, &curTimespeed);
+
 	int curtick = 0;
 	int speed = 0;
-	disable_gpio_irq(3);
-	int ms = SysTick->VAL;
-	long curtimeh = timeAdd(&curTimespeed,ms);
-	long buftimeh = timeAdd(&bufferedTimespeed,bufferedms);
+	disable_gpio_irq(2,13);
+
+
 	curtick = cnttick;
 	cnttick = 0;
+	float div = Chip_TIMER_ReadCount(LPC_TIMER2)/ticksPerSecond;
 
-	enable_gpio_irq(3);
+	Chip_TIMER_Reset(LPC_TIMER2);
+	enable_gpio_irq(2,13);
+	DBG("div:%f count:%d\n",div,curtick);
 
-	long div =  curtimeh -buftimeh;
-	bufferedTimespeed = curTimespeed;
-	bufferedms = ms;
-	speed =  curtick*(2.25/(div/1000))*1.609344*100; //mph to km/h to 100m/h
+	speed =  curtick*(2.25/(div))*1.609344*100; //mph to km/h to 100m/h
 	return speed;
 }
 
@@ -55,10 +52,22 @@ void tickhandler(){
  */
 void setupirq(){
 	DBG("Initialize Wind Cups...\n");
-	Chip_RTC_GetFullTime(LPC_RTC, &bufferedTimespeed);
-	bufferedms = SysTick->VAL;
-	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT0, (1 << 3));
-	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 3));
+
+	Chip_GPIOINT_Init(LPC_GPIOINT);
+	Chip_GPIO_SetPinDIRInput(LPC_GPIO,2,13);
+	Chip_GPIO_SetPinState(LPC_GPIO, 2, 13, true);
+
+	Chip_IOCON_PinMux(LPC_IOCON, 2, 13, IOCON_MODE_PULLUP, IOCON_FUNC0);
+
+	const uint32_t prescaleDivisor = 8;
+	Chip_TIMER_Init(LPC_TIMER2);
+	Chip_TIMER_PrescaleSet(LPC_TIMER2, prescaleDivisor - 1);
+	Chip_TIMER_Enable(LPC_TIMER2);
+	ticksPerSecond = Chip_Clock_GetSystemClockRate() / prescaleDivisor / 4;
+
+	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT2, (1 << 13));
+	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT2, (1 << 13));
+
 	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_EnableIRQ(EINT3_IRQn);
 	DBG("Initialize Wind Cups complete...\n");

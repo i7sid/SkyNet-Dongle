@@ -15,7 +15,7 @@
 #include "../tools/mutex.h"
 #include "../../periph/adc.h"
 
-#define WINDVANE	ADC_CHANNEL_EXT
+#define WINDVANE	ADC_CH6
 #define buffersize	100
 
 
@@ -30,16 +30,17 @@ uint32_t samplerate = 100;//ms
  */
 
 int getWindDirection(){
-	//measure stop
+	//measure stop();
 	winvane_measure_stop();
 	int dir = 0;
-		for (int i = 0; i < buffersize; i++){
-			dir = addvec2(dir,(int)(((float)bufferdir[i])/11.37));
-		}
-		// FIXME input_winddir_statistics(dir);
-		return dir;
+	for (int i = 0; i < buffersize; i++){
+		dir = addvec2(dir,(int)(((float)bufferdir[i])/11.37));
+	}
+	// FIXME input_winddir_statistics(dir);
 	//measure start
 	winvane_measure_start();
+	return dir;
+
 }
 
 void winvane_measure_start(){
@@ -63,7 +64,7 @@ void winvane_measure(){
 	}
 
 	// Read ADC value
-	Chip_ADC_ReadValue(LPC_ADC, WINDVANE, &bufferdir[buffcount]);
+	Chip_ADC_ReadValue(LPC_ADC, WINDVANE,&bufferdir[buffcount] );
 
 	// deactivate
 	Chip_ADC_EnableChannel(LPC_ADC, WINDVANE, DISABLE);
@@ -81,7 +82,7 @@ void winvane_measure(){
  */
 void setupadc(){
 	DBG("Initialize Wind Vane...\n");
-	//adc setup already done in adc.h and called in main
+	Chip_IOCON_PinMux(LPC_IOCON, 0, 3, IOCON_MODE_INACT, IOCON_FUNC2);
 	winvane_measure_start();
 	DBG("Initialize Wind Vane complete...\n");
 }

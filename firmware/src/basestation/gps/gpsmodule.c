@@ -14,6 +14,11 @@
 #include "stdlib.h"
 #include "string.h"
 
+
+#define GPS_UART 			LPC_UART1
+#define GPS_IRQn			UART1_IRQn
+#define GPS_IRQ_Handler	UART1_IRQHandler
+
 #define GPS_UART_INT_MASK 	(UART_IER_RBRINT)
 
 struct gps_data data;
@@ -33,8 +38,8 @@ static uint8_t rxbuff[UART_RRB_SIZE], txbuff[UART_SRB_SIZE];
 
 bool gps_init(){
 
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 2, IOCON_MODE_INACT, IOCON_FUNC1);
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 3, IOCON_MODE_INACT, IOCON_FUNC1);
+	Chip_IOCON_PinMux(LPC_IOCON, 2, 0, IOCON_MODE_INACT, IOCON_FUNC2);
+	Chip_IOCON_PinMux(LPC_IOCON, 2, 1, IOCON_MODE_INACT, IOCON_FUNC2);
 
 	Chip_UART_Init(GPS_UART);
 	Chip_UART_SetBaud(GPS_UART, 9600);
@@ -143,6 +148,6 @@ struct gps_data* get_gps_data(){
 	return &data;
 }
 
-void GPS_IRQHandler (){
+void GPS_IRQ_Handler (){
 	Chip_UART_IRQRBHandler(GPS_UART, &rxring, &txring);
 }

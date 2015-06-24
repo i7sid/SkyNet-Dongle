@@ -19,9 +19,7 @@
 #include "../misc/debug.h"
 
 // general handler for EINT3 sources (EINT3, GPIO, ...)
-#define EINT3_IRQ_HANDLER 		EINT3_IRQHandler
-#define GPIO_IRQ_HANDLER		EINT3_IRQ_HANDLER
-
+#define GPIO_IRQ_HANDLER 		EINT3_IRQHandler
 
 
 // defines for input switch
@@ -41,15 +39,15 @@
 #define SI_LIB_NSEL_PIN		16	///< @copydoc  SI_LIB_NSEL_PORT
 #define SI_LIB_GPIO0_PORT	0	///< PORT and PIN where GPIO0 from radio chip is connected
 #define SI_LIB_GPIO0_PIN	20	///< @copydoc  SI_LIB_GPIO0_PORT
-//#define RADIO_IRQ_HANDLER	EINT3_IRQ_HANDLER //irq now handled in gpio_irq
+#define RADIO_IRQ_HANDLER	EINT3_IRQ_HANDLER
 #define RADIO_IRQ_SOURCE	EINT3
 #define RADIO_ON_PORT		0
 #define RADIO_ON_PIN		9
 
 
 // Bluetooth configuration
-#define BLUETOOTH_DEVICE_NAME		"SKYNET3v1a"			// alphanumeric (max. 31 characters)
-#define BLUETOOTH_DEVICE_PIN		"2014"    			// alphanumeric (max. 16 characters)
+#define BLUETOOTH_DEVICE_NAME		"SKYNET3v1b"			// alphanumeric (max. 31 characters)
+#define BLUETOOTH_DEVICE_PIN		"1234"    			// alphanumeric (max. 16 characters)
 #define BLUETOOTH_BUFFER_SIZE		512
 #define BLUETOOTH_UART 				LPC_UART3
 #define BLUETOOTH_UART_IRQn			UART3_IRQn
@@ -62,11 +60,6 @@
 #define BLUETOOTH_CONNECTED_PIN		24
 #define BLUETOOTH_ON_PORT			3
 #define BLUETOOTH_ON_PIN			26
-
-//GPS configuration
-#define GPS_UART LPC_UART0
-#define GPS_IRQn UART0_IRQn
-#define GPS_IRQHandler UART0_IRQHandler
 
 // charger configuration
 #define CHARGER_STAT1_PORT			0
@@ -112,7 +105,7 @@
 #define ADC_EXT_IN_PORT				0
 #define ADC_EXT_IN_PIN				26
 #define ADC_CHANNEL					ADC_CH0
-#define ADC_CHANNEL_EXT				ADC_CH3 	// AD0[3]
+#define ADC_CHANNEL_EXT				ADC_CH0 	// AD0[3]
 
 
 // make some tasks more readable in code.
