@@ -14,6 +14,7 @@
 #include "time.h"
 #include "../tools/mutex.h"
 #include "../../periph/adc.h"
+#include "../compass/compass.h"
 
 #define WINDVANE	ADC_CH6
 #define buffersize	100
@@ -34,9 +35,23 @@ int getWindDirection(){
 	winvane_measure_stop();
 	int dir = 0;
 	for (int i = 0; i < buffersize; i++){
-		dir = addvec2(dir,(int)(((float)bufferdir[i])/11.37));
+		dir = (addvec2(dir,(int)(((float)bufferdir[i])/11.37)));
 	}
-	// FIXME input_winddir_statistics(dir);
+	//measure start
+	winvane_measure_start();
+	float corr = readCompass();
+	dir -= corr;
+	return dir;
+
+}
+
+int getWindDirection_raw(){
+	//measure stop();
+	winvane_measure_stop();
+	int dir = 0;
+	for (int i = 0; i < buffersize; i++){
+		dir = (addvec2(dir,(int)(((float)bufferdir[i])/11.37)));
+	}
 	//measure start
 	winvane_measure_start();
 	return dir;

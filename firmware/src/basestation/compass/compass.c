@@ -13,6 +13,7 @@
 #include "../tools/bitprint.h"
 #include "../../periph/led.h"
 #include <math.h>
+#include "../config.h"
 
 #define read_Addr 0x3D
 #define write_Addr 0x3C
@@ -38,7 +39,12 @@ float scale = 1;
 
 
 float readCompass(){
-	DBG("Readcompass enter!\n");
+
+	float degs = 0;
+	//DBG("Readcompass enter!\n");
+	//DBG("xoffset:%f yoffset:%f scale:%f",xoffset,yoffset,scale);
+	//while(1){
+
 
 	uint8_t readbuf[6]={0,0,0,0,0,0};
 	//uint8_t cmd = 0x0A;
@@ -53,51 +59,62 @@ float readCompass(){
 		DBG("Error I2C reading compass values\n");
 	}
 
-	uint8_t x1 = readbuf[0];
-	uint8_t x2 = readbuf[1];
+	uint8_t x1 = readbuf[4];
+	uint8_t x2 = readbuf[5];
 	uint8_t y1 = readbuf[2];
 	uint8_t y2 = readbuf[3];
-	uint8_t z1 = readbuf[2];
-	uint8_t z2 = readbuf[3];
+	uint8_t z1 = readbuf[0];
+	uint8_t z2 = readbuf[1];
 	uint16_t xaxis = (((x1 << 8) | x2)) ;
 	uint16_t yaxis = (((y1 << 8) | y2)) ;
 	uint16_t zaxis = (((z1 << 8) | z2)) ;
 
-	float xstore = ((float) castuint16toint(xaxis))* 4.35; //gain correction
-	float ystore = ((float) castuint16toint(yaxis))* 4.35; //gain correction
-	float zstore = ((float) castuint16toint(zaxis))* 4.35; //gain correction
+	float xstore = ((float) castuint16toint(xaxis))*1.52;
+	float ystore = ((float) castuint16toint(yaxis))*1.52;
+	float zstore = ((float) castuint16toint(zaxis))*1.52;
 
-	xstore = sqrtf((xstore*xstore) - (zstore*zstore));
-	ystore = sqrtf((ystore*ystore) - (zstore*zstore));
-	DBG("%f %f \n",xstore,ystore);
+	//xstore = sqrtf((xstore*xstore) - (zstore*zstore));
+	//ystore = sqrtf((ystore*ystore) - (zstore*zstore));
+
 	float x = xstore;
 	float y = ystore;
 
 	//calibration correction
-	x += xoffset;
-	y += yoffset;
+	x -= xoffset;
+	y -= yoffset;
 	y *= scale;
 
+	DBG("%f %f %f %f \n",x,y,xstore,ystore);
+	/*
+		if(y > 0){
+			degs = 90-((atan(x/y))*180 / PI);
+		}
 
-	float degs = 0;
+		else if(y < 0){
+			degs = 270 -((atan(x/y))*180 / PI);
+		}
+		else if((y == 0) && (x < 0)){
+			degs = 180;
+		}
 
-	if(y > 0){
-		degs = 90-((atan(x/y))*180 / PI);
-	}
+		else if ((y == 0) && (x > 0)){
+			degs = 0;
+		}
 
-	if(y < 0){
-		degs = 270 -((atan(x/y))*180 / PI);
-	}
-	if((y == 0) && (x < 0)){
-		degs = 180;
-	}
+		else{
+			DBG("atan2 Data Error\n");
+		}
+	//}
+	 */
+	degs = atan2(x,y);
 
-	if((y == 0) && (x > 0)){
-		degs = 0;
-	}
+	if(degs < 0)
+		degs += 2*PI;
 
+	if(degs > 2*PI)
+		degs -= 2*PI;
 
-	return degs;
+	return (degs*180/PI)-(magneticdeclination/100);
 }
 
 
@@ -124,18 +141,24 @@ bool setupcompass(){
 	//HMC5883L init
 	uint8_t test [2] = {0xFF,0xFF};
 	uint8_t Write_CRA [2]= {0x00,0x70};//default settings
-	uint8_t Write_CRB [2]= {0x07,0xA0};//highest gain level
+	uint8_t Write_CRB [2]= {0x03,0xA0};//gain level
 
 	/*
-	 * FIXME This sending test causes failure of commuication with compass on I2C2.
+	 * FIXED This sending test causes failure of commuication with compass on I2C2.
 	 * Works fine on I2C0.
-	 * not necessarily need, so skipped on board version 3.1
+	 * not necessarily needed, so skipped on board version 3.1
 	 *
-	 * if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,test,2))!=2){
-		DBG("Error sending test: Compass\n");
+	 * FIXME First try of Communication always fails.
+	 */
+	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,test,2))!=2){
+		DBG("Error sending test1: Compass\n");
+	}
+
+	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,test,2))!=2){
+		DBG("Error sending test2: Compass\n");
 		return false;
 	}
-	*/
+
 	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,Write_CRA,2))!=2){
 		DBG("Error I2C setting control register A\n");
 	}
@@ -148,6 +171,7 @@ bool setupcompass(){
 }
 
 void calibcompass(){
+	if(skipcompasscal)return;
 	skynet_led_green(false);
 	skynet_led_red(true);
 
@@ -168,25 +192,24 @@ void calibcompass(){
 			DBG("Error I2C reading compass values\n");
 		}
 
-		uint8_t x1 = readbuf[0];
-		uint8_t x2 = readbuf[1];
+		uint8_t x1 = readbuf[4];
+		uint8_t x2 = readbuf[5];
 		uint8_t y1 = readbuf[2];
 		uint8_t y2 = readbuf[3];
-		uint8_t z1 = readbuf[4];
-		uint8_t z2 = readbuf[5];
+		uint8_t z1 = readbuf[1];
+		uint8_t z2 = readbuf[0];
 		uint16_t xaxis = (((x1 << 8) | x2)) ;
 		uint16_t yaxis = (((y1 << 8) | y2)) ;
 		uint16_t zaxis = (((z1 << 8) | z2)) ;
-		float x =((float) castuint16toint(xaxis))* 4.35; //gain correction
-		float y =((float) castuint16toint(yaxis))* 4.35; //gain correction
-		float z =((float) castuint16toint(zaxis))* 4.35; //gain correction
+		float x =((float) castuint16toint(xaxis))*1.52;
+		float y =((float) castuint16toint(yaxis))*1.52;
+		//float z =((float) castuint16toint(zaxis))*1.52;
 
-		DBG("%f %f %f\n",x,y,z);
 
-		x = sqrtf((x*x) - (z*z));
-		y = sqrtf((y*y) - (z*z));
+		//x = sqrtf((x*x) - (z*z));
+		//y = sqrtf((y*y) - (z*z));
 
-		DBG("%f %f\n", x,y);
+		//DBG("%f %f\n", x,y);
 
 
 		if(xmax < x){
@@ -208,7 +231,7 @@ void calibcompass(){
 	yoffset = (ymin + ymax)/2;
 	float xlength = fabs(xmin)+fabs(xmax);
 	float ylength = fabs(ymin)+fabs(ymax);
-	scale = (xlength)/(ylength);
+	scale = ((xlength)/(ylength))+1;
 
 }
 

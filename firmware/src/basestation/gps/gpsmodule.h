@@ -19,15 +19,15 @@
 struct gps_data{
 	char utc[11];
 	char lat[10];
-	char north;
+	char north[2];
 	char lon[11];
-	char east;
-	uint8_t status;
+	char east[2];
+	char status[2];
 };
 
 /**
  * @brief Setup GPS Module
- * @return \b true sucessfully connected \b false failure/ no Module connected
+ * @return \b true sucessfully connected \b false failure or no Module connected
  *
  */
 bool gps_init();
@@ -45,7 +45,13 @@ void config_ublox();
 
 void poll_messages();
 
-void poll_one_message();
+/**
+ * @brief read one message from GPS Module
+ * @return \b true checksum ok and satellite fix available \b false checksum failed or no fix
+ *
+ */
+
+bool poll_one_message();
 
 bool parse_message(char * message);
 

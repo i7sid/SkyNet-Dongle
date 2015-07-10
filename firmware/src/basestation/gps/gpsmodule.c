@@ -13,6 +13,7 @@
 #include "ubx_nmea_parser.h"
 #include "stdlib.h"
 #include "string.h"
+#include "../config.h"
 
 
 #define GPS_UART 			LPC_UART1
@@ -27,8 +28,8 @@ struct gps_data data;
 STATIC RINGBUFF_T txring, rxring;
 
 /* Transmit and receive ring buffer sizes */
-#define UART_SRB_SIZE 128	/* Send */
-#define UART_RRB_SIZE 128	/* Receive */
+#define UART_SRB_SIZE 160	/* Send */
+#define UART_RRB_SIZE 512	/* Receive */
 
 /* Transmit and receive buffers */
 static uint8_t rxbuff[UART_RRB_SIZE], txbuff[UART_SRB_SIZE];
@@ -64,8 +65,15 @@ bool gps_init(){
 	NVIC_EnableIRQ(GPS_IRQn);
 
 	config_ublox();
-	poll_one_message();
 
+	if(skipgpsfix){
+		poll_one_message();
+	}else{
+		while(!poll_one_message()){
+			//waiting for valid gps message
+		}; //wait for valid gps data
+		//TODO set gps module in idle mode
+	}
 	return true;
 }
 
@@ -78,8 +86,8 @@ void config_ublox(){
 	char* config2 = ("$PUBX,40,ZDA,0,0,0,0*44\r\n");
 	char* config3 = ("$PUBX,40,VTG,0,0,0,0*5E\r\n");
 	char* config4 = ("$PUBX,40,GSV,0,0,0,0*59\r\n");
-	char* config5 = ("$PUBX,40,GSA,0,0,0,0*4E\r\n");
-	char* config6 = ("$PUBX,40,RMC,0,0,0,0*47\r\n");
+	char* config6 = ("$PUBX,40,GSA,0,0,0,0*4E\r\n");//Fixme sending configuration in different orders fixes messages overlapping
+	char* config5 = ("$PUBX,40,RMC,0,0,0,0*47\r\n");
 
 	Chip_UART_SendRB(GPS_UART,&txring,(void*)config1,25);
 	Chip_UART_SendRB(GPS_UART,&txring,(void*)config2,25);
@@ -90,7 +98,37 @@ void config_ublox(){
 
 }
 
+bool poll_one_message(){
+	char message [81];
+	char get = 0;
+	int count = 0;
+	bool start = false;
+	while (true){
+		int read = Chip_UART_ReadRB(GPS_UART, &rxring, &get, 1);
+		if(read > 0){
+			if(get == '$'){ //found start
+				start = true;
+			}
+			if(start){ //found start symbol read until end symbol
+				message[count] = get;
+				count++;
+				if(get == '\n'){
+					message[count -2] = '\0';
+					DBG("%s\n",message);
+					if(parse_message(message)){
+						return true;
+						//return false;
+					}else{
+						return false;
+					}
+				}
+			}
+		}
+	}
+}
+
 void poll_messages(){
+	/*
 	char message [81];
 	char get = 0;
 	int count = 0;
@@ -99,48 +137,46 @@ void poll_messages(){
 		if(read > 0){
 			message[count] = get;
 			count++;
+			if(count >= 80){
+				DBG("Something is very wrong!\n");
+				return false;
+			}
 			if(get == '\n'){
 				message[count -2] = '\0';
 				DBG("%s\n",message);
-				count = 0;
-			}
-		}
-	}
-}
+				if(!parse_message(message)){
+					count = 0;
 
-void poll_one_message(){
-	char message [81];
-	char get = 0;
-	int count = 0;
-	while (true){
-		int read = Chip_UART_ReadRB(GPS_UART, &rxring, &get, 1);
-		if(read > 0){
-			message[count] = get;
-			count++;
-			if(get == '\n'){
-				message[count -2] = '\0';
-				parse_message(message);//TODO checksum and fix
-				return;
+				}
+				if(data.status == 0){ //satellite fix failed
+					return false;
+				}
+				return true;
 			}
 		}
 	}
+	*/
+	return;
 }
 
 bool parse_message(char * message){
-	char * str = strtok(message, ",");
-	if(strcmp(str,"$GPGGA")!=0)return false;
-	str = strtok(NULL, ",");
-	memcpy(data.utc,str,11);
-	str = strtok(NULL, ",");
-	memcpy(data.lat,str,10);
-	str = strtok(NULL, ",");
-	data.north = str[1];
-	str = strtok(NULL, ",");
-	memcpy(data.lon,str,11);
-	str = strtok(NULL, ",");
-	data.east=str[1];
-	str = strtok(NULL, ",");
-	data.status=(uint8_t)str[1];
+	char buf[81];
+	strcpy(buf,message);
+	char * str1 = strtok(buf, ",");
+	if(strcmp(str1,"$GPGGA")!=0)return false;
+	if(checksum(message))return false;
+	char * str2 = strtok(NULL, ",");
+	memcpy(data.utc,str2,10);
+	char * str3 = strtok(NULL, ",");
+	memcpy(data.lat,str3,9);
+	char * str4 = strtok(NULL, ",");
+	memcpy(data.north,str4,1);
+	char * str5 = strtok(NULL, ",");
+	memcpy(data.lon,str5,10);
+	char * str6 = strtok(NULL, ",");
+	memcpy(data.east,str6,1);
+	char * str7 = strtok(NULL, ",");
+	memcpy(data.status,str7,1);
 	return true;
 }
 

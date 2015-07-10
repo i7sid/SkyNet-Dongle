@@ -19,9 +19,15 @@
 
 /**
  *	@brief get measured Winddirection
- *	@return Winddirection in degs
+ *	@return Winddirection in degs with compass correction
  */
 int getWindDirection();
+
+/**
+ *	@brief get measured Winddirection
+ *	@return Winddirection in degs without compass correction
+ */
+int getWindDirection_raw();
 
 /**
  * @brief Enqueue winvane_measure() in Eventqueue

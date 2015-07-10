@@ -9,7 +9,6 @@
 #include "../periph/adc.h"
 #include "../misc/misc.h"
 #include "../periph/adc.h"
-#include "../radio/skynet_radio.h"
 #include "../gpio//gpio_irq.h"
 #include "./tools/bitprint.h"
 #include "winddirection/winddirection.h"
@@ -19,6 +18,8 @@
 #include "../periph/led.h"
 #include <math.h>
 #include <string.h>
+
+#include "communikation/comprot.h"
 #include "gps/gpsmodule.h"
 
 bool compassconnected = false;
@@ -32,12 +33,13 @@ static uint32_t ticksPerMs;
 
 void baseinit(){
 	DBG("Initialize Basestation Unit...\n");
-	//setupadc();
-	//setupirq();
+	setupadc();
+	setupirq();
 
 	compassconnected = setupcompass();
 	if(!compassconnected){
-		DBG("No Compass connected!\n");
+		char * errormessage = "No Compass connected!";
+		send_compass_error(errormessage,(int)strlen(errormessage));
 	}else{
 		calibcompass();
 	}
@@ -45,23 +47,32 @@ void baseinit(){
 
 	gpsconnected = gps_init();
 	if(!gpsconnected){
-		DBG("No GPS connected!\n");
+		char * errormessage = "No GPS connected!";
+				send_gps_error(errormessage,(int)strlen(errormessage));
 	}else{
 		struct gps_data * posandtime = NULL;
+		/*{
+				{'0','1','2','3','4','5','6','7','8','9','0'},
+				{'0','1','2','3','4','5','6','7','8','9'},
+				'N',
+				{'0','1','2','3','4','5','6','7','8','9','0'},
+				'E',
+				1;
+		};
+		*/
 		posandtime = get_gps_data();
-		if(posandtime->status == 0){
-			DBG("GPS: No Fix!\n");
+		if(strcmp(posandtime->status,"0")==0){
+			send_gps_nofix();//todo poll new message
 		}else{
 		DBG("Time: %s\n",posandtime->utc);
-		DBG("Position: %s %c :: %s %c\n\n",posandtime->lat,posandtime->north,
+		DBG("Position: %s %s :: %s %s\n\n",posandtime->lat,posandtime->north,
 				posandtime->lon,posandtime->east);
 		}
 	}
 	if(!compassconnected){
 		if(!gpsconnected){
-			Chip_I2C_DeInit(I2C0);
 			DBG("Not a Basestation?\n");
-			return;
+			//return;
 		}
 
 	}
@@ -93,10 +104,8 @@ void updateBaseData(){
 	int dirMN = 0;
 	if (compassconnected){
 		dirMN = readCompass();
-		//TODO compass correction of wind direction
 	}
 	int speed = calcwindspeed();
-	//DBG("Basedata:\n Winddirection: %d deg; Windspeed: %d kmh \n", dir, speed);
 	basedata_measure_start();
 	unsigned int packet[3] = {(unsigned int)dir,(unsigned int)speed,(unsigned int)dirMN};
 	Chip_RTC_GetFullTime(LPC_RTC, &Time);
@@ -105,10 +114,8 @@ void updateBaseData(){
 	DBG("Packet : %d %d %d:: %d:%d:%d :: %d \n"
 			,packet[0],packet[1],packet[2],Time.time[RTC_TIMETYPE_HOUR],Time.time[RTC_TIMETYPE_MINUTE],
 			Time.time[RTC_TIMETYPE_SECOND],stoptime);
-	uint8_t packet_send [9];
-	memcpy(packet_send, packet, 9);
+	add_data(speed,dir);
 	skynet_led_blue(true);
-	//radio_send_variable_packet(packet_send, 9);
 	skynet_led_blue(false);
 
 }

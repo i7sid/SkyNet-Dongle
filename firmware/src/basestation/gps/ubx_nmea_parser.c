@@ -8,6 +8,8 @@
  */
 
 #include "ubx_nmea_parser.h"
+#include "../../misc/debug.h"
+#include <string.h>
 
 bool checksum(char * message){
 	int count = 3;
@@ -16,6 +18,8 @@ bool checksum(char * message){
 	while(message[count] != '*'){
 		ch_a = ch_a + message[count];
 		ch_b = ch_a +ch_b;
+		count++;
+		//DBG("%d %c \n",count,message[count]);
 	}
 
 	return ((ch_a == message[count +1])&&(ch_b == message[count +2]));

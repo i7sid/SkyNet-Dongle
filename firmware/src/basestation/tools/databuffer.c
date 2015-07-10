@@ -10,53 +10,83 @@
 
 #define bufferedtime 900
 #define measuretime updaterate/1000
-#define timeslots bufferedtime/measuretime
+#define timeslots bufferedtime/(measuretime)
 
 int dirbuffer[timeslots];
-unsigned int dirwrite = 0;
+unsigned int dirwritepos = 0;
+unsigned int writecounterdir = 0;
 
 int speedbuffer[timeslots];
-unsigned int speedwrite = 0;
+unsigned int speedwritepos = 0;
+unsigned int writecounterspeed = 0;
 
-
-void putdir(int val){
-	dirbuffer[dirwrite] = val;
-	dirwrite++;
-	if(dirwrite == timeslots) dirwrite = 0;
+bool putdata(int speed, int dir){
+	return (putspeed(speed) && putdir(dir));
 }
 
-void putspeed(int val){
-	speedbuffer[speedwrite] = val;
-	speedwrite++;
-	if(speedwrite == timeslots) speedwrite = 0;
+void readdata(unsigned int time , int * speed, int * dir){
+	basedata_measure_stop();
+	*(speed) = readspeedbuffer(time);
+	*(dir) = readdirbuffer(time);
+	basedata_measure_start();
+}
+
+bool putdir(int val){
+	dirbuffer[dirwritepos] = val;
+	dirwritepos++;
+	writecounterdir++;
+	if(dirwritepos == timeslots) dirwritepos = 0;
+	if(writecounterdir >= timeslots){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+bool putspeed(int val){
+	speedbuffer[speedwritepos] = val;
+	speedwritepos++;
+	writecounterspeed++;
+	if(speedwritepos == timeslots) speedwritepos = 0;
+	if(writecounterspeed >= timeslots){
+		return false;
+	}else{
+		return true;
+	}
 }
 
 int readspeedbuffer(unsigned int time){
-	basedata_measure_stop();
-	unsigned int curpointer = speedwrite;
+	writecounterspeed = 0;
+	unsigned int curpointer = speedwritepos;
 	int slots = time/measuretime;
 	int ret = 0;
 	if(slots > timeslots){
 		slots = timeslots;
 	}
-	for(int i = 0 ; i <= timeslots; i++){
-		ret += speedbuffer[curpointer-i];
+	int count = 0;
+	while(count < slots){
+		ret += speedbuffer[curpointer];
+		curpointer--;
+		if(curpointer < 0)curpointer = timeslots-1;
+		count++;
 	}
-	basedata_measure_start();
-	return ret;
+	return (ret/slots)*100;
 }
 
 int readdirbuffer(unsigned int time){
-	basedata_measure_stop();
-	unsigned int curpointer = dirwrite;
+	writecounterdir = 0;
+	unsigned int curpointer = dirwritepos;
 	int slots = time/measuretime;
 	int ret = 0;
 	if(slots > timeslots){
 		slots = timeslots;
 	}
-	for(int i = 0 ; i <= timeslots; i++){
-		ret += speedbuffer[curpointer-i];
+	int count = 0;
+	while(count < slots){
+		ret += dirbuffer[curpointer];
+		curpointer--;
+		if(curpointer < 0)curpointer = timeslots-1;
+		count++;
 	}
-	basedata_measure_start();
-	return ret;
+	return (ret/slots)*100;
 }
