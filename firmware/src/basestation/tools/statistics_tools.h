@@ -10,6 +10,8 @@
 
 int addvec2(int val1, int val2);
 
+float addvec2f(float val1, float val2);
+
 int addvec3(int val1, int val2, int val3);
 
 void shiftarray(int * array, int value, int nvals);

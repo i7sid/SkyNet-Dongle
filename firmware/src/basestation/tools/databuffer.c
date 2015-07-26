@@ -7,18 +7,32 @@
 
 #include "databuffer.h"
 #include "../skybase.h"
+#include "../config.h"
+#include <stdlib.h>
 
-#define bufferedtime 900
-#define measuretime updaterate/1000
-#define timeslots bufferedtime/(measuretime)
+unsigned int measuretime = 0;
+unsigned int timeslots =  0;
 
-int dirbuffer[timeslots];
+
+//int dirbuffer[timeslots];
+int * dirbuffer;
 unsigned int dirwritepos = 0;
 unsigned int writecounterdir = 0;
 
-int speedbuffer[timeslots];
+//int speedbuffer[timeslots];
+int * speedbuffer;
 unsigned int speedwritepos = 0;
 unsigned int writecounterspeed = 0;
+
+void init_data_buffers(){
+	measuretime = updaterate/1000;
+	timeslots =  bufferedtime/(measuretime);
+	dirbuffer = malloc(timeslots*sizeof(int));
+	speedbuffer = malloc(timeslots*sizeof(int));
+	if((dirbuffer == NULL) || (speedbuffer == NULL)){
+		//fixme error
+	}
+}
 
 bool putdata(int speed, int dir){
 	return (putspeed(speed) && putdir(dir));
@@ -67,7 +81,7 @@ int readspeedbuffer(unsigned int time){
 	while(count < slots){
 		ret += speedbuffer[curpointer];
 		curpointer--;
-		if(curpointer < 0)curpointer = timeslots-1;
+		if(curpointer < 0)curpointer = timeslots-1; //overflow
 		count++;
 	}
 	return (ret/slots)*100;
@@ -77,16 +91,16 @@ int readdirbuffer(unsigned int time){
 	writecounterdir = 0;
 	unsigned int curpointer = dirwritepos;
 	int slots = time/measuretime;
-	int ret = 0;
+	float ret = 0;
 	if(slots > timeslots){
 		slots = timeslots;
 	}
 	int count = 0;
 	while(count < slots){
-		ret += dirbuffer[curpointer];
+		ret = addvec2(ret,dirbuffer[curpointer]);
 		curpointer--;
-		if(curpointer < 0)curpointer = timeslots-1;
+		if(curpointer < 0)curpointer = timeslots-1; //overflow
 		count++;
 	}
-	return (ret/slots)*100;
+	return (int)(ret*100);
 }

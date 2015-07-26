@@ -15,15 +15,16 @@
 #include "../tools/mutex.h"
 #include "../../periph/adc.h"
 #include "../compass/compass.h"
+#include "../config.h"
+#include "stdlib.h"
 
 #define WINDVANE	ADC_CH6
-#define buffersize	100
+
 
 
 int buffcount = 0;
-uint16_t bufferdir[buffersize];
-
-uint32_t samplerate = 100;//ms
+//uint16_t bufferdir[buffersize];
+uint16_t * bufferdir;
 
 
 /*
@@ -48,13 +49,13 @@ int getWindDirection(){
 int getWindDirection_raw(){
 	//measure stop();
 	winvane_measure_stop();
-	int dir = 0;
+	float dir = 0;
 	for (int i = 0; i < buffersize; i++){
 		dir = (addvec2(dir,(int)(((float)bufferdir[i])/11.37)));
 	}
 	//measure start
 	winvane_measure_start();
-	return dir;
+	return (int)dir;
 
 }
 
@@ -97,6 +98,10 @@ void winvane_measure(){
  */
 void setupadc(){
 	DBG("Initialize Wind Vane...\n");
+	bufferdir = malloc(buffersize*sizeof(uint16_t));
+	if (bufferdir == NULL){
+		//fixme error
+	}
 	Chip_IOCON_PinMux(LPC_IOCON, 0, 3, IOCON_MODE_INACT, IOCON_FUNC2);
 	winvane_measure_start();
 	DBG("Initialize Wind Vane complete...\n");

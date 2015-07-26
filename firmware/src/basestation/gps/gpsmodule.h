@@ -16,6 +16,8 @@
 #endif
 #endif
 
+
+//todo höhe!!!
 struct gps_data{
 	char utc[11];
 	char lat[10];
@@ -42,6 +44,10 @@ struct gps_data* get_gps_data();
  * @brief Send ublox configuration
  */
 void config_ublox();
+/**
+ * @brief Set GPS-Module to Idle-Mode
+ */
+void shutdown_GPS();
 
 void poll_messages();
 

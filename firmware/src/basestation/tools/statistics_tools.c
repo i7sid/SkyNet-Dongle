@@ -61,3 +61,34 @@ int addvec2(int val1, int val2){
 
 	return (int) degs;
 }
+
+float addvec2f(float val1, float val2){
+
+	double val1x = cos(val1 *(PI/180));
+	double val1y = sin(val1 *(PI/180));
+
+	double val2x = cos(val2 *(PI/180));
+	double val2y = sin(val2 *(PI/180));
+
+	double degs = 0;
+
+	double x = val1x + val2x;
+	double y = val1y +val2y;
+
+	if(y > 0){
+		degs = 90-((atan(x/y))*180 / PI);
+	}
+
+	if(y < 0){
+		degs = 270 -((atan(x/y))*180 / PI);
+	}
+	if((y == 0) && (x < 0)){
+		degs = 180;
+	}
+
+	if((y == 0) && (x > 0)){
+		degs = 0;
+	}
+
+	return degs;
+}

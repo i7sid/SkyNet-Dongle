@@ -18,9 +18,10 @@
 #include "../periph/led.h"
 #include <math.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include "communikation/comprot.h"
 #include "gps/gpsmodule.h"
+#include "config.h"
 
 bool compassconnected = false;
 bool gpsconnected = false;
@@ -44,31 +45,47 @@ void baseinit(){
 		calibcompass();
 	}
 
-
 	gpsconnected = gps_init();
 	if(!gpsconnected){
 		char * errormessage = "No GPS connected!";
-				send_gps_error(errormessage,(int)strlen(errormessage));
+		send_gps_error(errormessage,(int)strlen(errormessage));
 	}else{
-		struct gps_data * posandtime = NULL;
-		/*{
-				{'0','1','2','3','4','5','6','7','8','9','0'},
-				{'0','1','2','3','4','5','6','7','8','9'},
-				'N',
-				{'0','1','2','3','4','5','6','7','8','9','0'},
-				'E',
-				1;
+		struct gps_data defaultpos =
+		{
+				"0123456789",
+				"012345678",
+				"a",
+				"0123456789",
+				"b",
+				"1"
 		};
-		*/
-		posandtime = get_gps_data();
-		if(strcmp(posandtime->status,"0")==0){
-			send_gps_nofix();//todo poll new message
-		}else{
-		DBG("Time: %s\n",posandtime->utc);
-		DBG("Position: %s %s :: %s %s\n\n",posandtime->lat,posandtime->north,
-				posandtime->lon,posandtime->east);
+		struct gps_data * posandtime = &defaultpos;
+		while(true){
+			posandtime = get_gps_data();
+			if(strcmp(posandtime->status,"0")==0){
+				send_gps_nofix();
+				while(!poll_one_message()){};//poll new message
+			}else{
+				DBG("Time: %s\n",posandtime->utc);
+				DBG("Position: %s %s :: %s %s\n\n",posandtime->lat,posandtime->north,
+						posandtime->lon,posandtime->east);
+				char hours[3] = {posandtime->utc[0],posandtime->utc[1],'\0'};
+				char mins[3] = {posandtime->utc[2],posandtime->utc[3],'\0'};
+				char secs[3] = {posandtime->utc[4],posandtime->utc[5],'\0'};
+				uint32_t hour = atoi(hours);
+				uint32_t min =  atoi(mins);
+				uint32_t sec = atoi(secs);
+				Chip_RTC_SetTime(LPC_RTC,RTC_TIMETYPE_HOUR,hour);
+				Chip_RTC_SetTime(LPC_RTC,RTC_TIMETYPE_MINUTE,min);
+				Chip_RTC_SetTime(LPC_RTC,RTC_TIMETYPE_SECOND,sec);
+				shutdown_GPS();
+				break;
+			}
+
 		}
 	}
+
+
 	if(!compassconnected){
 		if(!gpsconnected){
 			DBG("Not a Basestation?\n");

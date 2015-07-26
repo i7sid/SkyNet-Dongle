@@ -31,11 +31,16 @@ float xmax = -2500;
 float xmin = 2500;
 float ymax = -2500;
 float ymin = 2500;
+float zmax = -2500;
+float zmin = 2500;
+
 
 float xoffset = 0;
 float yoffset = 0;
+float zoffset = 0;
 
-float scale = 1;
+float scaley = 1;
+float scalez = 1;
 
 
 float readCompass(){
@@ -73,18 +78,21 @@ float readCompass(){
 	float ystore = ((float) castuint16toint(yaxis))*1.52;
 	float zstore = ((float) castuint16toint(zaxis))*1.52;
 
-	//xstore = sqrtf((xstore*xstore) - (zstore*zstore));
-	//ystore = sqrtf((ystore*ystore) - (zstore*zstore));
+	/*
+	xstore = sqrtf((xstore*xstore) - (zstore*zstore));
+	ystore = sqrtf((ystore*ystore) - (zstore*zstore));
 
 	float x = xstore;
 	float y = ystore;
-
+	*/
 	//calibration correction
-	x -= xoffset;
-	y -= yoffset;
-	y *= scale;
+	xstore -= xoffset;
+	ystore -= yoffset;
+	zstore -= zoffset;
+	ystore *= scaley;
+	zstore *= scalez;
 
-	DBG("%f %f %f %f \n",x,y,xstore,ystore);
+	//DBG("%f %f %f %f \n",x,y,xstore,ystore);
 	/*
 		if(y > 0){
 			degs = 90-((atan(x/y))*180 / PI);
@@ -106,6 +114,10 @@ float readCompass(){
 		}
 	//}
 	 */
+
+	float x = sqrtf((xstore*xstore) - (zstore*zstore));
+	float y = sqrtf((ystore*ystore) - (zstore*zstore));
+
 	degs = atan2(x,y);
 
 	if(degs < 0)
@@ -171,7 +183,6 @@ bool setupcompass(){
 }
 
 void calibcompass(){
-	if(skipcompasscal)return;
 	skynet_led_green(false);
 	skynet_led_red(true);
 
@@ -203,7 +214,7 @@ void calibcompass(){
 		uint16_t zaxis = (((z1 << 8) | z2)) ;
 		float x =((float) castuint16toint(xaxis))*1.52;
 		float y =((float) castuint16toint(yaxis))*1.52;
-		//float z =((float) castuint16toint(zaxis))*1.52;
+		float z =((float) castuint16toint(zaxis))*1.52;
 
 
 		//x = sqrtf((x*x) - (z*z));
@@ -224,14 +235,24 @@ void calibcompass(){
 		if(ymin > y){
 			ymin = y;
 		}
+		if(zmax < z){
+			zmax = z;
+		}
+		if(zmin > z){
+			zmin = z;
+		}
+
+		send_compass_calibration_begin();
 	}
 	skynet_led_green(true);
 	skynet_led_red(false);
-	xoffset = (xmin + xmax)/2;
-	yoffset = (ymin + ymax)/2;
-	float xlength = fabs(xmin)+fabs(xmax);
-	float ylength = fabs(ymin)+fabs(ymax);
-	scale = ((xlength)/(ylength))+1;
+	xoffset = (fabs(xmin)+fabs(xmax))/2;
+	yoffset = (fabs(ymin)+fabs(ymax))/2;
+	zoffset = (fabs(zmin)+fabs(zmax))/2;
+	scaley = ((xoffset)/(yoffset));
+	scalez = ((xoffset)/(zoffset));
+
+	send_compass_calibration_end();
 
 }
 

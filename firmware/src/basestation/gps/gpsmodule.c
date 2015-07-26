@@ -66,14 +66,7 @@ bool gps_init(){
 
 	config_ublox();
 
-	if(skipgpsfix){
-		poll_one_message();
-	}else{
-		while(!poll_one_message()){
-			//waiting for valid gps message
-		}; //wait for valid gps data
-		//TODO set gps module in idle mode
-	}
+	while(!poll_one_message()){}; //wait for valid gps data
 	return true;
 }
 
@@ -96,6 +89,10 @@ void config_ublox(){
 	Chip_UART_SendRB(GPS_UART,&txring,(void*)config5,25);
 	Chip_UART_SendRB(GPS_UART,&txring,(void*)config6,25);
 
+}
+
+void shutdown_GPS(){
+	//TODO set gps module in idle mode
 }
 
 bool poll_one_message(){
@@ -155,28 +152,35 @@ void poll_messages(){
 			}
 		}
 	}
-	*/
+	 */
 	return;
 }
 
 bool parse_message(char * message){
 	char buf[81];
 	strcpy(buf,message);
-	char * str1 = strtok(buf, ",");
-	if(strcmp(str1,"$GPGGA")!=0)return false;
+	char * str = strtok(buf, ",");
+	if (str == NULL)return false;
+	if(strcmp(str,"$GPGGA")!=0)return false;
 	if(checksum(message))return false;
-	char * str2 = strtok(NULL, ",");
-	memcpy(data.utc,str2,10);
-	char * str3 = strtok(NULL, ",");
-	memcpy(data.lat,str3,9);
-	char * str4 = strtok(NULL, ",");
-	memcpy(data.north,str4,1);
-	char * str5 = strtok(NULL, ",");
-	memcpy(data.lon,str5,10);
-	char * str6 = strtok(NULL, ",");
-	memcpy(data.east,str6,1);
-	char * str7 = strtok(NULL, ",");
-	memcpy(data.status,str7,1);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.utc,str,10);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.lat,str,9);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.north,str,1);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.lon,str,10);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.east,str,1);
+	str = strtok(NULL, ",");
+	if (str == NULL)return false;
+	memcpy(data.status,str,1);
 	return true;
 }
 

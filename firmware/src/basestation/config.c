@@ -7,9 +7,19 @@
 
 #include "config.h"
 
-bool skipcompasscal = true;
-bool skipgpsfix = false;
 int magneticdeclination = 258; // Erlangen, Germany 49°35' 11°0', Magnetic Declination 2°35'
-char * deviceID = "01";
+
+char * deviceID = "01:";
+
 unsigned int bufferedtime = 900;
-unsigned int sendtime = 900;
+
+unsigned int timeintervall1 = 600;
+
+unsigned int timeintervall2 = 240;
+
+unsigned int updaterate =  5000;
+
+unsigned int buffersize = 	50;
+
+uint32_t samplerate = 100;
+

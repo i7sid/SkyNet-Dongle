@@ -28,5 +28,6 @@ int readspeedbuffer(unsigned int time);
 
 int readdirbuffer(unsigned int time);
 
+void init_data_buffers();
 
 #endif /* DATABUFFER_H_ */

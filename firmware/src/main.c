@@ -33,6 +33,7 @@
 #include "misc/event_queue.h"
 #include "basestation/skybase.h"
 #include "cmsis_175x_6x.h"
+#include "basestation/communikation/comprot.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
@@ -126,8 +127,8 @@ int main(void) {
 	skynet_led_green(false);
 
 
-	uint32_t last_bt_check = StopWatch_Start();
-	bool bt_connected = false;
+	//uint32_t last_bt_check = StopWatch_Start();
+	//bool bt_connected = false;
 
 
 
@@ -210,9 +211,13 @@ int main(void) {
 				DBG("RF packet received: %s\n", rf_packet_rx_buf);
 				skynet_led_blink_blue_passive(50);
 				skynet_led_blink_green_passive(50);
+				/*
 				if (!bt_at_mode_active() && bt_is_connected()) {
 					bt_uart_puts(rf_packet_rx_buf);
 				}
+				*/
+				get_config_message(rf_packet_rx_buf);
+
 				break;
 			case EVENT_BT_GOT_PACKET:
 				DBG("BT packet received (size: %d): %s\n", bt_packet_rx_buf_written, bt_packet_rx_buf);
@@ -238,8 +243,9 @@ int main(void) {
 
 
 
-    	// check if bluetooth device connected
+    	// check if bluetooth device connected fixme not needed as basestation
     	// if not - no radio required
+    	/*
     	if (StopWatch_TicksToMs(StopWatch_Elapsed(last_bt_check)) > 1000) {
     		bool c = bt_is_connected();
     		if (!bt_connected && c) {
@@ -258,6 +264,7 @@ int main(void) {
     		// restart stopwatch
     		last_bt_check = StopWatch_Start();
     	}
+    	*/
 
 
 #ifdef DEBUG

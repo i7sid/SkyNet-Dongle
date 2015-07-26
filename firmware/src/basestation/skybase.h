@@ -17,9 +17,6 @@
 #endif
 #endif
 
-/// @brief Updaterate of Data Sampling and Sending in MSec
-#define updaterate 5000
-
 /**
  * @brief Collects and sends sampled Data
  */
