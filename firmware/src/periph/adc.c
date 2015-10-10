@@ -55,7 +55,9 @@ void adc_read_buffered_measure(void) {
 	if (adc_buffered_value < 1900) { // aprox. <3V
 		events_enqueue(EVENT_LOW_BATTERY);
 	}
-	// TODO kleiner 1700 abschalten! (ca. 2,7V)
+	if (adc_buffered_value < 1700) { // aprox. 2.7V
+		events_enqueue(EVENT_CRITICAL_BATTERY);
+	}
 }
 
 INLINE uint16_t adc_get_buffered_value(void) {

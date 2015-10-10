@@ -299,6 +299,7 @@ int bt_request(char request[], char response[]) {
 
 	waiting_for_answer = false;
 	memcpy(response, bt_packet_rx_buf, read);
+	//DBG("ret: %s\n", response);
 	return read;
 }
 
