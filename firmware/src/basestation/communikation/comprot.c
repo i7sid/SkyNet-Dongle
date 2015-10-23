@@ -236,9 +236,9 @@ void config_updatewinddir(unsigned int adcbuffersize, unsigned int adcsamplerate
 void buildHeader(char * header){
 
 	Chip_RTC_GetFullTime(LPC_RTC, &time);
-	char * hours = NULL;
-	char * mins = NULL;
-	char * secs = NULL;
+	char hours[4];
+	char mins[4];
+	char secs[4];
 	if(sprintf(hours,"%d",(int)time.time[RTC_TIMETYPE_HOUR])<=0){
 		//error
 	}

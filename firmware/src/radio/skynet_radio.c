@@ -266,7 +266,7 @@ void radio_packet_handler(void) {
 			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
 		DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
-		skynet_led_blink_red_passive(500);
+		skynet_led_blink_passive(500);
 
 		// reset chip to assure correct behaviour next time
 		events_enqueue(EVENT_RADIO_RESTART);

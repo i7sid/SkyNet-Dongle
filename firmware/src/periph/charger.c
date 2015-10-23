@@ -20,9 +20,15 @@ void charger_init() {
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, CHARGER_SEL_L_PORT, CHARGER_SEL_L_PIN);
 
 	// set port pins for USB port (only used for charging!)
+	// NOTE: Now as usb is used this cannot be used as easily as that.
+	// At least this causes errors when connected to a (SWD-)debugger,
+	// so it is disabled.
+	/*
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, CHARGER_USBDP_PORT, CHARGER_USBDP_PIN);
 	Chip_GPIO_SetPinDIRInput(LPC_GPIO, CHARGER_USBDM_PORT, CHARGER_USBDM_PIN);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, CHARGER_USBCON_PORT, CHARGER_USBCON_PIN);
+	*/
+
 
 	LPC_SYSCTL->EXTMODE |= 0x4;		// edge sensitive
 	LPC_SYSCTL->EXTPOLAR |= 0x4;	// rising edge
@@ -64,6 +70,13 @@ void charger_set_mode(charge_mode mode) {
 }
 
 void charger_check_port(void) {
+	charger_set_mode(USB_HIGH);
+	// @note Deactivated due to issues mentioned above.
+	// As an alternative we could check here if an usb enumeration was done,
+	// and only then use USB_HIGH.
+
+
+	/*
 	Chip_GPIO_SetPinState(LPC_GPIO, CHARGER_USBDP_PORT, CHARGER_USBDP_PIN, true);
 	msDelayActive(500); // not sure if data lines are connected immeadiately after power line
 	if (Chip_GPIO_GetPinState(LPC_GPIO, CHARGER_USBDM_PORT, CHARGER_USBDM_PIN)) {
@@ -75,6 +88,7 @@ void charger_check_port(void) {
 		charger_set_mode(USB_HIGH);  // DEBUG
 		//charger_set_mode(USB_LOW);
 	}
+	*/
 
 }
 

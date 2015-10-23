@@ -56,7 +56,7 @@ int main(void) {
 
     SystemCoreClockUpdate();
 
-    cpu_set_speed(SPEED_60MHz);
+    cpu_set_speed(SPEED_120MHz);
 
 	StopWatch_Init();
 
@@ -76,21 +76,14 @@ int main(void) {
 	Chip_GPIO_Init(LPC_GPIO);
 	Chip_IOCON_Init(LPC_IOCON);
 	skynet_led_init();
-	skynet_led_blue(false);
-	skynet_led_green(false);
-	skynet_led_red(false);
 	charger_init();
 	dcdc_init();
 
 
 	// give visual feedback that program started
-	skynet_led_red(true);
-	skynet_led_green(true);
-	skynet_led_blue(true);
+	skynet_led(true);
 	msDelay(250);
-	skynet_led_red(false);
-	skynet_led_green(false);
-	skynet_led_blue(false);
+	skynet_led(false);
 
 
     DBG("Initialize input...\n");
@@ -111,17 +104,17 @@ int main(void) {
     msDelay(100);  // wait a moment to ensure that all systems are up and ready
 
 
-	skynet_led_green(true);
+	skynet_led(true);
 	msDelay(250);
-	skynet_led_green(false);
+	skynet_led(false);
 	msDelay(200);
-	skynet_led_green(true);
+	skynet_led(true);
 	msDelay(250);
-	skynet_led_green(false);
+	skynet_led(false);
 	msDelay(200);
-	skynet_led_green(true);
+	skynet_led(true);
 	msDelay(250);
-	skynet_led_green(false);
+	skynet_led(false);
 
     // usb init
     usb_init();
@@ -129,7 +122,7 @@ int main(void) {
     DBG("Initialization complete.\n");
 
 
-    skynet_led_green(true);
+    skynet_led(true);
 
     // usb test
     uint32_t prompt = 0, rdCnt = 0;
@@ -144,6 +137,7 @@ int main(void) {
 		if (prompt) {
 			rdCnt = vcom_bread(&usb_cdc_rxBuff[0], 256);
 			if (rdCnt) {
+				skynet_led_blink_passive(3);
 				vcom_write(&usb_cdc_rxBuff[0], rdCnt);
 			}
 		}

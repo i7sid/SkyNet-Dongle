@@ -89,12 +89,9 @@
 
 
 // LED configuration
-#define LED_R_PORT					1
-#define LED_R_PIN					21
-#define LED_G_PORT					1
-#define LED_G_PIN					20
-#define LED_B_PORT					1
-#define LED_B_PIN					18
+#define LED_PORT					1
+#define LED_PIN						21
+
 
 
 // ADC configuration

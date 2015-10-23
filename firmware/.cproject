@@ -128,6 +128,8 @@
 								<option id="com.crt.advproject.gcc.hdrlib.8358814" name="Library headers" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.717865237" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_175x_6x/inc}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/usb}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_175x_6x/inc/usbd}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.c.misc.dialect.1839501297" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" value="com.crt.advproject.misc.dialect.gnu99" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.1291920712" superClass="com.crt.advproject.compiler.input"/>
@@ -154,9 +156,11 @@
 								<option id="com.crt.advproject.link.gcc.hdrlib.1771996896" name="Library" superClass="com.crt.advproject.link.gcc.hdrlib" value="com.crt.advproject.gcc.link.hdrlib.codered.none" valueType="enumerated"/>
 								<option id="gnu.c.link.option.libs.638525477" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="lpc_chip_175x_6x"/>
+									<listOptionValue builtIn="false" value="usbd_175x_6x_lib"/>
 								</option>
 								<option id="gnu.c.link.option.paths.541930748" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_175x_6x/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/lpc_chip_175x_6x/libs}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.link.crpenable.1061817336" name="Enable Code Read Protect" superClass="com.crt.advproject.link.crpenable"/>
 								<option id="com.crt.advproject.link.gcc.multicore.slave.735226376" name="Multicore configuration" superClass="com.crt.advproject.link.gcc.multicore.slave"/>
