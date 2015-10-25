@@ -26,3 +26,4 @@ RDB1768cmsis2_usbstack/Debug*
 #other
 *.fuse_hidden*
 *.swp
+.metadata
