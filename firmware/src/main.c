@@ -33,7 +33,7 @@
 #include "misc/event_queue.h"
 #include "basestation/skybase.h"
 #include "cmsis_175x_6x.h"
-#include "cdc_vcom.h"
+#include "skynet_cdc.h"
 #include "basestation/communikation/comprot.h"
 
 #if defined(NO_BOARD_LIB)
@@ -117,7 +117,7 @@ int main(void) {
 	skynet_led(false);
 
     // usb init
-    usb_init();
+    skynet_cdc_init();
 
     DBG("Initialization complete.\n");
 
@@ -125,22 +125,23 @@ int main(void) {
     skynet_led(true);
 
     // usb test
-    uint32_t prompt = 0, rdCnt = 0;
+    uint32_t rdCnt = 0;
     static uint8_t usb_cdc_rxBuff[256];
 	while (1) {
-		// Check if host has connected and opened the VCOM port
-		if ((vcom_connected() != 0) && (prompt == 0)) {
-			vcom_write((uint8_t*)"Hello World!!\r\n", 15);
-			prompt = 1;
+		event_types event = events_dequeue();
+		switch (event) {
+			case EVENT_USB_DATA:
+				rdCnt = skynet_cdc_read(&usb_cdc_rxBuff[0], 256);
+				if (rdCnt) {
+					skynet_led_blink_passive(5);
+					skynet_cdc_write(&usb_cdc_rxBuff[0], rdCnt);
+				}
+				break;
+
+			default:
+				break;
 		}
-		// If VCOM port is opened echo whatever we receive back to host.
-		if (prompt) {
-			rdCnt = vcom_bread(&usb_cdc_rxBuff[0], 256);
-			if (rdCnt) {
-				skynet_led_blink_passive(3);
-				vcom_write(&usb_cdc_rxBuff[0], rdCnt);
-			}
-		}
+
 		// Sleep until next IRQ happens
 		__WFI();
 	}

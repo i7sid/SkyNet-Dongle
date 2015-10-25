@@ -27,9 +27,10 @@ typedef enum event_types {
 	EVENT_SWITCH_DOUBLE,	///< @brief Input switch was pressed two times.
 	EVENT_SWITCH_POWER,		///< @brief Input switch was pressed for a long time.
 	EVENT_LOW_BATTERY,		///< @brief Battery voltage low.
-	EVENT_CRITICAL_BATTERY,		///< @brief Battery empty.
+	EVENT_CRITICAL_BATTERY,	///< @brief Battery empty.
 	EVENT_EXT_PWR_PLUGGED,	///< @brief External power supplied, can charge.
-	EVENT_RADIO_RESTART		///< @brief Radio chip needs restart due to error.
+	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
+	EVENT_USB_DATA			///< @brief USB CDC characters available.
 } event_types;
 
 /**

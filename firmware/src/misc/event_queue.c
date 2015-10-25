@@ -23,7 +23,16 @@ uint8_t		events_queue_read_i = 0;
 
 // If there is more load (more packets per second etc.) some synchronisation will be needed!
 
+bool events_is_queued(event_types type) {
+	for (int i = 0; i < MAX_QUEUED_EVENTS; ++i) {
+		if (events_queued[i] == type) return true;
+	}
+	return false;
+}
+
 void events_enqueue(event_types type) {
+	if (events_is_queued(type)) return; // don't enqueue twice
+
 	events_queued[events_queue_write_i] = type;
 	events_queue_write_i = (events_queue_write_i + 1) % MAX_QUEUED_EVENTS;
 
