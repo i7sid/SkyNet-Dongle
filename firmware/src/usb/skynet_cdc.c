@@ -164,9 +164,9 @@ USB_INTERFACE_DESCRIPTOR *find_IntfDesc(const uint8_t *pDesc, uint32_t intfClass
 }
 
 inline uint32_t skynet_cdc_read(uint8_t *pBuf, uint32_t buf_len) {
-	vcom_bread(pBuf, buf_len);
+	return vcom_bread(pBuf, buf_len);
 }
 
 inline uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len) {
-	vcom_write(pBuf, len);
+	return vcom_write(pBuf, len);
 }
