@@ -132,7 +132,7 @@ void updateBaseData(){
 			,packet[0],packet[1],packet[2],Time.time[RTC_TIMETYPE_HOUR],Time.time[RTC_TIMETYPE_MINUTE],
 			Time.time[RTC_TIMETYPE_SECOND],stoptime);
 	add_data(speed,dir);
-	skynet_led_blue(true);
-	skynet_led_blue(false);
+	//skynet_led_blue(true);
+	//skynet_led_blue(false);
 
 }

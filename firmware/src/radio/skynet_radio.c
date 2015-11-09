@@ -193,7 +193,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
 				DBG("[ERROR] RF chip reported error while sending.\n");
-				skynet_led_blink_red_passive(1000);
+				//skynet_led_blink_red_passive(1000);
 
 				// reset chip to assure correct behaviour next time
 				radio_shutdown();
@@ -208,7 +208,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 					// ERROR CASE! PACKET_SENT interrupt occurred,
 					// even if not all remaining bytes have been put to FIFO
 					DBG("[ERROR] PACKET_SENT, but remaining: %d\n", remaining);
-					skynet_led_blink_red_passive(1000);
+					//skynet_led_blink_red_passive(1000);
 
 					// clear remaining bytes to avoid pushing further bytes to FIFO
 					remaining = 0;

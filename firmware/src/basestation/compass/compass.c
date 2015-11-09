@@ -183,8 +183,8 @@ bool setupcompass(){
 }
 
 void calibcompass(){
-	skynet_led_green(false);
-	skynet_led_red(true);
+	//skynet_led_green(false);
+	//skynet_led_red(true);
 
 	const uint32_t prescaleDivisor = 8;
 	Chip_TIMER_Init(LPC_TIMER2);
@@ -244,8 +244,8 @@ void calibcompass(){
 
 		send_compass_calibration_begin();
 	}
-	skynet_led_green(true);
-	skynet_led_red(false);
+	//skynet_led_green(true);
+	//skynet_led_red(false);
 	xoffset = (fabs(xmin)+fabs(xmax))/2;
 	yoffset = (fabs(ymin)+fabs(ymax))/2;
 	zoffset = (fabs(zmin)+fabs(zmax))/2;

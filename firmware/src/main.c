@@ -119,6 +119,9 @@ int main(void) {
     // usb init
     skynet_cdc_init();
 
+    // base station init
+    baseinit();
+
     DBG("Initialization complete.\n");
 
 
