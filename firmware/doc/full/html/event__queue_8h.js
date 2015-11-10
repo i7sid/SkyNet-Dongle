@@ -10,8 +10,10 @@ var event__queue_8h =
       [ "EVENT_SWITCH_DOUBLE", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba2d835baeebc08112077c3276592234d9", null ],
       [ "EVENT_SWITCH_POWER", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afbaa9c5cddc39e1da8df88aa10cf6a55ea4", null ],
       [ "EVENT_LOW_BATTERY", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba15db5a93f2db46106c81b964e9fdd56c", null ],
+      [ "EVENT_CRITICAL_BATTERY", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba2ea954d728b64dbb497b47757d97c6fc", null ],
       [ "EVENT_EXT_PWR_PLUGGED", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba16287c46ce258a1de667d6055a96ae5a", null ],
-      [ "EVENT_RADIO_RESTART", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba699d996534b161894e4aaddffd9158cf", null ]
+      [ "EVENT_RADIO_RESTART", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba699d996534b161894e4aaddffd9158cf", null ],
+      [ "EVENT_USB_RAW", "event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afba9fbc49145af9550563dc4818f745376b", null ]
     ] ],
     [ "events_dequeue", "event__queue_8h.html#ac9a2fe21a750232bd379b667eff6a492", null ],
     [ "events_enqueue", "event__queue_8h.html#a3b1c9af73bc48ae0d8207fa651c4420d", null ]

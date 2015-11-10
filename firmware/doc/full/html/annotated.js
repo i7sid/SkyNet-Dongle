@@ -21,5 +21,7 @@ var annotated =
     [ "si446x_reply_READ_CMD_BUFF_map", "structsi446x__reply__READ__CMD__BUFF__map.html", "structsi446x__reply__READ__CMD__BUFF__map" ],
     [ "si446x_reply_REQUEST_DEVICE_STATE_map", "structsi446x__reply__REQUEST__DEVICE__STATE__map.html", "structsi446x__reply__REQUEST__DEVICE__STATE__map" ],
     [ "tRadioConfiguration", "structtRadioConfiguration.html", "structtRadioConfiguration" ],
-    [ "UU16", "unionUU16.html", "unionUU16" ]
+    [ "usb_message", "structusb__message.html", "structusb__message" ],
+    [ "UU16", "unionUU16.html", "unionUU16" ],
+    [ "VCOM_DATA", "structVCOM__DATA.html", "structVCOM__DATA" ]
 ];
