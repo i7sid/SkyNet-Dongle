@@ -52,7 +52,7 @@ void vRadio_PowerUp(void)
 /*!
  *  Radio Initialization.
  *
- *  @author Sz. Papp, Michael Zapf
+ *  @author Sz. Papp, Michael Zapf <michael.zapf@fau.de>
  *
  *  @note
  *

@@ -5,7 +5,7 @@
  */
 
 
-int skynetbase_compass_init(void) {
+int skynetbase_gps_init(void) {
 	// TODO
 	return 0;
 }

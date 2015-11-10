@@ -31,17 +31,16 @@
 #include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
-#include "basestation/skybase.h"
 #include "cmsis_175x_6x.h"
 #include "skynet_cdc.h"
-#include "basestation/communikation/comprot.h"
+#include "basestation/skynet_basestation.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
 const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
-void usb_init(void);
+
 
 int main(void) {
 
@@ -120,7 +119,7 @@ int main(void) {
     skynet_cdc_init();
 
     // base station init
-    baseinit();
+    //skynetbase_init();
 
     DBG("Initialization complete.\n");
 
@@ -128,17 +127,23 @@ int main(void) {
     skynet_led(true);
 
     // usb test
-    uint32_t rdCnt = 0;
-    static uint8_t usb_cdc_rxBuff[256];
 	while (1) {
+		char debugstr[] = "This is a debug string.";
+		usb_message msg;
+		msg.magic = USB_MAGIC_NUMBER;
+		msg.type = USB_DEBUG;
+		msg.payload_length = strlen(debugstr);
+		msg.payload = debugstr;
+		skynet_cdc_write_message(&msg);
+
+		msDelay(1000);
+
+		continue;
+
 		event_types event = events_dequeue();
 		switch (event) {
-			case EVENT_USB_DATA:
-				rdCnt = skynet_cdc_read(&usb_cdc_rxBuff[0], 256);
-				if (rdCnt) {
-					skynet_led_blink_passive(5);
-					skynet_cdc_write(&usb_cdc_rxBuff[0], rdCnt);
-				}
+			case EVENT_USB_RAW:
+				skynet_cdc_receive_data();
 				break;
 
 			default:
@@ -152,5 +157,9 @@ int main(void) {
 	///// END OF USB DEBUG PROGRAM - lines below won't be reached ///////
 
 
-    return 0 ;
+    return 0;
+}
+
+void skynet_cdc_received_message(usb_message *msg) {
+	DBG("Received usb message of type %d.\n", msg->type);
 }

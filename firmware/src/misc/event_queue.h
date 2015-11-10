@@ -30,7 +30,7 @@ typedef enum event_types {
 	EVENT_CRITICAL_BATTERY,	///< @brief Battery empty.
 	EVENT_EXT_PWR_PLUGGED,	///< @brief External power supplied, can charge.
 	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
-	EVENT_USB_DATA			///< @brief USB CDC characters available.
+	EVENT_USB_RAW			///< @brief USB CDC RAW data available.
 } event_types;
 
 /**

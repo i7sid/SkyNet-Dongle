@@ -12,10 +12,12 @@
 #include "chip.h"
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <string.h>
 
 #include "app_usbd_cfg.h"
 #include "cdc_vcom.h"
+#include "message.h"
 #include "stopwatch.h"
 #include "../misc/event_queue.h"
 
@@ -71,6 +73,25 @@ uint32_t skynet_cdc_read(uint8_t *pBuf, uint32_t buf_len);
  */
 uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len);
 
+/**
+ * @brief	Sends a \ref usb_message to usb host.
+ * @return	Number of written bytes.
+ */
+uint32_t skynet_cdc_write_message(usb_message *msg);
+
+/**
+ * @brief	Works like to printf and generates debug output message.
+ *
+ * Internally it uses vsnprintf to stay in maximum message size.
+ */
+uint32_t skynet_cdc_write_debug(const char* format, ... );
+
+/**
+ * @brief	Must be called if usb characters are available.
+ *
+ * Then they are processed.
+ */
+void skynet_cdc_receive_data(void);
 
 
 #endif /* USB_SKYNET_CDC_H_ */

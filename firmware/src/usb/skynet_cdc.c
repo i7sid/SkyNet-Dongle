@@ -36,7 +36,6 @@
  *
  */
 
-
 #include <skynet_cdc.h>
 
 
@@ -132,7 +131,7 @@ void skynet_cdc_disconnect(void) {
 void USB_IRQHandler(void)
 {
 	USBD_API->hw->ISR(g_hUsb);
-	events_enqueue(EVENT_USB_DATA);
+	events_enqueue(EVENT_USB_RAW);
 }
 
 /* Find the address of interface descriptor for given class type. */
@@ -169,4 +168,109 @@ inline uint32_t skynet_cdc_read(uint8_t *pBuf, uint32_t buf_len) {
 
 inline uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len) {
 	return vcom_write(pBuf, len);
+}
+
+uint32_t skynet_cdc_write_message(usb_message *msg) {
+	// size:  magic+type+length+      payload
+	int len =   2  + 1  +   4  + msg->payload_length;
+
+	msg->magic = USB_MAGIC_NUMBER;
+	return skynet_cdc_write((unsigned char*)msg, len);
+}
+
+uint32_t skynet_cdc_write_debug(const char* format, ... ) {
+	char buf[USB_MAX_PAYLOAD_LENGTH];
+
+	va_list args;
+	va_start(args, format);
+	int n = vsnprintf(buf, (int)USB_MAX_PAYLOAD_LENGTH, format, args);
+	va_end(args);
+
+	if (n < 0) return n; // error case
+
+	usb_message msg;
+	msg.type = USB_DEBUG;
+	msg.payload_length = n;
+	msg.payload = buf;
+	return skynet_cdc_write_message(&msg);
+}
+
+
+
+typedef enum usb_receive_state {
+	USB_RECEIVE_IDLE,
+	USB_RECEIVE_MAGIC1,
+	USB_RECEIVE_MAGIC2,
+	USB_RECEIVE_TYPE,
+	USB_RECEIVE_PAYLOAD_LENGTH,
+	USB_RECEIVE_PAYLOAD
+} usb_receive_state;
+
+unsigned char usb_payload_buf[USB_MAX_PAYLOAD_LENGTH];
+int usb_read_pos = 0;
+bool usb_reverse = false;
+usb_message usb_received_message;
+usb_receive_state usb_rx_state;
+
+void skynet_cdc_received_message(usb_message *msg);
+
+void skynet_cdc_receive_data(void) {
+	unsigned char buf;
+	int c = 0;
+	while ((c = skynet_cdc_read(&buf, 1)) > 0) {
+		if (c) {
+			// expect magic number
+			if (usb_rx_state == USB_RECEIVE_IDLE) {
+				if (buf == USB_MAGIC_BYTE1) {
+					// correct byte order, no reverse
+					usb_reverse = false;
+					usb_rx_state = USB_RECEIVE_MAGIC2;
+				}
+				else if (buf == USB_MAGIC_BYTE2) {
+					// wrong byte order, reverse
+					usb_reverse = true;
+					usb_rx_state = USB_RECEIVE_MAGIC2;
+				}
+				else {
+					usb_rx_state = USB_RECEIVE_IDLE;
+				}
+			}
+			else if (usb_rx_state == USB_RECEIVE_MAGIC1) {
+				if (usb_reverse == false && buf == USB_MAGIC_BYTE2) {
+					usb_rx_state = USB_RECEIVE_TYPE;
+				}
+				else if (usb_reverse == true && buf == USB_MAGIC_BYTE1) {
+					usb_rx_state = USB_RECEIVE_TYPE;
+				}
+				else {
+					usb_rx_state = USB_RECEIVE_IDLE;
+				}
+			}
+			else if (usb_rx_state == USB_RECEIVE_TYPE) {
+				usb_received_message.type = buf;
+				usb_rx_state = USB_RECEIVE_PAYLOAD_LENGTH;
+				usb_read_pos = 0;
+				usb_received_message.payload_length = 0;
+				// TODO check type is if valid?
+			}
+			else if (usb_rx_state == USB_RECEIVE_PAYLOAD_LENGTH) {
+				// TODO revert if neccessary
+				usb_received_message.payload_length += ((int)buf << (usb_read_pos*8));
+				usb_read_pos++;
+				if (usb_read_pos > 4) {
+					usb_rx_state = USB_RECEIVE_PAYLOAD;
+					usb_read_pos = 0;
+				}
+			}
+			else if (usb_rx_state == USB_RECEIVE_PAYLOAD) {
+				usb_received_message.payload[usb_read_pos] = buf;
+				usb_read_pos++;
+				if (usb_read_pos == usb_received_message.payload_length) {
+					usb_rx_state = USB_RECEIVE_IDLE;
+					skynet_cdc_received_message(&usb_received_message);
+				}
+			}
+			usb_read_pos += c;
+		}
+	}
 }
