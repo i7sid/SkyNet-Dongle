@@ -51,6 +51,7 @@ void RTC_IRQHandler(void)
 
 		Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
+		/*
 		DBG("Time: %.2d:%.2d:%.2d %.2d/%.2d/%.4d\r\n",
 				FullTime.time[RTC_TIMETYPE_HOUR],
 				FullTime.time[RTC_TIMETYPE_MINUTE],
@@ -58,6 +59,7 @@ void RTC_IRQHandler(void)
 				FullTime.time[RTC_TIMETYPE_MONTH],
 				FullTime.time[RTC_TIMETYPE_DAYOFMONTH],
 				FullTime.time[RTC_TIMETYPE_YEAR]);
+		*/
 	}
 
 	// Check for alarm match

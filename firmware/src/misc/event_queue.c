@@ -10,6 +10,59 @@
 
 #include "event_queue.h"
 
+RINGBUFF_T events_ringbuf;
+char events_buf[MAX_QUEUED_EVENTS * sizeof(queued_event)];
+
+void events_init(void) {
+	//queued_event
+	RingBuffer_Init(&events_ringbuf, events_buf, sizeof(queued_event), MAX_QUEUED_EVENTS);
+	RingBuffer_Flush(&events_ringbuf);
+}
+
+
+int events_enqueue(event_types type, void* data) {
+	//DBG("buf_enc\n");
+	queued_event e;
+	e.type = type;
+	e.data = data;
+
+	int r = RingBuffer_Insert(&events_ringbuf, &e);
+#ifdef DEBUG
+	if (!r) {
+		// TODO do something? (but then remove #ifdef DEBUG !)
+		DBG("ERROR: events ringbuffer is full.\n");
+	}
+#endif
+	return r;
+}
+
+event_types events_dequeue(queued_event *e) {
+	//DBG("buf_deq\n");
+	queued_event *ev = e;
+	queued_event instead;
+
+	// if e is not given, use temporaray one instead
+	if (e == NULL) {
+		ev = &instead;
+	}
+
+	uint8_t r = RingBuffer_Pop(&events_ringbuf, ev);
+	if (r) {
+		return ev->type;
+	}
+	else {
+		return EVENT_NONE;
+	}
+}
+
+
+/////// old code following
+
+
+
+/*
+
+
 /// @brief Array of enqueued events
 event_types events_queued[MAX_QUEUED_EVENTS];
 
@@ -48,3 +101,5 @@ event_types events_dequeue(void) {
 	events_queue_read_i = (events_queue_read_i + 1) % MAX_QUEUED_EVENTS;
 	return ret;
 }
+
+*/

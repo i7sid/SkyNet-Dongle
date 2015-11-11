@@ -32,6 +32,43 @@ void usbReceiveHandler(usb_message *pkt);
 void usbReceiveWorker() {
 	fstream tty(cmd_tty.c_str(), ios::in | ios::out | ios::binary);
 
+	int n = 0;
+	while(true) {
+		usb_message msg;
+		usb_message* msg_ptr = &msg;
+		msg.magic = USB_MAGIC_NUMBER;
+		msg.type = 3;
+		msg.seqno = n++;
+		char p[] = "TEST-Nachricht";
+		msg.payload = p;
+		msg.payload_length = strlen(p);
+
+		/*
+		for (int i=0; i < 8; ++i) {
+			tty.write(((char*)(msg_ptr)) + i, 1);
+			tty.flush();
+		}
+		for (unsigned int i=0; i < msg.payload_length; ++i) {
+			tty.write(msg.payload+i, 1);
+			tty.flush();
+		}
+		*/
+		tty.write(((char*)(msg_ptr)), 8);
+		tty.flush();
+		tty.write(msg.payload, msg.payload_length);
+		tty.flush();
+
+
+
+		cout << setfill(' ') << setw(3) <<  (int)msg.seqno << " Sent. " << endl;
+
+
+
+		sleep(2);
+	}
+
+
+
 	while (tty.good()) {
 		char first = 0;
 		bool reverse = false;

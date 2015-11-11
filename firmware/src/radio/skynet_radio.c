@@ -269,7 +269,7 @@ void radio_packet_handler(void) {
 		skynet_led_blink_passive(500);
 
 		// reset chip to assure correct behaviour next time
-		events_enqueue(EVENT_RADIO_RESTART);
+		events_enqueue(EVENT_RADIO_RESTART, NULL);
 		return;
 	}
 	// Packet beginning or completely received
@@ -334,7 +334,7 @@ void radio_packet_handler(void) {
 			memcpy(rf_packet_rx_buf, data, length);
 		}
 		rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE] = 0; // terminating null byte
-		events_enqueue(EVENT_RF_GOT_PACKET);
+		events_enqueue(EVENT_RF_GOT_PACKET, NULL);
 
 
 #ifdef DEBUG

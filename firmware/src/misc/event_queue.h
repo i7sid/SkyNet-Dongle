@@ -11,7 +11,9 @@
 #ifndef EVENT_QUEUE_H_
 #define EVENT_QUEUE_H_
 
+#include <ring_buffer.h>
 #include "../misc/misc.h"
+
 
 /// @brief 	Defines the maximum amount of events that can wait in the event queue.
 #define MAX_QUEUED_EVENTS 	(64)
@@ -30,18 +32,33 @@ typedef enum event_types {
 	EVENT_CRITICAL_BATTERY,	///< @brief Battery empty.
 	EVENT_EXT_PWR_PLUGGED,	///< @brief External power supplied, can charge.
 	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
-	EVENT_USB_RAW			///< @brief USB CDC RAW data available.
+	EVENT_USB_RX_MESSAGE	///< @brief USB CDC data available.
 } event_types;
 
-/**
- * @brief	Push a new event into the queue.
- */
-void events_enqueue(event_types);
+typedef struct queued_event {
+	void*	data;	///< @brief May point to a data structure, must be known.
+	char	type;	///< @brief Should be one of \ref event_types .
+} queued_event;
+
 
 /**
- * @brief	Take an event from the queue.
+ * @brief	Initializes the ringbuffer.
  */
-event_types events_dequeue(void);
+void events_init(void);
+
+
+/**
+ * @brief			Push a new event into the queue.
+ * @param	type	\ref one of event_types
+ * @param	data	pointer to optional event data (may be NULL)
+ */
+int events_enqueue(event_types type, void* data);
+
+/**
+ * @brief		Take an event from the queue.
+ * @param	e	Pointer the event is written to. (can be NULL if not needed)
+ */
+event_types events_dequeue(queued_event *e);
 
 
 

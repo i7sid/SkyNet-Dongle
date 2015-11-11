@@ -38,13 +38,13 @@ bool input_state() {
 void input_pressed(switch_pressed_type type) {
 	switch (type) {
 		case SWITCH_SHORT:
-			events_enqueue(EVENT_SWITCH_SINGLE);
+			events_enqueue(EVENT_SWITCH_SINGLE, NULL);
 			break;
 		case SWITCH_POWER:
-			events_enqueue(EVENT_SWITCH_POWER);
+			events_enqueue(EVENT_SWITCH_POWER, NULL);
 			break;
 		case SWITCH_DOUBLE:
-			events_enqueue(EVENT_SWITCH_DOUBLE);
+			events_enqueue(EVENT_SWITCH_DOUBLE, NULL);
 			break;
 		default:
 			break;

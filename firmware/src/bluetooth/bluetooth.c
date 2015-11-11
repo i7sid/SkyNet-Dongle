@@ -323,7 +323,7 @@ void BLUETOOTH_UART_IRQ_HANDLER()
 		// newline character found?
 		if (buf[i] == '\n') {
 			if (!waiting_for_answer) {
-				events_enqueue(EVENT_BT_GOT_PACKET);
+				events_enqueue(EVENT_BT_GOT_PACKET, NULL);
 			}
 			bt_packet_rx_buf[bt_packet_rx_buf_pos + i + 1] = 0; // write trailing null byte for C
 			bt_packet_rx_buf_written = bt_packet_rx_buf_pos; // save length

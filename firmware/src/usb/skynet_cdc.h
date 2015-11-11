@@ -14,12 +14,26 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "app_usbd_cfg.h"
 #include "cdc_vcom.h"
 #include "message.h"
 #include "stopwatch.h"
 #include "../misc/event_queue.h"
+
+
+/**
+ * @brief	Types for FSM controlling USB CDC RX.
+ */
+typedef enum usb_receive_state {
+	USB_RECEIVE_IDLE,
+	USB_RECEIVE_MAGIC,
+	USB_RECEIVE_TYPE,
+	USB_RECEIVE_SEQNO,
+	USB_RECEIVE_PAYLOAD_LENGTH,
+	USB_RECEIVE_PAYLOAD
+} usb_receive_state;
 
 
 

@@ -9,10 +9,10 @@
 
 
 #define USB_HEADER_SIZE			(8)
-#define USB_MAX_PAYLOAD_LENGTH	(1024)
+#define USB_MAX_PAYLOAD_LENGTH	(56)
 #define USB_MAGIC_NUMBER		(43981)
-#define USB_MAGIC_BYTE1			((char)0xAB)
-#define USB_MAGIC_BYTE2			((char)0xCD)
+#define USB_MAGIC_BYTE1			((unsigned char)0xAB)
+#define USB_MAGIC_BYTE2			((unsigned char)0xCD)
 
 #define USB_MAX_MESSAGE_LENGTH 	(USB_MAX_PAYLOAD_LENGTH + USB_HEADER_SIZE)
 

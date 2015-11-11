@@ -41,6 +41,8 @@ const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
 
+void skynet_cdc_received_message(usb_message *msg);
+
 
 int main(void) {
 
@@ -74,6 +76,7 @@ int main(void) {
 	// Initializes GPIO
 	Chip_GPIO_Init(LPC_GPIO);
 	Chip_IOCON_Init(LPC_IOCON);
+	events_init();
 	skynet_led_init();
 	charger_init();
 	dcdc_init();
@@ -129,6 +132,8 @@ int main(void) {
     uint8_t usb_seqno = 0;
     // usb test
 	while (1) {
+
+		/*
 		char debugstr[] = "This is a debug string.";
 		usb_message msg;
 		memset(&msg, 0, sizeof(usb_message));
@@ -147,11 +152,21 @@ int main(void) {
 		msDelay(1000);
 
 		continue;
+		*/
 
-		event_types event = events_dequeue();
-		switch (event) {
-			case EVENT_USB_RAW:
-				skynet_cdc_receive_data();
+
+		/*
+		if (usb_message_avail) {
+			skynet_cdc_received_message(&usb_received_message);
+			usb_message_avail = false;
+		}
+		*/
+
+		queued_event event;
+		event_types event_type = events_dequeue(&event);
+		switch (event_type) {
+			case EVENT_USB_RX_MESSAGE:
+				skynet_cdc_received_message(event.data);
 				break;
 
 			default:
@@ -170,4 +185,7 @@ int main(void) {
 
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
+
+	free(msg->payload);
+	free(msg);
 }

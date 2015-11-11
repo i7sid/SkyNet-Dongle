@@ -53,10 +53,10 @@ void adc_read_buffered_measure(void) {
 	adc_buffered_value = adc_measure();
 	adc_start_buffered_measure();
 	if (adc_buffered_value < 1900) { // aprox. <3V
-		events_enqueue(EVENT_LOW_BATTERY);
+		events_enqueue(EVENT_LOW_BATTERY, NULL);
 	}
 	if (adc_buffered_value < 1700) { // aprox. 2.7V
-		events_enqueue(EVENT_CRITICAL_BATTERY);
+		events_enqueue(EVENT_CRITICAL_BATTERY, NULL);
 	}
 }
 
