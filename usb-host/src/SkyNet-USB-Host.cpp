@@ -9,6 +9,7 @@
 #include <usb/message.h>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 
 #include <string.h>
 
@@ -17,7 +18,7 @@
 
 using namespace std;
 
-string cmd_tty = "/dev/ttyUSB0";
+string cmd_tty = "/dev/ttyACM0";
 char rx_buf[USB_MAX_PAYLOAD_LENGTH];
 
 void parseCmd(int argc, char** argv);
@@ -35,6 +36,8 @@ void usbReceiveWorker() {
 		char first = 0;
 		bool reverse = false;
 		tty.read(&first, 1);
+		//cerr << "Read: " << (int)(uint8_t)first << endl;
+		//continue;
 
 		// wait for first (magic) character
 		if (first != USB_MAGIC_BYTE1 && first != USB_MAGIC_BYTE2) {
@@ -60,11 +63,15 @@ void usbReceiveWorker() {
 				char raw_type;
 				tty.read(&raw_type, 1);
 
+				char raw_seqno;
+				tty.read(&raw_seqno, 1);
+
 				char raw_length[4];
 				uint32_t length = 0;
 				tty.read(raw_length, 4);
 
 				if (reverse) {
+					cerr << (int)raw_length[3] << " " << (int)raw_length[2] << " " << (int)raw_length[1] << " " << (int)raw_length[0] << " " << endl;
 					length = length + (int)raw_length[0];
 					length = length + ((int)raw_length[1] << 8);
 					length = length + ((int)raw_length[2] << 16);
@@ -77,6 +84,8 @@ void usbReceiveWorker() {
 					length = length + ((int)raw_length[0] << 24);
 				}
 
+				cerr << "Test: " << (int)first << "  " << (int)second << "  " << (int)length << endl;
+
 				if (length <= USB_MAX_PAYLOAD_LENGTH) {
 					// and now receive
 					tty.read(rx_buf, length);
@@ -84,6 +93,7 @@ void usbReceiveWorker() {
 					usb_message pkt;
 					pkt.payload_length = length;
 					pkt.type = static_cast<usb_packet_type>(raw_type);
+					pkt.seqno = raw_seqno;
 					pkt.payload = rx_buf;
 
 					usbReceiveHandler(&pkt);
@@ -142,15 +152,15 @@ void usbReceiveHandler(usb_message *pkt) {
 	cout << "Type:\t" << pkt->type << endl;
 	cout << "Length:\t" << pkt->payload_length << endl;
 	cout << "Payload:" << endl;
-	cout << (int)pkt->payload[0] << " "
-			 << (int)pkt->payload[1] << " "
-			 << (int)pkt->payload[2] << " "
-			 << (int)pkt->payload[3] << " "
-			 << (int)pkt->payload[4] << " "
-			 << (int)pkt->payload[5] << " "
-			 << (int)pkt->payload[6] << " "
-			 << (int)pkt->payload[7] << " "
-			 << (int)pkt->payload[8] << " "
-			 << endl << endl;
+
+	for (unsigned int i = 0; i < pkt->payload_length; ++i) {
+		cout << setfill(' ') << setw(3) << (unsigned int)pkt->payload[i] << " ";
+	}
+	cout << endl;
+	for (unsigned int i = 0; i < pkt->payload_length; ++i) {
+		cout <<  " " << (char)pkt->payload[i] << "  ";
+	}
+	cout << endl << endl;
+
 }
 

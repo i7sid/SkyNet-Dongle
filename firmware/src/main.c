@@ -126,15 +126,23 @@ int main(void) {
 
     skynet_led(true);
 
+    uint8_t usb_seqno = 0;
     // usb test
 	while (1) {
 		char debugstr[] = "This is a debug string.";
 		usb_message msg;
+		memset(&msg, 0, sizeof(usb_message));
 		msg.magic = USB_MAGIC_NUMBER;
 		msg.type = USB_DEBUG;
+		msg.seqno = usb_seqno++;
 		msg.payload_length = strlen(debugstr);
+		DBG("Payload length: %d\n", msg.payload_length);
 		msg.payload = debugstr;
-		skynet_cdc_write_message(&msg);
+		int cnt = skynet_cdc_write_message(&msg);
+		DBG("n: %d\n", cnt);
+
+
+		skynet_led_blink_passive(100);
 
 		msDelay(1000);
 

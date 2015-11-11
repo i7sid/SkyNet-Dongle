@@ -8,13 +8,14 @@
 #define USB_MESSAGE_H_
 
 
+#define USB_HEADER_SIZE			(8)
 #define USB_MAX_PAYLOAD_LENGTH	(1024)
 #define USB_MAGIC_NUMBER		(43981)
 #define USB_MAGIC_BYTE1			((char)0xAB)
 #define USB_MAGIC_BYTE2			((char)0xCD)
 
+#define USB_MAX_MESSAGE_LENGTH 	(USB_MAX_PAYLOAD_LENGTH + USB_HEADER_SIZE)
 
-#define USB_MAX_MESSAGE_LENGTH 	(USB_MAX_PAYLOAD_LENGTH + 7)
 
 /**
  * @brief	Different types of data transferred over USB.
@@ -32,10 +33,13 @@ typedef enum usb_packet_type {
  * Can be real networking packet, or control commands, debug strings, ...
  * The field \ref magic must be 43981 (0xAB 0xCD) and helps the other end
  * to determine the byte order.
+ *
+ * (Field seqno is especially important for correct alignment.)
  */
 typedef struct usb_message {
 	uint16_t			magic;			///< @brief Must be 43981.
 	char				type;			///< @brief Should ne \ref usb_packet_type.
+	char				seqno;			///< @brief	Increasing sequence number.
 	uint32_t 			payload_length;	///< @brief Number of payload bytes.
 	char*				payload;		///< @brief Actual payload bytes.
 } usb_message;

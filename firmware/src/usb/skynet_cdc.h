@@ -74,6 +74,22 @@ uint32_t skynet_cdc_read(uint8_t *pBuf, uint32_t buf_len);
 uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len);
 
 /**
+ * @brief	Writes len characters from pBuf into sending buffer.
+ *
+ * Bytes won't be sent until buffer is full or \ref skynet_cdc_flush() is called.
+ *
+ * @return	Number of written bytes.
+ */
+uint32_t skynet_cdc_write_buffered(uint8_t *pBuf, uint32_t len);
+
+/**
+ * @brief	Send the bytes in the buffer immediately.
+ * @return	Number of written bytes.
+ */
+uint32_t skynet_cdc_flush(void);
+
+
+/**
  * @brief	Sends a \ref usb_message to usb host.
  * @return	Number of written bytes.
  */

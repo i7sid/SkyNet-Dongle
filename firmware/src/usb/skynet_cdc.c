@@ -170,12 +170,44 @@ inline uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len) {
 	return vcom_write(pBuf, len);
 }
 
-uint32_t skynet_cdc_write_message(usb_message *msg) {
-	// size:  magic+type+length+      payload
-	int len =   2  + 1  +   4  + msg->payload_length;
+unsigned char usb_cdc_write_buf[USB_MAX_MESSAGE_LENGTH];
+unsigned int usb_cdc_write_pos = 0;
 
+inline uint32_t skynet_cdc_write_buffered(uint8_t *pBuf, uint32_t len) {
+	int pos = 0;
+	int remaining = len;
+	int written = 0;
+
+	// TODO: sollte man mal testen bei Gelegenheit
+	while (usb_cdc_write_pos + remaining > USB_MAX_MESSAGE_LENGTH) {
+		int now = USB_MAX_MESSAGE_LENGTH - usb_cdc_write_pos;
+		memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, now);
+		usb_cdc_write_pos += now;
+		written += skynet_cdc_flush();
+		remaining -= now;
+		pos += now;
+	}
+
+	// remaining part (fits into buffer for sure)
+	memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, remaining);
+	usb_cdc_write_pos += remaining;
+	written += remaining;
+	return written;
+}
+
+inline uint32_t skynet_cdc_flush(void) {
+	int n = vcom_write(usb_cdc_write_buf, usb_cdc_write_pos);
+	usb_cdc_write_pos = 0;
+	return n;
+}
+
+uint32_t skynet_cdc_write_message(usb_message *msg) {
 	msg->magic = USB_MAGIC_NUMBER;
-	return skynet_cdc_write((unsigned char*)msg, len);
+
+	skynet_cdc_write_buffered((unsigned char*)msg, USB_HEADER_SIZE);
+	skynet_cdc_write_buffered((unsigned char*)msg->payload, msg->payload_length);
+
+	return skynet_cdc_flush();
 }
 
 uint32_t skynet_cdc_write_debug(const char* format, ... ) {
@@ -202,6 +234,7 @@ typedef enum usb_receive_state {
 	USB_RECEIVE_MAGIC1,
 	USB_RECEIVE_MAGIC2,
 	USB_RECEIVE_TYPE,
+	USB_RECEIVE_SEQNO,
 	USB_RECEIVE_PAYLOAD_LENGTH,
 	USB_RECEIVE_PAYLOAD
 } usb_receive_state;
@@ -248,10 +281,14 @@ void skynet_cdc_receive_data(void) {
 			}
 			else if (usb_rx_state == USB_RECEIVE_TYPE) {
 				usb_received_message.type = buf;
+				usb_rx_state = USB_RECEIVE_SEQNO;
+				// TODO check type is if valid?
+			}
+			else if (usb_rx_state == USB_RECEIVE_SEQNO) {
+				usb_received_message.seqno = buf;
 				usb_rx_state = USB_RECEIVE_PAYLOAD_LENGTH;
 				usb_read_pos = 0;
 				usb_received_message.payload_length = 0;
-				// TODO check type is if valid?
 			}
 			else if (usb_rx_state == USB_RECEIVE_PAYLOAD_LENGTH) {
 				// TODO revert if neccessary
