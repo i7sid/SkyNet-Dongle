@@ -7,6 +7,7 @@
 #ifndef USB_MESSAGE_H_
 #define USB_MESSAGE_H_
 
+#include "stdint.h"
 
 #define USB_HEADER_SIZE			(8)
 #define USB_MAX_PAYLOAD_LENGTH	(56)

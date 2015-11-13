@@ -30,7 +30,7 @@ int events_enqueue(event_types type, void* data) {
 #ifdef DEBUG
 	if (!r) {
 		// TODO do something? (but then remove #ifdef DEBUG !)
-		DBG("ERROR: events ringbuffer is full.\n");
+		DBG("ERROR: events ringbuffer is full. (%d)\n", (int)type);
 	}
 #endif
 	return r;

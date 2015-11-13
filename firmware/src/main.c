@@ -133,26 +133,8 @@ int main(void) {
     // usb test
 	while (1) {
 
-		/*
-		char debugstr[] = "This is a debug string.";
-		usb_message msg;
-		memset(&msg, 0, sizeof(usb_message));
-		msg.magic = USB_MAGIC_NUMBER;
-		msg.type = USB_DEBUG;
-		msg.seqno = usb_seqno++;
-		msg.payload_length = strlen(debugstr);
-		DBG("Payload length: %d\n", msg.payload_length);
-		msg.payload = debugstr;
-		int cnt = skynet_cdc_write_message(&msg);
-		DBG("n: %d\n", cnt);
 
 
-		skynet_led_blink_passive(100);
-
-		msDelay(1000);
-
-		continue;
-		*/
 
 
 		/*
@@ -169,8 +151,24 @@ int main(void) {
 				skynet_cdc_received_message(event.data);
 				break;
 
-			default:
+			default: {
+				char debugstr[] = "This is a debug string.";
+				usb_message msg;
+				memset(&msg, 0, sizeof(usb_message));
+				msg.magic = USB_MAGIC_NUMBER;
+				msg.type = USB_DEBUG;
+				msg.seqno = usb_seqno++;
+				msg.payload_length = strlen(debugstr);
+				msg.payload = debugstr;
+				int cnt = skynet_cdc_write_message(&msg);
+				DBG("n: %d\n", cnt);
+
+				skynet_led_blink_passive(50);
+
+				msDelay(1000);
+
 				break;
+			}
 		}
 
 		// Sleep until next IRQ happens
