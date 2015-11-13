@@ -12,7 +12,6 @@
 
 #include "../misc/misc.h"
 #include "../spi/spi.h"
-#include "../bluetooth/bluetooth.h"
 
 #include "si446x_defs.h"
 #include "si446x_api_lib.h"
@@ -28,6 +27,13 @@
 
 extern char rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
 extern volatile bool radio_initialized;
+
+
+// debug
+typedef struct skynet_packet {
+	char*	data;
+	int		length;
+} skynet_packet;
 
 
 /**

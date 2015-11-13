@@ -8,6 +8,7 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "skynet_radio.h"
 #include "radio_config.h"
@@ -23,9 +24,6 @@ uint8_t pwrLvlIdx = 0;
 uint8_t pwrLvl[] = {8,12,19,35,127};	//0, 5, 10, 15, 20 dBm
 char timeStr[] = {0, 0, 0, 0, 0, 0};
 
-// should be greater than RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH
-char rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE+1];
-
 volatile bool radio_initialized = false;
 
 void radio_pin_init(void) {
@@ -36,6 +34,7 @@ void radio_pin_init(void) {
 }
 
 void radio_init(void) {
+	radio_pin_init();
 	Chip_GPIOINT_Init(LPC_GPIOINT);
 
 	// "on/off" pin
@@ -327,14 +326,23 @@ void radio_packet_handler(void) {
 		ptr = data;
 		DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
 
+		// copy packet
+		int copy_length = length;
 		if (SKYNET_RADIO_MAX_SIZE < length) {
-			memcpy(rf_packet_rx_buf, data, SKYNET_RADIO_MAX_SIZE);
+			copy_length = SKYNET_RADIO_MAX_SIZE;
+		}
+
+		skynet_packet *pkt = malloc(sizeof(skynet_packet));
+		char* newdata = malloc(copy_length * sizeof(char));
+		if (pkt != NULL) {
+			memcpy(newdata, data, SKYNET_RADIO_MAX_SIZE);
+			pkt->data = newdata;
+			pkt->length = SKYNET_RADIO_MAX_SIZE;
+			events_enqueue(EVENT_RF_GOT_PACKET, pkt);
 		}
 		else {
-			memcpy(rf_packet_rx_buf, data, length);
+			// TODO: ERROR, could not malloc memory
 		}
-		rf_packet_rx_buf[SKYNET_RADIO_MAX_SIZE] = 0; // terminating null byte
-		events_enqueue(EVENT_RF_GOT_PACKET, NULL);
 
 
 #ifdef DEBUG
@@ -347,18 +355,6 @@ void radio_packet_handler(void) {
 	}
 
 	radio_enable_irq();
-
-#ifdef SKYNET_RX_TEST
-	if (!(strncmp(rf_packet_rx_buf, SKYNET_RADIO_TESTPATTERN, SKYNET_RADIO_TESTLENGTH))) {
-		skynet_led_blink_green_passive(250);
-		skynet_led_blink_red_passive(250);
-		skynet_led_blink_blue_passive(250);
-	}
-	else {
-		skynet_led_blink_red_passive(500);
-	}
-	memset(rf_packet_rx_buf, 0, SKYNET_RADIO_MAX_SIZE);
-#endif
 }
 
 INLINE bool radio_get_gpio0(void) {

@@ -58,6 +58,8 @@ static const  USBD_API_T g_usbApi = {
 
 const  USBD_API_T *g_pUsbApi = &g_usbApi;
 
+uint8_t current_seqno = 0;
+
 
 
 int skynet_cdc_init(void) {
@@ -203,6 +205,7 @@ inline uint32_t skynet_cdc_flush(void) {
 
 uint32_t skynet_cdc_write_message(usb_message *msg) {
 	msg->magic = USB_MAGIC_NUMBER;
+	if (msg->seqno == 0) msg->seqno = current_seqno++;
 
 	skynet_cdc_write_buffered((unsigned char*)msg, USB_HEADER_SIZE);
 	skynet_cdc_write_buffered((unsigned char*)msg->payload, msg->payload_length);

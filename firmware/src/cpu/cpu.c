@@ -12,7 +12,6 @@
 #include "rtc.h"
 #include "systick.h"
 #include "../sysinit.h"
-#include "../bluetooth/bluetooth.h"
 #include "../radio/skynet_radio.h"
 #include "../periph/adc.h"
 #include "../periph/input.h"

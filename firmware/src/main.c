@@ -4,6 +4,16 @@
  */
 
 
+///@brief Send a usb debug packet each second.
+#define DEBUG_SEND_USB_TEST
+
+///@brief Send a rf debug packet each second.
+#define DEBUG_SEND_RF_TEST
+
+///@brief This module is a basestation
+//#define IS_BASESTATION
+
+
 #if defined (__USE_LPCOPEN)
 #if defined(NO_BOARD_LIB)
 #include "chip.h"
@@ -22,7 +32,6 @@
 #include "misc/misc.h"
 
 #include "radio/skynet_radio.h"
-#include "bluetooth/bluetooth.h"
 #include "periph/input.h"
 #include "periph/led.h"
 #include "periph/charger.h"
@@ -42,6 +51,16 @@ const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 
 
 void skynet_cdc_received_message(usb_message *msg);
+void skynet_received_packet(skynet_packet *pkt);
+
+
+void debug_send_usb(void) {
+	events_enqueue(EVENT_DEBUG_1, NULL);
+}
+
+void debug_send_rf(void) {
+	events_enqueue(EVENT_DEBUG_2, NULL);
+}
 
 
 int main(void) {
@@ -94,55 +113,42 @@ int main(void) {
 	adc_init();
 	adc_start_buffered_measure();
 
-	SPI_Init();
-
-    DBG("Initialize Bluetooth module...\n");
-    //bt_init();	// initialize bluetooth module communication comment in for real hw
-
     DBG("Initialize radio module...\n");
-    //radio_init();
-    //radio_pin_init();//comment in for real hw
-    //radio_init();
-    msDelay(100);  // wait a moment to ensure that all systems are up and ready
+    radio_init();
+    msDelay(50);  // wait a moment to ensure that all systems are up and ready
 
-
-	skynet_led(true);
-	msDelay(250);
-	skynet_led(false);
-	msDelay(200);
-	skynet_led(true);
-	msDelay(250);
-	skynet_led(false);
-	msDelay(200);
-	skynet_led(true);
-	msDelay(250);
-	skynet_led(false);
 
     // usb init
     skynet_cdc_init();
 
+
+#ifdef IS_BASESTATION
     // base station init
-    //skynetbase_init();
+    skynetbase_init();
+#endif
+
+
+
+#ifdef DEBUG_SEND_USB_TEST
+    // DEBUG: Send regularily usb packets
+    register_delayed_event(1000, debug_send_usb);
+#endif
+
+#ifdef DEBUG_SEND_RF_TEST
+    // DEBUG: Send regularily rf packets
+    register_delayed_event(1000, debug_send_rf);
+#endif
 
     DBG("Initialization complete.\n");
 
 
-    skynet_led(true);
+    skynet_led_blink_active(50);
+    msDelay(50);
+    skynet_led_blink_active(50);
+    msDelay(50);
+    skynet_led_blink_active(100);
 
-    uint8_t usb_seqno = 0;
-    // usb test
 	while (1) {
-
-
-
-
-
-		/*
-		if (usb_message_avail) {
-			skynet_cdc_received_message(&usb_received_message);
-			usb_message_avail = false;
-		}
-		*/
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -150,36 +156,61 @@ int main(void) {
 			case EVENT_USB_RX_MESSAGE:
 				skynet_cdc_received_message(event.data);
 				break;
+			case EVENT_RF_GOT_PACKET:
+				skynet_received_packet(event.data);
+				break;
 
-			default: {
+			case EVENT_RADIO_RESTART:
+				// TODO restart radio chip
+				break;
+
+			case EVENT_DEBUG_1:
+			{
+				// DEBUG: send usb packet
 				char debugstr[] = "This is a debug string.";
 				usb_message msg;
 				memset(&msg, 0, sizeof(usb_message));
 				msg.magic = USB_MAGIC_NUMBER;
 				msg.type = USB_DEBUG;
-				msg.seqno = usb_seqno++;
+				msg.seqno = 0;
 				msg.payload_length = strlen(debugstr);
 				msg.payload = debugstr;
 				int cnt = skynet_cdc_write_message(&msg);
 				DBG("n: %d\n", cnt);
-
-				skynet_led_blink_passive(50);
-
-				msDelay(1000);
-
+				break;
+			}
+			case EVENT_DEBUG_2:
+			{
+				// DEBUG: send RF packet
+				char* dbg_string = "Hello world! 0123456789 <=>?@";
+				radio_send_variable_packet(dbg_string, strlen(dbg_string));
+				break;
+			}
+			default: {
 				break;
 			}
 		}
 
 		// Sleep until next IRQ happens
-		__WFI();
+		cpu_sleep();
 	}
-
-	///// END OF USB DEBUG PROGRAM - lines below won't be reached ///////
-
 
     return 0;
 }
+
+void skynet_received_packet(skynet_packet *pkt) {
+	// send debug message
+	usb_message msg;
+	msg.seqno = 0;
+	msg.type = USB_DEBUG;
+	msg.payload_length = pkt->length;
+	char buf[pkt->length];
+	msg.payload = buf;
+	memcpy(buf, pkt->data, pkt->length);
+
+	skynet_cdc_write_message(&msg);
+}
+
 
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
@@ -187,3 +218,5 @@ void skynet_cdc_received_message(usb_message *msg) {
 	free(msg->payload);
 	free(msg);
 }
+
+

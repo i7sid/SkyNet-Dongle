@@ -23,7 +23,7 @@
  */
 typedef enum event_types {
 	EVENT_NONE = 0,			///< @brief No event queued (empty)
-	EVENT_BT_GOT_PACKET,	///< @brief Received packet via bluetooth.
+	EVENT_ERROR,			///< @brief An error occured in software.
 	EVENT_RF_GOT_PACKET,	///< @brief Received packet via radio.
 	EVENT_SWITCH_SINGLE,	///< @brief Input switch was pressed one time.
 	EVENT_SWITCH_DOUBLE,	///< @brief Input switch was pressed two times.
@@ -32,7 +32,11 @@ typedef enum event_types {
 	EVENT_CRITICAL_BATTERY,	///< @brief Battery empty.
 	EVENT_EXT_PWR_PLUGGED,	///< @brief External power supplied, can charge.
 	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
-	EVENT_USB_RX_MESSAGE	///< @brief USB CDC data available.
+	EVENT_USB_RX_MESSAGE,	///< @brief USB CDC data available.
+	EVENT_DEBUG_1,			///< @brief Reserved for debugging purposes.
+	EVENT_DEBUG_2,			///< @brief Reserved for debugging purposes.
+	EVENT_DEBUG_3,			///< @brief Reserved for debugging purposes.
+	EVENT_DEBUG_4			///< @brief Reserved for debugging purposes.
 } event_types;
 
 typedef struct queued_event {
