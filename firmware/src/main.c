@@ -183,7 +183,7 @@ int main(void) {
 			{
 				// DEBUG: send RF packet
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
-				radio_send_variable_packet(dbg_string, strlen(dbg_string));
+				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
 				break;
 			}
 			default: {

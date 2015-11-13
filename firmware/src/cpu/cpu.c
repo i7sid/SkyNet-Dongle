@@ -54,19 +54,12 @@ INLINE void cpu_sleep() {
 void cpu_powerdown() {
 	cpu_powered_down = true;
 
-	skynet_led_red(true);
-	skynet_led_green(true);
-	skynet_led_blue(true);
-	msDelay(250);
-	skynet_led_green(false);
-	msDelay(250);
-	skynet_led_red(false);
-	msDelay(250);
-	skynet_led_blue(false);
+	skynet_led_blink_active(100);
+	msDelay(50);
+	skynet_led_blink_active(100);
 
 
 	adc_deinit();
-	bt_shutdown();
 	radio_shutdown();
 	dcdc_set_powersave(true);
 	msDelayActive(50);
@@ -105,17 +98,13 @@ void cpu_powerdown() {
 	}
 
 
-	skynet_led_green(true);
-	skynet_led_red(true);
-	skynet_led_blue(true);
-	msDelayActive(1000);
-	skynet_led_red(false);
-	skynet_led_green(false);
-	skynet_led_blue(false);
+	skynet_led_blink_active(100);
+	msDelay(50);
+	skynet_led_blink_active(100);
+
 
 	dcdc_set_powersave(false);
 	adc_init();
-	bt_init();
 
 #ifdef SKYNET_RX_TEST
 	radio_init();
@@ -123,8 +112,11 @@ void cpu_powerdown() {
 
 	adc_start_buffered_measure();
 
-	skynet_led_green(true);
-	msDelay(1000);
-	skynet_led_green(false);
+	skynet_led_blink_active(100);
+	msDelay(50);
+	skynet_led_blink_active(100);
+	msDelay(50);
+	skynet_led_blink_active(100);
+
 }
 
