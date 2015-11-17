@@ -202,18 +202,25 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// send debug message
 	usb_message msg;
 	msg.seqno = 0;
-	msg.type = USB_DEBUG;
+	msg.type = USB_SKYNET_PACKET;
 	msg.payload_length = pkt->length;
 	char buf[pkt->length];
 	msg.payload = buf;
 	memcpy(buf, pkt->data, pkt->length);
 
 	skynet_cdc_write_message(&msg);
+
+	free(pkt->data);
+	free(pkt);
 }
 
 
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
+
+	if (msg->type == USB_SKYNET_PACKET) {
+		radio_send_variable_packet((uint8_t*)msg->payload, msg->payload_length);
+	}
 
 	free(msg->payload);
 	free(msg);

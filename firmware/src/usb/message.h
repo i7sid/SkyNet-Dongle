@@ -22,10 +22,10 @@
  * @brief	Different types of data transferred over USB.
  */
 typedef enum usb_packet_type {
-	USB_PACKET  = 0,	///< SkyNet data packet
-	USB_CONTROL = 1,	///< Node control message
-	USB_INFO    = 2,	///< Pure information
-	USB_DEBUG   = 3		///< Debugging string (as from sprintf)
+	USB_SKYNET_PACKET  = 0,	///< SkyNet data packet
+	USB_CONTROL = 1,		///< Node control message
+	USB_INFO    = 2,		///< Pure information
+	USB_DEBUG   = 3			///< Debugging string (as from sprintf)
 } usb_packet_type;
 
 /**
