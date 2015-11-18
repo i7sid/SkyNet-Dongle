@@ -16,7 +16,7 @@
 
 
 /// @brief 	Defines the maximum amount of events that can wait in the event queue.
-#define MAX_QUEUED_EVENTS 	(64)
+#define MAX_QUEUED_EVENTS 	(32)
 
 /**
  * @brief	All possible types of events that can be queued and processed.

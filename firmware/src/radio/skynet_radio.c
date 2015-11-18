@@ -313,7 +313,7 @@ void radio_packet_handler(void) {
 				}
 #endif
 				if (Si446xCmd.GET_INT_STATUS.PH_STATUS & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
-					DBG("RECEIVED, remaining: %d\n", remaining);
+					//DBG("RECEIVED, remaining: %d\n", remaining);
 					break;
 				}
 				else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT) {
@@ -335,9 +335,11 @@ void radio_packet_handler(void) {
 		skynet_packet *pkt = malloc(sizeof(skynet_packet));
 		char* newdata = malloc(copy_length * sizeof(char));
 		if (pkt != NULL) {
-			memcpy(newdata, data, SKYNET_RADIO_MAX_SIZE);
+			//printf("pkt: %p\n", pkt);				// DEBUG: pointer check
+			//printf("newdata: %p\n", newdata);		// DEBUG: pointer check
+			memcpy(newdata, data, copy_length);
 			pkt->data = newdata;
-			pkt->length = SKYNET_RADIO_MAX_SIZE;
+			pkt->length = copy_length;
 			events_enqueue(EVENT_RF_GOT_PACKET, pkt);
 		}
 		else {

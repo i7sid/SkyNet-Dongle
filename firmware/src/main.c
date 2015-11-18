@@ -5,10 +5,10 @@
 
 
 ///@brief Send a usb debug packet each second.
-#define DEBUG_SEND_USB_TEST
+//#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-#define DEBUG_SEND_RF_TEST
+//#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -56,10 +56,12 @@ void skynet_received_packet(skynet_packet *pkt);
 
 void debug_send_usb(void) {
 	events_enqueue(EVENT_DEBUG_1, NULL);
+	register_delayed_event(1000, debug_send_usb);
 }
 
 void debug_send_rf(void) {
 	events_enqueue(EVENT_DEBUG_2, NULL);
+	register_delayed_event(1000, debug_send_rf);
 }
 
 
@@ -149,6 +151,7 @@ int main(void) {
     skynet_led_blink_active(100);
 
 	while (1) {
+		skynet_cdc_receive_data();
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -184,6 +187,7 @@ int main(void) {
 				// DEBUG: send RF packet
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
 				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
+				skynet_led_blink_passive(100);
 				break;
 			}
 			default: {
@@ -199,9 +203,10 @@ int main(void) {
 }
 
 void skynet_received_packet(skynet_packet *pkt) {
+	DBG("pkt recv (length: %d)\n", pkt->length);
 	// send debug message
 	usb_message msg;
-	msg.seqno = 0;
+	msg.seqno = 0; 							// chose automatically next one
 	msg.type = USB_SKYNET_PACKET;
 	msg.payload_length = pkt->length;
 	char buf[pkt->length];

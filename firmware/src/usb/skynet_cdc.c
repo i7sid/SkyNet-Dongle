@@ -133,7 +133,6 @@ void skynet_cdc_disconnect(void) {
 void USB_IRQHandler(void)
 {
 	USBD_API->hw->ISR(g_hUsb);
-	skynet_cdc_receive_data();
 }
 
 /* Find the address of interface descriptor for given class type. */
@@ -166,6 +165,7 @@ USB_INTERFACE_DESCRIPTOR *find_IntfDesc(const uint8_t *pDesc, uint32_t intfClass
 
 inline uint32_t skynet_cdc_read(uint8_t *pBuf, uint32_t buf_len) {
 	return vcom_bread(pBuf, buf_len);
+	//return vcom_read_req(pBuf, buf_len);
 }
 
 inline uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len) {
@@ -238,101 +238,99 @@ usb_message usb_received_message;
 usb_receive_state usb_rx_state = USB_RECEIVE_IDLE;
 
 void skynet_cdc_receive_data(void) {
-	int c = 0;
 	usb_received_message.payload = usb_payload_buf;
 
 	unsigned char b[64];
-	c = skynet_cdc_read(b, 64);
+	int c = skynet_cdc_read(b, 64);
 
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];
 
-		if (c) {
-			// expect magic number
-			if (usb_rx_state == USB_RECEIVE_IDLE) {
-				if (buf == USB_MAGIC_BYTE1) {
-					// wrong byte order, reverse
-					usb_reverse = true;
-					usb_rx_state = USB_RECEIVE_MAGIC;
-				}
-				else if (buf == USB_MAGIC_BYTE2) {
-					// correct byte order, no reverse
-					usb_reverse = false;
-					usb_rx_state = USB_RECEIVE_MAGIC;
-				}
-				else {
-					usb_rx_state = USB_RECEIVE_IDLE;
-				}
+		// expect magic number
+		if (usb_rx_state == USB_RECEIVE_IDLE) {
+			if (buf == USB_MAGIC_BYTE1) {
+				// wrong byte order, reverse
+				usb_reverse = true;
+				usb_rx_state = USB_RECEIVE_MAGIC;
 			}
-			else if (usb_rx_state == USB_RECEIVE_MAGIC) {
-				if (usb_reverse == true && buf == USB_MAGIC_BYTE2) {
-					usb_rx_state = USB_RECEIVE_TYPE;
-				}
-				else if (usb_reverse == false && buf == USB_MAGIC_BYTE1) {
-					usb_rx_state = USB_RECEIVE_TYPE;
-				}
-				else {
-					usb_rx_state = USB_RECEIVE_IDLE;
-				}
+			else if (buf == USB_MAGIC_BYTE2) {
+				// correct byte order, no reverse
+				usb_reverse = false;
+				usb_rx_state = USB_RECEIVE_MAGIC;
 			}
-			else if (usb_rx_state == USB_RECEIVE_TYPE) {
-				usb_received_message.type = buf;
-				usb_rx_state = USB_RECEIVE_SEQNO;
-				// TODO check type is if valid?
+			else {
+				usb_rx_state = USB_RECEIVE_IDLE;
 			}
-			else if (usb_rx_state == USB_RECEIVE_SEQNO) {
-				usb_received_message.seqno = buf;
-				usb_rx_state = USB_RECEIVE_PAYLOAD_LENGTH;
+		}
+		else if (usb_rx_state == USB_RECEIVE_MAGIC) {
+			if (usb_reverse == true && buf == USB_MAGIC_BYTE2) {
+				usb_rx_state = USB_RECEIVE_TYPE;
+			}
+			else if (usb_reverse == false && buf == USB_MAGIC_BYTE1) {
+				usb_rx_state = USB_RECEIVE_TYPE;
+			}
+			else {
+				usb_rx_state = USB_RECEIVE_IDLE;
+			}
+		}
+		else if (usb_rx_state == USB_RECEIVE_TYPE) {
+			usb_received_message.type = buf;
+			usb_rx_state = USB_RECEIVE_SEQNO;
+			// TODO check type is if valid?
+		}
+		else if (usb_rx_state == USB_RECEIVE_SEQNO) {
+			usb_received_message.seqno = buf;
+			usb_rx_state = USB_RECEIVE_PAYLOAD_LENGTH;
+			usb_read_pos = 0;
+			usb_received_message.payload_length = 0;
+		}
+		else if (usb_rx_state == USB_RECEIVE_PAYLOAD_LENGTH) {
+			// TODO revert if neccessary
+			//printf("length: %d %d\n", usb_read_pos, usb_read_pos*8);
+
+			if (usb_reverse) {
+				usb_received_message.payload_length += ((int)buf << ((3 - usb_read_pos)*8));
+			}
+			else {
+				usb_received_message.payload_length += ((int)buf << ((usb_read_pos)*8));
+			}
+			usb_read_pos++;
+			if (usb_read_pos == 4) {
+				usb_rx_state = USB_RECEIVE_PAYLOAD;
 				usb_read_pos = 0;
-				usb_received_message.payload_length = 0;
 			}
-			else if (usb_rx_state == USB_RECEIVE_PAYLOAD_LENGTH) {
-				// TODO revert if neccessary
-				//printf("length: %d %d\n", usb_read_pos, usb_read_pos*8);
+		}
+		else if (usb_rx_state == USB_RECEIVE_PAYLOAD) {
+			usb_received_message.payload[usb_read_pos] = buf;
+			usb_read_pos++;
 
-				if (usb_reverse) {
-					usb_received_message.payload_length += ((int)buf << ((3 - usb_read_pos)*8));
+			if (usb_read_pos == usb_received_message.payload_length) {
+				usb_rx_state = USB_RECEIVE_IDLE;
+
+				// copy msg
+				usb_message *new_msg = malloc(sizeof(usb_message));
+				char *new_msg_payload = malloc(usb_received_message.payload_length * sizeof(unsigned char));
+
+				if (new_msg == NULL || new_msg_payload == NULL) {
+					DBG("Not enough heap memory for buffering USB packet. Aborting.\n");
+					break;
 				}
-				else {
-					usb_received_message.payload_length += ((int)buf << ((usb_read_pos)*8));
+
+				memcpy(new_msg, &usb_received_message, sizeof(usb_message));
+				memcpy(new_msg_payload, usb_received_message.payload, usb_received_message.payload_length * sizeof(unsigned char));
+				new_msg->payload = new_msg_payload;
+
+				// Now enqueue event. On error free space again.
+				if (!events_enqueue(EVENT_USB_RX_MESSAGE, new_msg)) {
+					free(new_msg_payload);
+					free(new_msg);
+					new_msg_payload = NULL;
+					new_msg = NULL;
 				}
-				usb_read_pos++;
-				if (usb_read_pos == 4) {
-					usb_rx_state = USB_RECEIVE_PAYLOAD;
-					usb_read_pos = 0;
-				}
+				//usb_message_avail = true;
+				//printf("event\n");
 			}
-			else if (usb_rx_state == USB_RECEIVE_PAYLOAD) {
-				usb_received_message.payload[usb_read_pos] = buf;
-				usb_read_pos++;
 
-				if (usb_read_pos == usb_received_message.payload_length) {
-					usb_rx_state = USB_RECEIVE_IDLE;
-
-					// copy msg
-					usb_message *new_msg = malloc(sizeof(usb_message));
-					char *new_msg_payload = malloc(usb_received_message.payload_length * sizeof(unsigned char));
-
-					if (new_msg == NULL || new_msg_payload == NULL) {
-						DBG("Not enough heap memory for buffering USB packet. Aborting.\n");
-						break;
-					}
-
-					memcpy(new_msg, &usb_received_message, sizeof(usb_message));
-					memcpy(new_msg_payload, usb_received_message.payload, usb_received_message.payload_length * sizeof(unsigned char));
-					new_msg->payload = new_msg_payload;
-
-					// Now enqueue event. On error free space again.
-					if (!events_enqueue(EVENT_USB_RX_MESSAGE, new_msg)) {
-						free(new_msg_payload);
-						free(new_msg);
-						new_msg_payload = NULL;
-						new_msg = NULL;
-					}
-					//usb_message_avail = true;
-					//printf("event\n");
-				}
-			}
 		}
 	}
 }

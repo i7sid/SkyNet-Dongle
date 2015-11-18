@@ -35,7 +35,8 @@ int main(int argc, char** argv) {
 
 	// init serial port on linux systems
 	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
-	string init = "stty -F " + cmd_tty + " pass8 -hupcl clocal 115200";
+	string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
+
 	int s = system(init.c_str());
 	if (s != 0) {
 		cerr << "Could not configure serial port  " << cmd_tty << " . Aborting." << endl;
@@ -44,6 +45,19 @@ int main(int argc, char** argv) {
 
 	// creyte usb_tty object and start rx thread
 	usb_tty tty(cmd_tty, usbReceiveHandler);
+
+	/*
+	while (true) {
+		usb_message m;
+		m.type = USB_DEBUG;
+		m.payload = (char*)string("test").c_str();
+		m.payload_length = 4;
+		m.seqno = 0;
+		tty.usbSendMessage(m);
+		sleep(1);
+	}
+	*/
+
 	std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
 
 
@@ -70,7 +84,7 @@ void parseCmd(int argc, char** argv) {
 
 void usbReceiveHandler(usb_message pkt) {
 	cout << "Received USB message: " << endl;
-	cout << "Type:\t" << pkt.type << endl;
+	cout << "Type:\t" << (int)pkt.type << endl;
 	cout << "SeqNo:\t" << (int)pkt.seqno << endl;
 	cout << "Length:\t" << pkt.payload_length << endl;
 	cout << "Payload:" << endl;
