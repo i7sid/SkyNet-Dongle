@@ -1,0 +1,3 @@
+[submodule "openlpc-USB_Bootloader"]
+	path = openlpc-USB_Bootloader
+	url = git@github.com:michz/openlpc-USB_Bootloader.git
