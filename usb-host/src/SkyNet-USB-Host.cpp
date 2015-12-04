@@ -33,6 +33,8 @@ using namespace std;
 #define COLOR_ERR()			if (prompt_colored) { cerr << ANSI_COLOR_RED; }
 #define COLOR_RESET()		if (prompt_colored) { cerr << ANSI_COLOR_RESET; }
 
+#define MAGIC_NO_COLOR		513
+
 string cmd_tty = "/dev/ttyACM0";
 bool cmd_flash = false;
 bool prompt_colored = true;
@@ -130,7 +132,7 @@ void parseCmd(int argc, char** argv) {
         {"tty",      required_argument, 0, 't'},
         {"flash",    no_argument,       0, 'f'},
         {"color",    no_argument,       0, 'c'},
-        {"no-color", no_argument,       0, 513},
+        {"no-color", no_argument,       0, MAGIC_NO_COLOR},
         {0, 0, 0, 0}
       };
 
@@ -149,7 +151,7 @@ void parseCmd(int argc, char** argv) {
 			case 'c':
 				prompt_colored = true;
 				break;
-			case 513:
+			case MAGIC_NO_COLOR:
 				prompt_colored = false;
 				break;
 			case 'h':
