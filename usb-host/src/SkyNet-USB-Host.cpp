@@ -37,6 +37,7 @@ using namespace std;
 
 string cmd_tty = "/dev/ttyACM0";
 bool cmd_flash = false;
+bool cmd_reset = false;
 bool prompt_colored = true;
 int verbosity = 0;
 
@@ -85,6 +86,17 @@ int main(int argc, char** argv) {
 		tty.usbSendMessage(m);
 		exit(0);
 	}
+	else if (cmd_reset) {
+		usb_message m;
+		char payload[USB_MAX_PAYLOAD_LENGTH];
+		m.type = USB_CONTROL;
+		m.payload_length = 1;
+		m.payload = payload;
+		m.payload[0] = (char)USB_CTRL_RESET;
+
+		tty.usbSendMessage(m);
+		exit(0);
+	}
 
 	/*
 	while (true) {
@@ -111,11 +123,12 @@ int main(int argc, char** argv) {
 }
 
 void printUsage(int argc, char** argv) {
-	cerr << "Usage: " << argv[0] << " [-f] [-t /dev/tty*] [-h] [-?]" << endl;
+	cerr << "Usage: " << argv[0] << " [-r] [-n] [-f] [-t /dev/tty*] [-h] [-?]" << endl;
 	cerr << endl;
 	cerr << "-t, --tty      Specifies which terminal to use for serial connection." << endl;
 	cerr << "               (default: /dev/ttyUSB0)" << endl;
 	cerr << "-f, --flash    Tell connected dongle to enter bootloader to flash new firmware." << endl;
+	cerr << "-r, --reset    Tell connected dongle to reset." << endl;
 	cerr << "-c, --color    Color console output. (default)" << endl;
 	cerr << "--no-color     Do not color console output." << endl;
 	cerr << "-h, -?, --help Print this usage message." << endl;
@@ -129,6 +142,7 @@ void parseCmd(int argc, char** argv) {
         {"verbose",  no_argument,       0, 'v'},
         {"help",     no_argument,       0, 'h'},
         {"tty",      required_argument, 0, 't'},
+        {"reset",    no_argument,       0, 'r'},
         {"flash",    no_argument,       0, 'f'},
         {"color",    no_argument,       0, 'c'},
         {"no-color", no_argument,       0, MAGIC_NO_COLOR},
@@ -136,10 +150,13 @@ void parseCmd(int argc, char** argv) {
     };
 
     int opt_index = 0; // getopt_long stores the option index here.
-	while ((c = getopt_long(argc, argv, "cvh?ft:", long_options, &opt_index)) != -1) {
+	while ((c = getopt_long(argc, argv, "rcvh?ft:", long_options, &opt_index)) != -1) {
 		switch (c) {
 			case 't':
 				cmd_tty = string(optarg);
+				break;
+			case 'r':
+				cmd_reset = true;
 				break;
 			case 'f':
 				cmd_flash = true;
