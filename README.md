@@ -37,9 +37,11 @@ Pinouts
 Flashing / Programming
 ----------------------
 First flashing has to be done via ISP or JTAG.
-Flash RDB1768cmsis2_usb_bootloader/Release/RDB1768cmsis2_usb_bootloader.axf
-(or .bin) to the processor. Afterwards you should be able to flash new firmware files
+Flash `bootloader/src/bootloader.bin` to the processor.
+Afterwards you should be able to flash new firmware files
 (.bin) via USB and mass storage emulation.
+
+Bootloader source: https://github.com/openxc/openlpc-USB_Bootloader
 
 
 
