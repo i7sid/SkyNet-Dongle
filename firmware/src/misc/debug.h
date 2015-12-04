@@ -14,6 +14,9 @@
 #if defined(SEMIHOSTING_CONSOLE)
 #include <stdio.h>
 #define DBG printf
+#elif defined(DEBUG_USB)
+#include <stdio.h>
+#define DBG skynet_cdc_write_debug
 #else
 #define DBG
 #endif

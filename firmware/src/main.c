@@ -175,16 +175,7 @@ int main(void) {
 			{
 				// DEBUG: send usb packet
 				char debugstr[] = "This is a debug string.";
-				//sprintf(debugstr, "%x \r\n", &goto_bootloader);
-				usb_message msg;
-				memset(&msg, 0, sizeof(usb_message));
-				msg.magic = USB_MAGIC_NUMBER;
-				msg.type = USB_DEBUG;
-				msg.seqno = 0;
-				msg.payload_length = strlen(debugstr);
-				msg.payload = debugstr;
-				int cnt = skynet_cdc_write_message(&msg);
-				DBG("n: %d\n", cnt);
+				skynet_cdc_write_debug("%s\n", debugstr);
 				break;
 			}
 			case EVENT_DEBUG_2:
