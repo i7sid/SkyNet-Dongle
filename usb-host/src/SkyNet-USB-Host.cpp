@@ -125,8 +125,7 @@ void printUsage(int argc, char** argv) {
 void parseCmd(int argc, char** argv) {
 	int c = 0;
 
-    static struct option long_options[] =
-      {
+    static struct option long_options[] = {
         {"verbose",  no_argument,       0, 'v'},
         {"help",     no_argument,       0, 'h'},
         {"tty",      required_argument, 0, 't'},
@@ -134,7 +133,7 @@ void parseCmd(int argc, char** argv) {
         {"color",    no_argument,       0, 'c'},
         {"no-color", no_argument,       0, MAGIC_NO_COLOR},
         {0, 0, 0, 0}
-      };
+    };
 
     int opt_index = 0; // getopt_long stores the option index here.
 	while ((c = getopt_long(argc, argv, "cvh?ft:", long_options, &opt_index)) != -1) {
