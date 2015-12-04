@@ -31,7 +31,7 @@ The library was slightly adjusted to compile for and work nicely on LPC1769.
 
 Pinouts
 -------
-... are documented in board/pinouts.txt .
+... are documented in `board/pinouts.txt`.
 
 
 Flashing / Programming
