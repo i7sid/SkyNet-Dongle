@@ -1,0 +1,23 @@
+LCPUSB - USB stack for LPC microcontrollers
+============================================
+
+This is a fork of the [LPCUSB](http://sourceforge.net/projects/lpcusb/) project
+which adds support for LPC17xx MCUs. That project hasn't been touched since
+2007, unfortunately, but it still works great.
+
+## Usage
+
+In your build process, define a `LPC17xx` preprocessor flag to build for the
+LPC17xx, e.g.:
+
+    $ gcc ... -DLPC17xx ...
+
+This has been tested on the LPC1769.
+
+## License
+
+The core of LPCUSB is made available under the BSD license. Some of the examples
+are covered by the GNU General Public License (check the source files).
+
+The contributions in this fork are also made available under the BSD license,
+and are Copyright 2013 Ford Motor Company.

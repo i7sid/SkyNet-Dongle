@@ -44,4 +44,17 @@ void cpu_sleep();
 void cpu_powerdown();
 
 
+/**
+ * @brief			Resets the node.
+ */
+void cpu_reset();
+
+/**
+ * @brief			Resets the cpu to enter bootloader mode.
+ *
+ * Starts a USB mass storage device to transfer new firmware.
+ */
+void cpu_enter_iap_mode();
+
+
 #endif /* PM_H_ */

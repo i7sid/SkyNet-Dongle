@@ -5,7 +5,7 @@
 
 
 ///@brief Send a usb debug packet each second.
-//#define DEBUG_SEND_USB_TEST
+#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
@@ -49,6 +49,8 @@ const uint32_t OscRateIn = 12000000; // 12 MHz
 const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
+__NOINIT(RAM2) volatile uint8_t goto_bootloader;
+
 
 void skynet_cdc_received_message(usb_message *msg);
 void skynet_received_packet(skynet_packet *pkt);
@@ -66,6 +68,7 @@ void debug_send_rf(void) {
 
 
 int main(void) {
+	goto_bootloader = 0;
 
 
 #if defined (__USE_LPCOPEN)
@@ -124,6 +127,7 @@ int main(void) {
     skynet_cdc_init();
 
 
+
 #ifdef IS_BASESTATION
     // base station init
     skynetbase_init();
@@ -171,15 +175,7 @@ int main(void) {
 			{
 				// DEBUG: send usb packet
 				char debugstr[] = "This is a debug string.";
-				usb_message msg;
-				memset(&msg, 0, sizeof(usb_message));
-				msg.magic = USB_MAGIC_NUMBER;
-				msg.type = USB_DEBUG;
-				msg.seqno = 0;
-				msg.payload_length = strlen(debugstr);
-				msg.payload = debugstr;
-				int cnt = skynet_cdc_write_message(&msg);
-				DBG("n: %d\n", cnt);
+				skynet_cdc_write_debug("%s\n", debugstr);
 				break;
 			}
 			case EVENT_DEBUG_2:
@@ -223,12 +219,25 @@ void skynet_received_packet(skynet_packet *pkt) {
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
 
-	if (msg->type == USB_SKYNET_PACKET) {
-		radio_send_variable_packet((uint8_t*)msg->payload, msg->payload_length);
+	switch(msg->type) {
+		case USB_SKYNET_PACKET: {
+			radio_send_variable_packet((uint8_t*)msg->payload, msg->payload_length);
+			break;
+		}
+		case USB_CONTROL: {
+			switch((usb_ctrl_msg_type)(msg->payload[0])) {
+				case USB_CTRL_RESET:
+					cpu_reset();
+					break;
+				case USB_CTRL_BOOTLOADER:
+					cpu_enter_iap_mode();
+					break;
+			}
+			break;
+		}
 	}
 
+	// Must be done! Memory was allocated dynamically.
 	free(msg->payload);
 	free(msg);
 }
-
-
