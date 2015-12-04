@@ -291,6 +291,11 @@ void SystemSetupClocking(void)
 //#define USER_FLASH_START (SECTOR_16_START)
 #define USER_FLASH_START (SECTOR_16_START)
 
+#define NVIC_NUM_VECTORS          (16 + 33)     // CORE + MCU Peripherals
+#define NVIC_RAM_VECTOR_ADDRESS   (0x10000000)  // Location of vectors in RAM
+static volatile uint32_t* vectors = (uint32_t*)NVIC_RAM_VECTOR_ADDRESS;
+
+
 // TODO: Dokumentieren, wie man vorgehen muss, um Bootloader-Größe zu ändern
 //       (also größe des reservierten Flash-Speichers)
 
@@ -311,7 +316,16 @@ void SystemInit(void)
 	Board_SystemInit();
 #endif
 
-	//SCB->VTOR = (uint32_t) interrupt_vectors;
+	////SCB->VTOR = (uint32_t) interrupt_vectors;
 	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); // TODO: woher?
+
+
+	// copy the vector table to SRAM to enable debugging
+	uint32_t *old_vectors = (uint32_t*)SCB->VTOR;
+	for (int i=0; i<NVIC_NUM_VECTORS; i++) {
+		vectors[i] = old_vectors[i];
+	}
+
+	SCB->VTOR = (uint32_t)vectors;
 }
 

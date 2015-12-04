@@ -22,7 +22,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="main"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_REGISTER_BOOKKEEPING" value="false"/>
 <booleanAttribute key="org.eclipse.cdt.launch.ENABLE_VARIABLE_BOOKKEEPING" value="false"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/SkyNet-Dongle-firmware.axf"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug Semihosting/SkyNet-Dongle-firmware.axf"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="SkyNet-Dongle-firmware"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.debug.400633509"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="false"/>
