@@ -283,6 +283,17 @@ void SystemSetupClocking(void)
 }
 
 
+//#define USER_START_SECTOR 16
+#define SECTOR_5_START      0x00005000
+#define SECTOR_8_START      0x00008000
+#define SECTOR_10_START     0x0000a000
+#define SECTOR_16_START     0x00010000
+//#define USER_FLASH_START (SECTOR_16_START)
+#define USER_FLASH_START (SECTOR_16_START)
+
+// TODO: Dokumentieren, wie man vorgehen muss, um Bootloader-Größe zu ändern
+//       (also größe des reservierten Flash-Speichers)
+
 /* Set up and initialize hardware prior to call to main */
 void SystemInit(void)
 {
@@ -299,5 +310,8 @@ void SystemInit(void)
 	/* Board specific SystemInit */
 	Board_SystemInit();
 #endif
+
+	//SCB->VTOR = (uint32_t) interrupt_vectors;
+	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); // TODO: woher?
 }
 

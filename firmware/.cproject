@@ -142,7 +142,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/usb}&quot;"/>
 								</option>
 								<option id="com.crt.advproject.c.misc.dialect.1839501297" name="Language standard" superClass="com.crt.advproject.c.misc.dialect" value="com.crt.advproject.misc.dialect.gnu99" valueType="enumerated"/>
-								<option id="com.crt.advproject.gcc.exe.release.option.debugging.level.141964925" superClass="com.crt.advproject.gcc.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option id="com.crt.advproject.gcc.exe.release.option.debugging.level.141964925" name="Debug Level" superClass="com.crt.advproject.gcc.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<inputType id="com.crt.advproject.compiler.input.1291920712" superClass="com.crt.advproject.compiler.input"/>
 							</tool>
 							<tool id="com.crt.advproject.gas.exe.release.1054091089" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.release">
@@ -207,9 +207,10 @@
 &lt;memory can_program="true" id="Flash" is_ro="true" type="Flash"/&gt;
 &lt;memory id="RAM" type="RAM"/&gt;
 &lt;memory id="Periph" is_volatile="true" type="Peripheral"/&gt;
-&lt;memoryInstance derived_from="Flash" edited="true" id="MFlash512" location="0x0" size="0x80000"/&gt;
-&lt;memoryInstance derived_from="RAM" id="RamLoc32" location="0x10000000" size="0x8000"/&gt;
-&lt;memoryInstance derived_from="RAM" id="RamAHB32" location="0x2007c000" size="0x8000"/&gt;
+&lt;memoryInstance derived_from="Flash" edited="true" id="MFlash512" location="0x10000" size="0x70000"/&gt;
+&lt;memoryInstance derived_from="RAM" edited="true" id="RamLoc32" location="0x10000000" size="0x7ff0"/&gt;
+&lt;memoryInstance derived_from="RAM" edited="true" id="RamBootShared" location="0x10007ff0" size="0x10"/&gt;
+&lt;memoryInstance derived_from="RAM" edited="true" id="RamAHB32" location="0x2007c000" size="0x8000"/&gt;
 &lt;prog_flash blocksz="0x1000" location="0" maxprgbuff="0x1000" progwithcode="TRUE" size="0x10000"/&gt;
 &lt;prog_flash blocksz="0x8000" location="0x10000" maxprgbuff="0x1000" progwithcode="TRUE" size="0x70000"/&gt;
 &lt;peripheralInstance derived_from="LPC17_NVIC" id="NVIC" location="0xE000E000"/&gt;
@@ -305,4 +306,5 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>

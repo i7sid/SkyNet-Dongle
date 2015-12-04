@@ -21,6 +21,7 @@
 
 
 volatile bool cpu_powered_down = false;
+extern volatile uint8_t goto_bootloader;
 
 void cpu_set_speed(cpu_speed speed) {
 	switch (speed) {
@@ -42,7 +43,6 @@ void cpu_set_speed(cpu_speed speed) {
 	}
 
 	DBG("CPU div: %d\n", Chip_Clock_GetCPUClockDiv());
-
 }
 
 
@@ -118,5 +118,16 @@ void cpu_powerdown() {
 	msDelay(50);
 	skynet_led_blink_active(100);
 
+}
+
+
+void cpu_reset(void) {
+	goto_bootloader = 0x0;
+	NVIC_SystemReset();
+}
+
+void cpu_enter_iap_mode(void) {
+	goto_bootloader = 0xAA;
+	NVIC_SystemReset();
 }
 

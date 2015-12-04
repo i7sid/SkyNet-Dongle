@@ -29,6 +29,14 @@ typedef enum usb_packet_type {
 } usb_packet_type;
 
 /**
+ * @brief	Different types of control messages.
+ */
+typedef enum usb_ctrl_msg_type {
+	USB_CTRL_RESET  = 0,		///< Reset the node
+	USB_CTRL_BOOTLOADER  = 1	///< Reset the node and switch to bootloader
+} usb_ctrl_msg_type;
+
+/**
  * @brief	A "message" transferred over USB.
  *
  * Can be real networking packet, or control commands, debug strings, ...
