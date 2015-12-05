@@ -5,13 +5,16 @@
 
 
 ///@brief Send a usb debug packet each second.
-#define DEBUG_SEND_USB_TEST
+//#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
 
+///@brief Test various basestation stuff.
+#define DEBUG_BASESTATION_TEST
+
 ///@brief This module is a basestation
-//#define IS_BASESTATION
+#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -43,13 +46,18 @@
 #include "cmsis_175x_6x.h"
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
+#include "basestation/compass/compass.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
 const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
-__NOINIT(RAM2) volatile uint8_t goto_bootloader;
+
+#ifndef SEMIHOSTING_CONSOLE
+__NOINIT(RAM2)
+#endif
+volatile uint8_t goto_bootloader;
 
 
 void skynet_cdc_received_message(usb_message *msg);
@@ -66,6 +74,10 @@ void debug_send_rf(void) {
 	register_delayed_event(1000, debug_send_rf);
 }
 
+void debug_basestation(void) {
+	events_enqueue(EVENT_DEBUG_3, NULL);
+	register_delayed_event(1000, debug_basestation);
+}
 
 int main(void) {
 	goto_bootloader = 0;
@@ -106,6 +118,14 @@ int main(void) {
 	dcdc_init();
 
 
+
+#ifdef IS_BASESTATION
+    // base station init
+    skynetbase_init();
+#endif
+
+
+
 	// give visual feedback that program started
 	skynet_led(true);
 	msDelay(250);
@@ -128,13 +148,6 @@ int main(void) {
 
 
 
-#ifdef IS_BASESTATION
-    // base station init
-    skynetbase_init();
-#endif
-
-
-
 #ifdef DEBUG_SEND_USB_TEST
     // DEBUG: Send regularily usb packets
     register_delayed_event(1000, debug_send_usb);
@@ -143,6 +156,11 @@ int main(void) {
 #ifdef DEBUG_SEND_RF_TEST
     // DEBUG: Send regularily rf packets
     register_delayed_event(1000, debug_send_rf);
+#endif
+
+#ifdef DEBUG_BASESTATION_TEST
+    // DEBUG: Send regularily rf packets
+    register_delayed_event(1000, debug_basestation);
 #endif
 
     DBG("Initialization complete.\n");
@@ -183,6 +201,14 @@ int main(void) {
 				// DEBUG: send RF packet
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
 				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
+				skynet_led_blink_passive(100);
+				break;
+			}
+			case EVENT_DEBUG_3:
+			{
+				// DEBUG: read compass
+				float d = skynetbase_compass_read();
+				DBG("Compass: %.6f\n", d);
 				skynet_led_blink_passive(100);
 				break;
 			}
@@ -232,6 +258,11 @@ void skynet_cdc_received_message(usb_message *msg) {
 				case USB_CTRL_BOOTLOADER:
 					cpu_enter_iap_mode();
 					break;
+#ifdef IS_BASESTATION
+				case USB_CTRL_CALIB_COMPASS:
+					skynetbase_compass_calibrate();
+					break;
+#endif
 			}
 			break;
 		}

@@ -33,7 +33,8 @@ typedef enum usb_packet_type {
  */
 typedef enum usb_ctrl_msg_type {
 	USB_CTRL_RESET  = 0,		///< Reset the node
-	USB_CTRL_BOOTLOADER  = 1	///< Reset the node and switch to bootloader
+	USB_CTRL_BOOTLOADER  = 1,	///< Reset the node and switch to bootloader
+	USB_CTRL_CALIB_COMPASS  = 2	///< Start calibration sequence of compass
 } usb_ctrl_msg_type;
 
 /**

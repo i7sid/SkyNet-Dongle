@@ -316,6 +316,8 @@ void SystemInit(void)
 	Board_SystemInit();
 #endif
 
+
+#ifndef SEMIHOSTING_CONSOLE
 	////SCB->VTOR = (uint32_t) interrupt_vectors;
 	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); // TODO: woher?
 
@@ -327,5 +329,6 @@ void SystemInit(void)
 	}
 
 	SCB->VTOR = (uint32_t)vectors;
+#endif
 }
 
