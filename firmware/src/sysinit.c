@@ -283,17 +283,18 @@ void SystemSetupClocking(void)
 }
 
 
+#ifndef SEMIHOSTING_CONSOLE
 //#define USER_START_SECTOR 16
 #define SECTOR_5_START      0x00005000
 #define SECTOR_8_START      0x00008000
 #define SECTOR_10_START     0x0000a000
 #define SECTOR_16_START     0x00010000
-//#define USER_FLASH_START (SECTOR_16_START)
 #define USER_FLASH_START (SECTOR_16_START)
 
 #define NVIC_NUM_VECTORS          (16 + 33)     // CORE + MCU Peripherals
 #define NVIC_RAM_VECTOR_ADDRESS   (0x10000000)  // Location of vectors in RAM
 static volatile uint32_t* vectors = (uint32_t*)NVIC_RAM_VECTOR_ADDRESS;
+#endif
 
 
 // TODO: Dokumentieren, wie man vorgehen muss, um Bootloader-Größe zu ändern

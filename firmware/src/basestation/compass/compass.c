@@ -37,11 +37,8 @@ float scalez = 1;
 int skynetbase_compass_init(void) {
 	DBG("Initialize Compass Modul...\n");
 
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 10, IOCON_MODE_INACT, IOCON_FUNC2);
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 11, IOCON_MODE_INACT, IOCON_FUNC2);
-
-	//Chip_IOCON_PinMux(LPC_IOCON, 0, 27, IOCON_MODE_INACT, IOCON_FUNC1);
-	//Chip_IOCON_PinMux(LPC_IOCON, 0, 28, IOCON_MODE_INACT, IOCON_FUNC1);
+	Chip_IOCON_PinMux(LPC_IOCON, COMPASS_I2C_SDA_PORT, COMPASS_I2C_SDA_PIN, IOCON_MODE_INACT, IOCON_FUNC2);
+	Chip_IOCON_PinMux(LPC_IOCON, COMPASS_I2C_SCL_PORT, COMPASS_I2C_SCL_PIN, IOCON_MODE_INACT, IOCON_FUNC2);
 
 	Chip_IOCON_SetI2CPad(LPC_IOCON, I2CPADCFG_STD_MODE);
 
@@ -52,42 +49,15 @@ int skynetbase_compass_init(void) {
 	Chip_I2C_SetMasterEventHandler(COMPASS_I2C, Chip_I2C_EventHandlerPolling);
 
 	//HMC5883L init
-	/*
-	uint8_t test [2] = {0xFF,0xFF};
-	uint8_t Write_CRA [2]= {0x00, 0x70}; //default settings
-	uint8_t Write_CRB [2]= {0x03, 0xA0}; //gain level
-	*/
 
-	/*
-	 * FIXED This sending test causes failure of commuication with compass on I2C2.
-	 * Works fine on I2C0.
-	 * not necessarily needed, so skipped on board version 3.1
-	 *
-	 * FIXME First try of Communication always fails.
-	 */
 
-	if((Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, (uint8_t[]){0xFF,0xFF}, 2)) != 2) {
+	// FIXME First try of Communication always fails.
+	if((Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, (uint8_t[]){0xFF, 0xFF}, 2)) != 2) {
 		//DBG("Error sending test1: Compass\n");
 	}
 	else {
 		DBG("First compass try does not fail anymore. Hooray!");
 	}
-
-	/*
-	if((Chip_I2C_MasterSend(COMPASS_I2C,HMC5883L_Addr,test,2))!=2){
-		DBG("Error sending test2: Compass\n");
-		return false;
-	}
-	*/
-
-	/*
-	if((Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, Write_CRA, 2))!=2){
-		DBG("Error I2C setting control register A\n");
-	}
-	if((Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, Write_CRB, 2))!=2){
-		DBG("Error I2C setting control register B\n");
-	}
-	*/
 
 	Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, (uint8_t[]){HMC5883L_CRA, 0x70}, 2);
 	Chip_I2C_MasterSend(COMPASS_I2C, HMC5883L_Addr, (uint8_t[]){HMC5883L_CRB, 0xA0}, 2);
@@ -137,10 +107,6 @@ static float heading_to_degree(float heading) {
 
 // Source for calculation: http://bildr.org/2012/02/hmc5883l_arduino/
 float skynetbase_compass_read(void) {
-	//DBG("Readcompass enter!\n");
-	//DBG("xoffset:%f yoffset:%f scale:%f",xoffset,yoffset,scale);
-	//while(1){
-
 	int16_t raw_x;
 	int16_t raw_y;
 	int16_t raw_z;
@@ -160,7 +126,6 @@ float skynetbase_compass_read(void) {
 			);
 
 	heading += magneticdeclination;
-
 
 	return heading_to_degree(heading);
 }

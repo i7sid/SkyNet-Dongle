@@ -12,7 +12,7 @@ uint16_t windvane_max_target = 360;
 
 int skynetbase_windvane_init(void) {
 	DBG("Initialize Wind Vane...\n");
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 3, IOCON_MODE_INACT, IOCON_FUNC2);
+	Chip_IOCON_PinMux(LPC_IOCON, WINVANE_PORT, WINVANE_PIN, IOCON_MODE_INACT, IOCON_FUNC2);
 
 	skynetbase_windvane_start();
 	DBG("Initialize Wind Vane complete.\n");

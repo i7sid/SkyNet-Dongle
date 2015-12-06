@@ -105,6 +105,21 @@
 #define ADC_CHANNEL_EXT				ADC_CH0 	// AD0[3]
 
 
+// basestation
+#define WINCUPS_PORT				2
+#define WINCUPS_PIN					13
+#define WINVANE_PORT				0
+#define WINVANE_PIN					3
+#define COMPASS_I2C_SDA_PORT		0
+#define COMPASS_I2C_SDA_PIN			10
+#define COMPASS_I2C_SCL_PORT		0
+#define COMPASS_I2C_SCL_PIN			11
+#define COMPASS_I2C					I2C2
+#define COMPASS_I2C_IRQn			I2C2_IRQn
+
+
+
+
 // make some tasks more readable in code.
 #define PINGET(port, pin)	(Chip_GPIO_ReadPortBit(LPC_GPIO, port, pin))
 #define PINSET(port, pin)	(Chip_GPIO_WritePortBit(LPC_GPIO, port, pin, true))

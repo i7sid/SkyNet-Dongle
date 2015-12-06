@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "chip.h"
+#include "../../misc/misc.h"
 #include "../../misc/debug.h"
 #include "../../cpu/systick.h"
 
@@ -18,8 +19,6 @@
 #define write_Addr 			0x3C				// 0b111100
 #define HMC5883L_Addr		0x1E 				// 0x3d or 0x3c >> 1
 #define PI					(float)3.141592653589793
-#define COMPASS_I2C			I2C2
-#define COMPASS_I2C_IRQn	I2C2_IRQn
 
 #define COMPASS_UNCAL_MAX	-32766
 #define COMPASS_UNCAL_MIN	32766
