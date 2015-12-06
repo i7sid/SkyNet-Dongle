@@ -16,7 +16,7 @@ int skynetbase_windvane_init(void) {
 
 	skynetbase_windvane_start();
 	DBG("Initialize Wind Vane complete.\n");
-	return 0;
+	return true;
 }
 
 __INLINE void skynetbase_windvane_start(void) {

@@ -46,8 +46,6 @@
 #include "cmsis_175x_6x.h"
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
-#include "basestation/compass/compass.h"
-#include "basestation/wind/windvane/windvane.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
@@ -162,7 +160,7 @@ int main(void) {
 
 #ifdef DEBUG_BASESTATION_TEST
     // DEBUG: Send regularily rf packets
-    register_delayed_event(1000, debug_basestation);
+    //register_delayed_event(1000, debug_basestation);
 #endif
 
     DBG("Initialization complete.\n");
@@ -214,8 +212,12 @@ int main(void) {
 				DBG("Compass: %.6f\n", d);
 				*/
 
+				/*
 				uint16_t v = skynetbase_windvane_measure();
 				DBG("Windvane: %d\n", v);
+				*/
+
+
 				skynet_led_blink_passive(100);
 				break;
 			}

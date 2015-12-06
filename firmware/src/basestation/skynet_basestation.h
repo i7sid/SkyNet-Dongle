@@ -7,6 +7,11 @@
 #ifndef BASESTATION_SKYNET_BASESTATION_H_
 #define BASESTATION_SKYNET_BASESTATION_H_
 
+#include "wind/windspeed/windspeed.h"
+#include "wind/windvane/windvane.h"
+#include "compass/compass.h"
+#include "gps/gps.h"
+
 
 /**
  * @brief	Initializes all components of the basestation.
