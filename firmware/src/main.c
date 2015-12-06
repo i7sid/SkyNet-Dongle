@@ -47,6 +47,7 @@
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
 #include "basestation/compass/compass.h"
+#include "basestation/wind/windvane/windvane.h"
 
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
@@ -118,14 +119,6 @@ int main(void) {
 	dcdc_init();
 
 
-
-#ifdef IS_BASESTATION
-    // base station init
-    skynetbase_init();
-#endif
-
-
-
 	// give visual feedback that program started
 	skynet_led(true);
 	msDelay(250);
@@ -137,6 +130,15 @@ int main(void) {
     DBG("Initialize ADC...\n");
 	adc_init();
 	adc_start_buffered_measure();
+
+
+
+#ifdef IS_BASESTATION
+    // base station init (important: after adc_init!)
+    skynetbase_init();
+#endif
+
+
 
     DBG("Initialize radio module...\n");
     radio_init();
@@ -207,8 +209,13 @@ int main(void) {
 			case EVENT_DEBUG_3:
 			{
 				// DEBUG: read compass
+				/*
 				float d = skynetbase_compass_read();
 				DBG("Compass: %.6f\n", d);
+				*/
+
+				uint16_t v = skynetbase_windvane_measure();
+				DBG("Windvane: %d\n", v);
 				skynet_led_blink_passive(100);
 				break;
 			}
