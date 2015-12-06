@@ -1,5 +1,6 @@
 var annotated =
 [
+    [ "queued_event", "structqueued__event.html", "structqueued__event" ],
     [ "si446x_cmd_reply_union", "unionsi446x__cmd__reply__union.html", "unionsi446x__cmd__reply__union" ],
     [ "si446x_reply_FIFO_INFO_map", "structsi446x__reply__FIFO__INFO__map.html", "structsi446x__reply__FIFO__INFO__map" ],
     [ "si446x_reply_FRR_A_READ_map", "structsi446x__reply__FRR__A__READ__map.html", "structsi446x__reply__FRR__A__READ__map" ],
@@ -20,6 +21,7 @@ var annotated =
     [ "si446x_reply_PART_INFO_map", "structsi446x__reply__PART__INFO__map.html", "structsi446x__reply__PART__INFO__map" ],
     [ "si446x_reply_READ_CMD_BUFF_map", "structsi446x__reply__READ__CMD__BUFF__map.html", "structsi446x__reply__READ__CMD__BUFF__map" ],
     [ "si446x_reply_REQUEST_DEVICE_STATE_map", "structsi446x__reply__REQUEST__DEVICE__STATE__map.html", "structsi446x__reply__REQUEST__DEVICE__STATE__map" ],
+    [ "skynet_packet", "structskynet__packet.html", "structskynet__packet" ],
     [ "tRadioConfiguration", "structtRadioConfiguration.html", "structtRadioConfiguration" ],
     [ "usb_message", "structusb__message.html", "structusb__message" ],
     [ "UU16", "unionUU16.html", "unionUU16" ],

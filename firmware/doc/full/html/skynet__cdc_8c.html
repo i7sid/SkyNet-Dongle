@@ -64,8 +64,6 @@ $(document).ready(function(){initNavTree('skynet__cdc_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#typedef-members">Typedefs</a> &#124;
-<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -74,25 +72,6 @@ $(document).ready(function(){initNavTree('skynet__cdc_8c.html','');});
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="skynet__cdc_8h_source.html">skynet_cdc.h</a>&gt;</code><br />
 </div><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a3f39b5862cfcbc5047a7fc4a964b21b3"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a3f39b5862cfcbc5047a7fc4a964b21b3">usb_receive_state</a></td></tr>
-<tr class="separator:a3f39b5862cfcbc5047a7fc4a964b21b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:a269061fc623fdacbe291937af63a308d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a> { <br />
-&#160;&#160;<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308da55ac62549714de4d26627ef6ba3a280f">USB_RECEIVE_IDLE</a>, 
-<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308da617e920617d189070bab96f475663373">USB_RECEIVE_MAGIC1</a>, 
-<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308da1b5729894a327c9450749a3084718dd6">USB_RECEIVE_MAGIC2</a>, 
-<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308da722a9f8024aba62515f3706550735d2c">USB_RECEIVE_TYPE</a>, 
-<br />
-&#160;&#160;<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308da5491d1db584fdd8d8739c3a43c29f41a">USB_RECEIVE_PAYLOAD_LENGTH</a>, 
-<a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308dad55492ee7786fecd670cff53c8269d0f">USB_RECEIVE_PAYLOAD</a>
-<br />
- }</td></tr>
-<tr class="separator:a269061fc623fdacbe291937af63a308d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:af94a782f743da6321562c732c4eee8dc"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#af94a782f743da6321562c732c4eee8dc">skynet_cdc_init</a> (void)</td></tr>
@@ -116,14 +95,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a6d362abf2b153e7f343abb3547953ceb"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a6d362abf2b153e7f343abb3547953ceb">skynet_cdc_write</a> (uint8_t *pBuf, uint32_t len)</td></tr>
 <tr class="memdesc:a6d362abf2b153e7f343abb3547953ceb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends len characters from pBuf to usb host.  <a href="#a6d362abf2b153e7f343abb3547953ceb">More...</a><br /></td></tr>
 <tr class="separator:a6d362abf2b153e7f343abb3547953ceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad1616699fbd947a5445e630b0728b37"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#aad1616699fbd947a5445e630b0728b37">skynet_cdc_write_buffered</a> (uint8_t *pBuf, uint32_t len)</td></tr>
+<tr class="memdesc:aad1616699fbd947a5445e630b0728b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes len characters from pBuf into sending buffer.  <a href="#aad1616699fbd947a5445e630b0728b37">More...</a><br /></td></tr>
+<tr class="separator:aad1616699fbd947a5445e630b0728b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee86055644b9899f0a364ca1c4e8eebe"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#aee86055644b9899f0a364ca1c4e8eebe">skynet_cdc_flush</a> (void)</td></tr>
+<tr class="memdesc:aee86055644b9899f0a364ca1c4e8eebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send the bytes in the buffer immediately.  <a href="#aee86055644b9899f0a364ca1c4e8eebe">More...</a><br /></td></tr>
+<tr class="separator:aee86055644b9899f0a364ca1c4e8eebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a775eaea71b3636370920e8fbe798d86f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a775eaea71b3636370920e8fbe798d86f">skynet_cdc_write_message</a> (<a class="el" href="structusb__message.html">usb_message</a> *msg)</td></tr>
 <tr class="memdesc:a775eaea71b3636370920e8fbe798d86f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a <a class="el" href="structusb__message.html">usb_message</a> to usb host.  <a href="#a775eaea71b3636370920e8fbe798d86f">More...</a><br /></td></tr>
 <tr class="separator:a775eaea71b3636370920e8fbe798d86f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b5e6af4407dde47f239ddf3b0c62ff4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a7b5e6af4407dde47f239ddf3b0c62ff4">skynet_cdc_write_debug</a> (const char *format,...)</td></tr>
 <tr class="memdesc:a7b5e6af4407dde47f239ddf3b0c62ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Works like to printf and generates debug output message.  <a href="#a7b5e6af4407dde47f239ddf3b0c62ff4">More...</a><br /></td></tr>
 <tr class="separator:a7b5e6af4407dde47f239ddf3b0c62ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa46feac6a6ed67f8948c0cfdb2721cf2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#aa46feac6a6ed67f8948c0cfdb2721cf2">skynet_cdc_received_message</a> (<a class="el" href="structusb__message.html">usb_message</a> *msg)</td></tr>
-<tr class="separator:aa46feac6a6ed67f8948c0cfdb2721cf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a759ffef08d6d690b639df232251143e7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a759ffef08d6d690b639df232251143e7">skynet_cdc_receive_data</a> (void)</td></tr>
 <tr class="memdesc:a759ffef08d6d690b639df232251143e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Must be called if usb characters are available.  <a href="#a759ffef08d6d690b639df232251143e7">More...</a><br /></td></tr>
 <tr class="separator:a759ffef08d6d690b639df232251143e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,15 +121,21 @@ Variables</h2></td></tr>
 <tr class="separator:a504b11be35ba5820bda17c430f10a4bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa694a4a7a106972c3e4bd17e03ab8f3b"><td class="memItemLeft" align="right" valign="top">const USBD_API_T *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#aa694a4a7a106972c3e4bd17e03ab8f3b">g_pUsbApi</a> = &amp;g_usbApi</td></tr>
 <tr class="separator:aa694a4a7a106972c3e4bd17e03ab8f3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54763db1fa1b277e8eba6bf0eef02e60"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a54763db1fa1b277e8eba6bf0eef02e60">usb_payload_buf</a> [<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>]</td></tr>
-<tr class="separator:a54763db1fa1b277e8eba6bf0eef02e60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34a809d1b3c77968dbfa91dea822b8a7"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a34a809d1b3c77968dbfa91dea822b8a7">current_seqno</a> = 0</td></tr>
+<tr class="separator:a34a809d1b3c77968dbfa91dea822b8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd23d177a91eb34d3f46a7a44d64bb1c"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#abd23d177a91eb34d3f46a7a44d64bb1c">usb_cdc_write_buf</a> [<a class="el" href="message_8h.html#a573d2f5fe7b80ffe399033fe93af6363">USB_MAX_MESSAGE_LENGTH</a>]</td></tr>
+<tr class="separator:abd23d177a91eb34d3f46a7a44d64bb1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3dd77c18c5fc4d5c483c08bd25e9d21d"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a3dd77c18c5fc4d5c483c08bd25e9d21d">usb_cdc_write_pos</a> = 0</td></tr>
+<tr class="separator:a3dd77c18c5fc4d5c483c08bd25e9d21d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac13212b871967000883850b61996a823"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#ac13212b871967000883850b61996a823">usb_payload_buf</a> [<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>]</td></tr>
+<tr class="separator:ac13212b871967000883850b61996a823"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6fded26022fa481f58bc474cfd0b190"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#ab6fded26022fa481f58bc474cfd0b190">usb_read_pos</a> = 0</td></tr>
 <tr class="separator:ab6fded26022fa481f58bc474cfd0b190"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab61681c7fbefa733eefb65083774569f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#ab61681c7fbefa733eefb65083774569f">usb_reverse</a> = false</td></tr>
 <tr class="separator:ab61681c7fbefa733eefb65083774569f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a888b90899c7b862fc9a31d4aa8f88b01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structusb__message.html">usb_message</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a888b90899c7b862fc9a31d4aa8f88b01">usb_received_message</a></td></tr>
 <tr class="separator:a888b90899c7b862fc9a31d4aa8f88b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3198a9cdd5465911e75ff41c47635444"><td class="memItemLeft" align="right" valign="top"><a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a3198a9cdd5465911e75ff41c47635444">usb_rx_state</a></td></tr>
+<tr class="memitem:a3198a9cdd5465911e75ff41c47635444"><td class="memItemLeft" align="right" valign="top"><a class="el" href="skynet__cdc_8h.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__cdc_8c.html#a3198a9cdd5465911e75ff41c47635444">usb_rx_state</a> = <a class="el" href="skynet__cdc_8h.html#a269061fc623fdacbe291937af63a308da55ac62549714de4d26627ef6ba3a280f">USB_RECEIVE_IDLE</a></td></tr>
 <tr class="separator:a3198a9cdd5465911e75ff41c47635444"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -156,47 +145,7 @@ Variables</h2></td></tr>
 <p>Copyright(C) NXP Semiconductors, 2013 All rights reserved.</p>
 <dl class="section user"><dt></dt><dd>Software that is described herein is for illustrative purposes only which provides customers with programming information regarding the LPC products. This software is supplied "AS IS" without any warranties of any kind, and NXP Semiconductors and its licensor disclaim any and all warranties, express or implied, including all implied warranties of merchantability, fitness for a particular purpose and non-infringement of intellectual property rights. NXP Semiconductors assumes no responsibility or liability for the use of the software, conveys no license or rights under any patent, copyright, mask work right, or any other intellectual property rights in or to any products. NXP Semiconductors reserves the right to make changes in the software without notification. NXP Semiconductors also makes no representation or warranty that such application will be suitable for the specified use without further testing or modification.</dd></dl>
 <dl class="section user"><dt></dt><dd>Permission to use, copy, modify, and distribute this software and its documentation is hereby granted, under NXP Semiconductors' and its licensor's relevant copyrights in the software, without fee, provided that it is used in conjunction with NXP Semiconductors microcontrollers. This copyright, permission, and disclaimer notice must appear in all copies of this code. </dd></dl>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a class="anchor" id="a3f39b5862cfcbc5047a7fc4a964b21b3"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef enum <a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a>  <a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a class="anchor" id="a269061fc623fdacbe291937af63a308d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308da55ac62549714de4d26627ef6ba3a280f"></a>USB_RECEIVE_IDLE&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308da617e920617d189070bab96f475663373"></a>USB_RECEIVE_MAGIC1&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308da1b5729894a327c9450749a3084718dd6"></a>USB_RECEIVE_MAGIC2&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308da722a9f8024aba62515f3706550735d2c"></a>USB_RECEIVE_TYPE&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308da5491d1db584fdd8d8739c3a43c29f41a"></a>USB_RECEIVE_PAYLOAD_LENGTH&#160;</td><td class="fielddoc">
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="a269061fc623fdacbe291937af63a308dad55492ee7786fecd670cff53c8269d0f"></a>USB_RECEIVE_PAYLOAD&#160;</td><td class="fielddoc">
-</td></tr>
-</table>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="ab9b1f39e2a05abac3136ac95a734fce4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -270,6 +219,33 @@ Variables</h2></td></tr>
 
 <p>Shuts the connection to USB host down. </p>
 <p>This has fairly the same effect as plugging the cable out. </p>
+
+</div>
+</div>
+<a class="anchor" id="aee86055644b9899f0a364ca1c4e8eebe"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t skynet_cdc_flush </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Send the bytes in the buffer immediately. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of written bytes. </dd></dl>
 
 </div>
 </div>
@@ -349,22 +325,6 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa46feac6a6ed67f8948c0cfdb2721cf2"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void skynet_cdc_received_message </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structusb__message.html">usb_message</a> *&#160;</td>
-          <td class="paramname"><em>msg</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="a6d362abf2b153e7f343abb3547953ceb"></a>
 <div class="memitem">
 <div class="memproto">
@@ -398,6 +358,44 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sends len characters from pBuf to usb host. </p>
+<dl class="section return"><dt>Returns</dt><dd>Number of written bytes. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aad1616699fbd947a5445e630b0728b37"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t skynet_cdc_write_buffered </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>pBuf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>len</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes len characters from pBuf into sending buffer. </p>
+<p>Bytes won't be sent until buffer is full or <a class="el" href="skynet__cdc_8c.html#aee86055644b9899f0a364ca1c4e8eebe">skynet_cdc_flush()</a> is called.</p>
 <dl class="section return"><dt>Returns</dt><dd>Number of written bytes. </dd></dl>
 
 </div>
@@ -494,6 +492,18 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a34a809d1b3c77968dbfa91dea822b8a7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t current_seqno = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="aa694a4a7a106972c3e4bd17e03ab8f3b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -518,12 +528,36 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a54763db1fa1b277e8eba6bf0eef02e60"></a>
+<a class="anchor" id="abd23d177a91eb34d3f46a7a44d64bb1c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned char usb_payload_buf[<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>]</td>
+          <td class="memname">unsigned char usb_cdc_write_buf[<a class="el" href="message_8h.html#a573d2f5fe7b80ffe399033fe93af6363">USB_MAX_MESSAGE_LENGTH</a>]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a3dd77c18c5fc4d5c483c08bd25e9d21d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int usb_cdc_write_pos = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ac13212b871967000883850b61996a823"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char usb_payload_buf[<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>]</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -571,7 +605,7 @@ Variables</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="skynet__cdc_8c.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a> usb_rx_state</td>
+          <td class="memname"><a class="el" href="skynet__cdc_8h.html#a269061fc623fdacbe291937af63a308d">usb_receive_state</a> usb_rx_state = <a class="el" href="skynet__cdc_8h.html#a269061fc623fdacbe291937af63a308da55ac62549714de4d26627ef6ba3a280f">USB_RECEIVE_IDLE</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -584,7 +618,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_74712b2155551d19e5fc375f21fbf06e.html">usb</a></li><li class="navelem"><a class="el" href="skynet__cdc_8c.html">skynet_cdc.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -64,6 +64,7 @@ $(document).ready(function(){initNavTree('sysinit_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
@@ -77,6 +78,23 @@ $(document).ready(function(){initNavTree('sysinit_8c.html','');});
 <code>#include &quot;<a class="el" href="systick_8h_source.html">cpu/systick.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="cpu_8h_source.html">cpu/cpu.h</a>&quot;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ad3bff60bf93b12b358c67d949d6df7ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#ad3bff60bf93b12b358c67d949d6df7ee">SECTOR_5_START</a>&#160;&#160;&#160;0x00005000</td></tr>
+<tr class="separator:ad3bff60bf93b12b358c67d949d6df7ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a670d93a2fa3745f30e8f2e7f8ab600de"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a670d93a2fa3745f30e8f2e7f8ab600de">SECTOR_8_START</a>&#160;&#160;&#160;0x00008000</td></tr>
+<tr class="separator:a670d93a2fa3745f30e8f2e7f8ab600de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fc28efba2220740d43ce225537a1b39"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a2fc28efba2220740d43ce225537a1b39">SECTOR_10_START</a>&#160;&#160;&#160;0x0000a000</td></tr>
+<tr class="separator:a2fc28efba2220740d43ce225537a1b39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a295aea5d361087cb7fd298daf75a0771"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a295aea5d361087cb7fd298daf75a0771">SECTOR_16_START</a>&#160;&#160;&#160;0x00010000</td></tr>
+<tr class="separator:a295aea5d361087cb7fd298daf75a0771"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f6e8d4f7cbe9eec668fa04ecc3811a0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a1f6e8d4f7cbe9eec668fa04ecc3811a0">USER_FLASH_START</a>&#160;&#160;&#160;(<a class="el" href="sysinit_8c.html#a295aea5d361087cb7fd298daf75a0771">SECTOR_16_START</a>)</td></tr>
+<tr class="separator:a1f6e8d4f7cbe9eec668fa04ecc3811a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabda131b2f01e9aa52b49477300bddf6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#aabda131b2f01e9aa52b49477300bddf6">NVIC_NUM_VECTORS</a>&#160;&#160;&#160;(16 + 33)</td></tr>
+<tr class="separator:aabda131b2f01e9aa52b49477300bddf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a658c2e61187a2e0a2c24d24fff527a5d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a658c2e61187a2e0a2c24d24fff527a5d">NVIC_RAM_VECTOR_ADDRESS</a>&#160;&#160;&#160;(0x10000000)</td></tr>
+<tr class="separator:a658c2e61187a2e0a2c24d24fff527a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a8ac1dc465c66e1cc00f5ffd346904d97"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a8ac1dc465c66e1cc00f5ffd346904d97">Board_SetupMuxing</a> (void)</td></tr>
@@ -94,6 +112,91 @@ Variables</h2></td></tr>
 <tr class="memitem:a83f9db198e72e02aa18e2a202b741a2d"><td class="memItemLeft" align="right" valign="top">STATIC const PINMUX_GRP_T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sysinit_8c.html#a83f9db198e72e02aa18e2a202b741a2d">pinmuxing</a> []</td></tr>
 <tr class="separator:a83f9db198e72e02aa18e2a202b741a2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="aabda131b2f01e9aa52b49477300bddf6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NVIC_NUM_VECTORS&#160;&#160;&#160;(16 + 33)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a658c2e61187a2e0a2c24d24fff527a5d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NVIC_RAM_VECTOR_ADDRESS&#160;&#160;&#160;(0x10000000)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a2fc28efba2220740d43ce225537a1b39"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SECTOR_10_START&#160;&#160;&#160;0x0000a000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a295aea5d361087cb7fd298daf75a0771"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SECTOR_16_START&#160;&#160;&#160;0x00010000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad3bff60bf93b12b358c67d949d6df7ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SECTOR_5_START&#160;&#160;&#160;0x00005000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a670d93a2fa3745f30e8f2e7f8ab600de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SECTOR_8_START&#160;&#160;&#160;0x00008000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a1f6e8d4f7cbe9eec668fa04ecc3811a0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define USER_FLASH_START&#160;&#160;&#160;(<a class="el" href="sysinit_8c.html#a295aea5d361087cb7fd298daf75a0771">SECTOR_16_START</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a8ac1dc465c66e1cc00f5ffd346904d97"></a>
 <div class="memitem">
@@ -171,7 +274,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="sysinit_8c.html">sysinit.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

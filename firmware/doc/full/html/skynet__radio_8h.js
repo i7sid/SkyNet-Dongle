@@ -1,8 +1,10 @@
 var skynet__radio_8h =
 [
+    [ "skynet_packet", "structskynet__packet.html", "structskynet__packet" ],
     [ "SKYNET_RADIO_MAX_SIZE", "skynet__radio_8h.html#a64679f65056513a626345b0efbbb8899", null ],
     [ "SKYNET_RADIO_TESTLENGTH", "skynet__radio_8h.html#aad662b0e498de5b2409714826e8a3740", null ],
     [ "SKYNET_RADIO_TESTPATTERN", "skynet__radio_8h.html#a16524da65636347a4ec5d8511688e953", null ],
+    [ "skynet_packet", "skynet__radio_8h.html#a582534daf4db2059ee93faa7dade82dc", null ],
     [ "radio_config_for_clock_measurement", "skynet__radio_8h.html#a4cdd3a38c28d807996cd44e52e7a24a0", null ],
     [ "radio_enable_irq", "skynet__radio_8h.html#aa670a4eb8134468c045685f89f056be3", null ],
     [ "radio_get_gpio0", "skynet__radio_8h.html#addd2897229c01343226a71942761f7d2", null ],

@@ -67,11 +67,16 @@
       <li><a href="#index_f"><span>f</span></a></li>
       <li><a href="#index_g"><span>g</span></a></li>
       <li><a href="#index_h"><span>h</span></a></li>
+      <li><a href="#index_m"><span>m</span></a></li>
       <li><a href="#index_p"><span>p</span></a></li>
       <li><a href="#index_r"><span>r</span></a></li>
       <li><a href="#index_s"><span>s</span></a></li>
       <li><a href="#index_t"><span>t</span></a></li>
-      <li class="current"><a href="#index_u"><span>u</span></a></li>
+      <li><a href="#index_u"><span>u</span></a></li>
+      <li><a href="#index_w"><span>w</span></a></li>
+      <li><a href="#index_x"><span>x</span></a></li>
+      <li><a href="#index_y"><span>y</span></a></li>
+      <li class="current"><a href="#index_z"><span>z</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -113,19 +118,8 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="skynet__radio_8c.html#aba046ab4ce03bb7440028c18445e9c79">skynet_radio.c</a>
 </li>
 <li>bPositionInPayload
-: <a class="el" href="radio_8c.html#ae1f4248bf807e887f342c49293a6f00a">radio.c</a>
-, <a class="el" href="radio_8h.html#ae1f4248bf807e887f342c49293a6f00a">radio.h</a>
-</li>
-<li>bt_packet_rx_buf
-: <a class="el" href="bluetooth_8c.html#aa36f4b2af3fd2ed6ebb848a098c5991e">bluetooth.c</a>
-, <a class="el" href="bluetooth_8h.html#aa36f4b2af3fd2ed6ebb848a098c5991e">bluetooth.h</a>
-</li>
-<li>bt_packet_rx_buf_pos
-: <a class="el" href="bluetooth_8c.html#aa5048b20bd2f463bbe9705b55aff71dd">bluetooth.c</a>
-</li>
-<li>bt_packet_rx_buf_written
-: <a class="el" href="bluetooth_8c.html#a61eda821d0ca4d9d260617ba94ab58a5">bluetooth.c</a>
-, <a class="el" href="bluetooth_8h.html#a61eda821d0ca4d9d260617ba94ab58a5">bluetooth.h</a>
+: <a class="el" href="radio_8h.html#ae1f4248bf807e887f342c49293a6f00a">radio.h</a>
+, <a class="el" href="radio_8c.html#ae1f4248bf807e887f342c49293a6f00a">radio.c</a>
 </li>
 </ul>
 
@@ -138,28 +132,28 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="skynet__cdc_8c.html#a5c48edecd9da4dbd49d0a1dd6195455c">skynet_cdc.c</a>
 </li>
 <li>cpu_powered_down
-: <a class="el" href="cpu_8c.html#abb9f2fc0864a7c8c693474f270571d1f">cpu.c</a>
-, <a class="el" href="cpu_8h.html#abb9f2fc0864a7c8c693474f270571d1f">cpu.h</a>
+: <a class="el" href="cpu_8h.html#abb9f2fc0864a7c8c693474f270571d1f">cpu.h</a>
+, <a class="el" href="cpu_8c.html#abb9f2fc0864a7c8c693474f270571d1f">cpu.c</a>
 </li>
 <li>ctsWentHigh
 : <a class="el" href="radio__comm_8c.html#ad171ab075a4e533a0a47b8849c866dcf">radio_comm.c</a>
 </li>
+<li>current_seqno
+: <a class="el" href="skynet__cdc_8c.html#a34a809d1b3c77968dbfa91dea822b8a7">skynet_cdc.c</a>
+</li>
 <li>customRadioPacket
-: <a class="el" href="radio_8c.html#a28f2895635f90233a41389caa2c2704c">radio.c</a>
-, <a class="el" href="radio_8h.html#a28f2895635f90233a41389caa2c2704c">radio.h</a>
+: <a class="el" href="radio_8h.html#a28f2895635f90233a41389caa2c2704c">radio.h</a>
+, <a class="el" href="radio_8c.html#a28f2895635f90233a41389caa2c2704c">radio.c</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_e"></a>- e -</h3><ul>
-<li>events_queue_read_i
-: <a class="el" href="event__queue_8c.html#ab73fcd148201e3e32bd9fb1cc5765550">event_queue.c</a>
+<li>events_buf
+: <a class="el" href="event__queue_8c.html#a24f9b8f7823cf7250b149b6f63257388">event_queue.c</a>
 </li>
-<li>events_queue_write_i
-: <a class="el" href="event__queue_8c.html#a01d3cb9f78b5ada5894934508fa24f21">event_queue.c</a>
-</li>
-<li>events_queued
-: <a class="el" href="event__queue_8c.html#aefefca3f72a5feffd25a3c73c872d6a6">event_queue.c</a>
+<li>events_ringbuf
+: <a class="el" href="event__queue_8c.html#a8c237bafe467d388ce2e0cdf54100448">event_queue.c</a>
 </li>
 </ul>
 
@@ -180,12 +174,23 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="cdc__vcom_8c.html#ac162f8651a00357b26f382d63dac6454">cdc_vcom.c</a>
 , <a class="el" href="cdc__vcom_8h.html#ac162f8651a00357b26f382d63dac6454">cdc_vcom.h</a>
 </li>
+<li>goto_bootloader
+: <a class="el" href="cpu_8c.html#aa6c8005d5219d62fe5990af0dba81d63">cpu.c</a>
+, <a class="el" href="main_8c.html#aa6c8005d5219d62fe5990af0dba81d63">main.c</a>
+</li>
 </ul>
 
 
 <h3><a class="anchor" id="index_h"></a>- h -</h3><ul>
 <li>hw_api
 : <a class="el" href="skynet__cdc_8c.html#a6dedf4a94bfaacb370622476b90be0f2">skynet_cdc.c</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_m"></a>- m -</h3><ul>
+<li>magneticdeclination
+: <a class="el" href="compass_8c.html#a5dc6bc52a11c64ec7880a5067ff40894">compass.c</a>
 </li>
 </ul>
 
@@ -203,8 +208,8 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 , <a class="el" href="radio_8h.html#a50be8a11ff8d106a00f5d815e977abf5">radio.h</a>
 </li>
 <li>Pro2Cmd
-: <a class="el" href="si446x__api__lib_8c.html#adea818580dfc5fed19c91d723384bc1b">si446x_api_lib.c</a>
-, <a class="el" href="si446x__api__lib_8h.html#adea818580dfc5fed19c91d723384bc1b">si446x_api_lib.h</a>
+: <a class="el" href="si446x__api__lib_8h.html#adea818580dfc5fed19c91d723384bc1b">si446x_api_lib.h</a>
+, <a class="el" href="si446x__api__lib_8c.html#adea818580dfc5fed19c91d723384bc1b">si446x_api_lib.c</a>
 </li>
 <li>pwrLvl
 : <a class="el" href="skynet__radio_8c.html#a8fa6aa9ca589799ef52eb57be4c7986b">skynet_radio.c</a>
@@ -221,8 +226,8 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 , <a class="el" href="radio_8h.html#a8cc376a0dbd7ff8c979f61e4f9d501f7">radio.h</a>
 </li>
 <li>radio_initialized
-: <a class="el" href="skynet__radio_8c.html#af80dfd8d0b5d8f9012fcc1c8f94e914f">skynet_radio.c</a>
-, <a class="el" href="skynet__radio_8h.html#af80dfd8d0b5d8f9012fcc1c8f94e914f">skynet_radio.h</a>
+: <a class="el" href="skynet__radio_8h.html#af80dfd8d0b5d8f9012fcc1c8f94e914f">skynet_radio.h</a>
+, <a class="el" href="skynet__radio_8c.html#af80dfd8d0b5d8f9012fcc1c8f94e914f">skynet_radio.c</a>
 </li>
 <li>radioCmd
 : <a class="el" href="radio__comm_8h.html#afb11ba83e39d6e9af1fc15b3cfe67497">radio_comm.h</a>
@@ -231,16 +236,21 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="radio_8c.html#a8dfeb06c6111d9920d724d59e87363a1">radio.c</a>
 </li>
 <li>rf_packet_rx_buf
-: <a class="el" href="skynet__radio_8c.html#ad1b7df8e91ee02d4d3106bcec96df915">skynet_radio.c</a>
-, <a class="el" href="skynet__radio_8h.html#ad1b7df8e91ee02d4d3106bcec96df915">skynet_radio.h</a>
+: <a class="el" href="skynet__radio_8h.html#ad1b7df8e91ee02d4d3106bcec96df915">skynet_radio.h</a>
 </li>
 </ul>
 
 
 <h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
+<li>scaley
+: <a class="el" href="compass_8c.html#a0efc777e8e5dbca130c0ca42778b7ee9">compass.c</a>
+</li>
+<li>scalez
+: <a class="el" href="compass_8c.html#a39a77ae588b7c517b2aa73f052421f84">compass.c</a>
+</li>
 <li>Si446xCmd
-: <a class="el" href="si446x__api__lib_8c.html#a08285b61107e9e4adec5836a193b084c">si446x_api_lib.c</a>
-, <a class="el" href="si446x__api__lib_8h.html#a08285b61107e9e4adec5836a193b084c">si446x_api_lib.h</a>
+: <a class="el" href="si446x__api__lib_8h.html#a08285b61107e9e4adec5836a193b084c">si446x_api_lib.h</a>
+, <a class="el" href="si446x__api__lib_8c.html#a08285b61107e9e4adec5836a193b084c">si446x_api_lib.c</a>
 </li>
 <li>switch_checked_times
 : <a class="el" href="input_8c.html#a73b9b0e002b9f21906da0fb703a5c1d0">input.c</a>
@@ -268,6 +278,12 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 
 
 <h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
+<li>usb_cdc_write_buf
+: <a class="el" href="skynet__cdc_8c.html#abd23d177a91eb34d3f46a7a44d64bb1c">skynet_cdc.c</a>
+</li>
+<li>usb_cdc_write_pos
+: <a class="el" href="skynet__cdc_8c.html#a3dd77c18c5fc4d5c483c08bd25e9d21d">skynet_cdc.c</a>
+</li>
 <li>USB_DeviceDescriptor
 : <a class="el" href="app__usbd__cfg_8h.html#a6fdf9c1f707c6d4f4e0ca052068cd715">app_usbd_cfg.h</a>
 </li>
@@ -278,7 +294,7 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="app__usbd__cfg_8h.html#aeb8dcd933ebc13733d51bf23c6389235">app_usbd_cfg.h</a>
 </li>
 <li>usb_payload_buf
-: <a class="el" href="skynet__cdc_8c.html#a54763db1fa1b277e8eba6bf0eef02e60">skynet_cdc.c</a>
+: <a class="el" href="skynet__cdc_8c.html#ac13212b871967000883850b61996a823">skynet_cdc.c</a>
 </li>
 <li>usb_read_pos
 : <a class="el" href="skynet__cdc_8c.html#ab6fded26022fa481f58bc474cfd0b190">skynet_cdc.c</a>
@@ -296,12 +312,64 @@ $(document).ready(function(){initNavTree('globals_vars.html','');});
 : <a class="el" href="app__usbd__cfg_8h.html#aa0342f0e15e2a96ecac5d16cde279b11">app_usbd_cfg.h</a>
 </li>
 </ul>
+
+
+<h3><a class="anchor" id="index_w"></a>- w -</h3><ul>
+<li>windvane_buffer
+: <a class="el" href="windvane_8c.html#a71752f114f3663159a4a9173f89af973">windvane.c</a>
+</li>
+<li>windvane_max
+: <a class="el" href="windvane_8c.html#a4ec48498da53cd0a13c1e48a93976fc1">windvane.c</a>
+</li>
+<li>windvane_max_target
+: <a class="el" href="windvane_8c.html#a9160838afeb94a85dff88a54514f7b50">windvane.c</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_x"></a>- x -</h3><ul>
+<li>xmax
+: <a class="el" href="compass_8c.html#a09aaabfde590c6eee480db7061378c56">compass.c</a>
+</li>
+<li>xmin
+: <a class="el" href="compass_8c.html#a97c35acdb36f05e7cede2803f10054ff">compass.c</a>
+</li>
+<li>xoffset
+: <a class="el" href="compass_8c.html#a053ece41589dd9880336364cd84b3e8b">compass.c</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_y"></a>- y -</h3><ul>
+<li>ymax
+: <a class="el" href="compass_8c.html#a9767d3c5fee00d75496e3a3295d1fc8a">compass.c</a>
+</li>
+<li>ymin
+: <a class="el" href="compass_8c.html#a6f275e2850598f114217ad31734178ac">compass.c</a>
+</li>
+<li>yoffset
+: <a class="el" href="compass_8c.html#a27d4b7df566caadfc72a580287fe10bf">compass.c</a>
+</li>
+</ul>
+
+
+<h3><a class="anchor" id="index_z"></a>- z -</h3><ul>
+<li>zmax
+: <a class="el" href="compass_8c.html#a6512fc62636d54e1ed98ca5d5fc537ba">compass.c</a>
+</li>
+<li>zmin
+: <a class="el" href="compass_8c.html#aa2ecdaa7333ab2283546b7ad072eb1ba">compass.c</a>
+</li>
+<li>zoffset
+: <a class="el" href="compass_8c.html#af013ac233e6adaa47a7ed026612af6b0">compass.c</a>
+</li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -1,9 +1,8 @@
 var event__queue_8c =
 [
-    [ "events_dequeue", "event__queue_8c.html#ac9a2fe21a750232bd379b667eff6a492", null ],
-    [ "events_enqueue", "event__queue_8c.html#accbf0de9ee77fbeb848fe5fed19f9e5a", null ],
-    [ "events_is_queued", "event__queue_8c.html#ab00df45b65006d7a05beeb375dfe147a", null ],
-    [ "events_queue_read_i", "event__queue_8c.html#ab73fcd148201e3e32bd9fb1cc5765550", null ],
-    [ "events_queue_write_i", "event__queue_8c.html#a01d3cb9f78b5ada5894934508fa24f21", null ],
-    [ "events_queued", "event__queue_8c.html#aefefca3f72a5feffd25a3c73c872d6a6", null ]
+    [ "events_dequeue", "event__queue_8c.html#a123f88b06466c35c5ab00d798af6991b", null ],
+    [ "events_enqueue", "event__queue_8c.html#a69a5027d824d3d69546c69c378dd62cf", null ],
+    [ "events_init", "event__queue_8c.html#ae4863d3807354bd60a629665f37bed29", null ],
+    [ "events_buf", "event__queue_8c.html#a24f9b8f7823cf7250b149b6f63257388", null ],
+    [ "events_ringbuf", "event__queue_8c.html#a8c237bafe467d388ce2e0cdf54100448", null ]
 ];

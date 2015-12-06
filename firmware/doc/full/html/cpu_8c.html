@@ -77,7 +77,6 @@ $(document).ready(function(){initNavTree('cpu_8c.html','');});
 <code>#include &quot;<a class="el" href="rtc_8h_source.html">rtc.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="systick_8h_source.html">systick.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sysinit_8h_source.html">../sysinit.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="bluetooth_8h_source.html">../bluetooth/bluetooth.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="skynet__radio_8h_source.html">../radio/skynet_radio.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="adc_8h_source.html">../periph/adc.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="input_8h_source.html">../periph/input.h</a>&quot;</code><br />
@@ -96,17 +95,43 @@ Functions</h2></td></tr>
 <tr class="memitem:a250189df9132ba7962ba4463b0149acd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cpu_8c.html#a250189df9132ba7962ba4463b0149acd">cpu_powerdown</a> ()</td></tr>
 <tr class="memdesc:a250189df9132ba7962ba4463b0149acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Power off the device.  <a href="#a250189df9132ba7962ba4463b0149acd">More...</a><br /></td></tr>
 <tr class="separator:a250189df9132ba7962ba4463b0149acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae753a57b9bb63cc5bcb9432e34046cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cpu_8c.html#aae753a57b9bb63cc5bcb9432e34046cc">cpu_reset</a> (void)</td></tr>
+<tr class="memdesc:aae753a57b9bb63cc5bcb9432e34046cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the node.  <a href="#aae753a57b9bb63cc5bcb9432e34046cc">More...</a><br /></td></tr>
+<tr class="separator:aae753a57b9bb63cc5bcb9432e34046cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d44a4c4dfdc46bfc041049eed27d683"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cpu_8c.html#a4d44a4c4dfdc46bfc041049eed27d683">cpu_enter_iap_mode</a> (void)</td></tr>
+<tr class="memdesc:a4d44a4c4dfdc46bfc041049eed27d683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the cpu to enter bootloader mode.  <a href="#a4d44a4c4dfdc46bfc041049eed27d683">More...</a><br /></td></tr>
+<tr class="separator:a4d44a4c4dfdc46bfc041049eed27d683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:abb9f2fc0864a7c8c693474f270571d1f"><td class="memItemLeft" align="right" valign="top">volatile bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cpu_8c.html#abb9f2fc0864a7c8c693474f270571d1f">cpu_powered_down</a> = false</td></tr>
 <tr class="separator:abb9f2fc0864a7c8c693474f270571d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c8005d5219d62fe5990af0dba81d63"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="cpu_8c.html#aa6c8005d5219d62fe5990af0dba81d63">goto_bootloader</a></td></tr>
+<tr class="separator:aa6c8005d5219d62fe5990af0dba81d63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the functionalities for CPU power management. </p>
 <dl class="section date"><dt>Date</dt><dd>10.07.2014 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a4d44a4c4dfdc46bfc041049eed27d683"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cpu_enter_iap_mode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets the cpu to enter bootloader mode. </p>
+<p>Starts a USB mass storage device to transfer new firmware. </p>
+
+</div>
+</div>
 <a class="anchor" id="a250189df9132ba7962ba4463b0149acd"></a>
 <div class="memitem">
 <div class="memproto">
@@ -122,6 +147,24 @@ Variables</h2></td></tr>
 
 <p>Power off the device. </p>
 <p>Powers down all peripherals (radio, bluetooth) and sends the CPU to a deep sleep state, waiting for a long press to input button. </p>
+
+</div>
+</div>
+<a class="anchor" id="aae753a57b9bb63cc5bcb9432e34046cc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void cpu_reset </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets the node. </p>
 
 </div>
 </div>
@@ -179,13 +222,25 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aa6c8005d5219d62fe5990af0dba81d63"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t goto_bootloader</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2c61f424fd391396db977702a2beee9a.html">cpu</a></li><li class="navelem"><a class="el" href="cpu_8c.html">cpu.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>
