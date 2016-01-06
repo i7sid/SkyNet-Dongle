@@ -28,7 +28,6 @@ static volatile uint16_t adc_buffered_value = 0xFFF; // 4095
 
 
 void adc_init(void) {
-
 	// init pwr pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, ADC_PWR_PORT, ADC_PWR_PIN);
 

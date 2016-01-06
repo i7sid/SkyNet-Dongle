@@ -116,7 +116,10 @@
 #define COMPASS_I2C_SCL_PIN			11
 #define COMPASS_I2C					I2C2
 #define COMPASS_I2C_IRQn			I2C2_IRQn
-
+#define GPS_UART_TX_PORT			2
+#define GPS_UART_TX_PIN				0
+#define GPS_UART_RX_PORT			2
+#define GPS_UART_RX_PIN				1
 
 
 

@@ -10,6 +10,8 @@
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
 
+#define DEBUG_GPS_TEST
+
 ///@brief Test various basestation stuff.
 #define DEBUG_BASESTATION_TEST
 
@@ -73,6 +75,11 @@ void debug_send_rf(void) {
 	register_delayed_event(1000, debug_send_rf);
 }
 
+void debug_query_gps(void) {
+	events_enqueue(EVENT_DEBUG_4, NULL);
+	register_delayed_event(1000, debug_query_gps);
+}
+
 void debug_basestation(void) {
 	events_enqueue(EVENT_DEBUG_3, NULL);
 	register_delayed_event(1000, debug_basestation);
@@ -127,7 +134,7 @@ int main(void) {
 	input_init();
     DBG("Initialize ADC...\n");
 	adc_init();
-	adc_start_buffered_measure();
+	//adc_start_buffered_measure();
 
 
 
@@ -158,6 +165,11 @@ int main(void) {
     register_delayed_event(1000, debug_send_rf);
 #endif
 
+#ifdef DEBUG_GPS_TEST
+    // DEBUG: Query GPS module regularily
+    register_delayed_event(1000, debug_query_gps);
+#endif
+
 #ifdef DEBUG_BASESTATION_TEST
     // DEBUG: Send regularily rf packets
     //register_delayed_event(1000, debug_basestation);
@@ -174,6 +186,9 @@ int main(void) {
 
 	while (1) {
 		skynet_cdc_receive_data();
+#ifdef IS_BASESTATION
+    	skynetbase_gps_receive_data();
+#endif
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -187,6 +202,10 @@ int main(void) {
 
 			case EVENT_RADIO_RESTART:
 				// TODO restart radio chip
+				break;
+
+			case EVENT_GPS_DATA_AVAILABLE:
+
 				break;
 
 			case EVENT_DEBUG_1:
@@ -216,6 +235,14 @@ int main(void) {
 				uint16_t v = skynetbase_windvane_measure();
 				DBG("Windvane: %d\n", v);
 				*/
+
+
+				skynet_led_blink_passive(100);
+				break;
+			}
+			case EVENT_DEBUG_4:
+			{
+				skynetbase_gps_query();
 
 
 				skynet_led_blink_passive(100);
