@@ -10,7 +10,7 @@
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
 
-#define DEBUG_GPS_TEST
+//#define DEBUG_GPS_TEST
 
 ///@brief Test various basestation stuff.
 #define DEBUG_BASESTATION_TEST
@@ -172,7 +172,7 @@ int main(void) {
 
 #ifdef DEBUG_BASESTATION_TEST
     // DEBUG: Send regularily rf packets
-    //register_delayed_event(1000, debug_basestation);
+    register_delayed_event(1000, debug_basestation);
 #endif
 
     DBG("Initialization complete.\n");
@@ -226,10 +226,10 @@ int main(void) {
 			case EVENT_DEBUG_3:
 			{
 				// DEBUG: read compass
-				/*
+
 				float d = skynetbase_compass_read();
 				DBG("Compass: %.6f\n", d);
-				*/
+
 
 				/*
 				uint16_t v = skynetbase_windvane_measure();
@@ -243,7 +243,6 @@ int main(void) {
 			case EVENT_DEBUG_4:
 			{
 				skynetbase_gps_query();
-
 
 				skynet_led_blink_passive(100);
 				break;

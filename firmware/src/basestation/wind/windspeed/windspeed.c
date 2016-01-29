@@ -31,7 +31,7 @@ static void measurement(void) {
 	// alternative approach?
 	//current_speed = (WAY_PER_ROTATION * (float)curtick) / div;
 
-	DBG("div:%4.4f; count:%d; speed:%4.4f\n", div, curtick, current_speed);
+	//DBG("div:%4.4f; count:%d; speed:%4.4f\n", div, curtick, current_speed);
 
 	register_delayed_event(1000, measurement); // enqueue next measurement
 }

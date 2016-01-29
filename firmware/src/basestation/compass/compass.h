@@ -7,6 +7,7 @@
 #ifndef BASESTATION_COMPASS_COMPASS_H_
 #define BASESTATION_COMPASS_COMPASS_H_
 
+#include <stdlib.h>
 #include <math.h>
 
 #include "chip.h"
