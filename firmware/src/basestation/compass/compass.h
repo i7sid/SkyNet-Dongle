@@ -16,13 +16,14 @@
 #include "../../cpu/systick.h"
 
 
-#define read_Addr 			0x3D				// 0b111101
-#define write_Addr 			0x3C				// 0b111100
-#define HMC5883L_Addr		0x1E 				// 0x3d or 0x3c >> 1
-#define PI					(float)3.141592653589793
+/// @brief	I2C address of compass module.
+#define HMC5883L_ADDR			0x1E 				// 0x3d or 0x3c >> 1
 
-#define COMPASS_UNCAL_MAX	-32766
-#define COMPASS_UNCAL_MIN	32766
+/// @brief	Value of mathematical constant PI.
+#define PI						(3.141592653589793f)
+
+/// @brief	Factor converting radians to degrees
+#define COMPASS_RAD2DEGREE 		(57.2957795f)
 
 
 // Taken from HMC5883L datasheet:
