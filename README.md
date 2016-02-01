@@ -41,6 +41,18 @@ Flash `bootloader/src/bootloader.bin` to the processor.
 Afterwards you should be able to flash new firmware files
 (.bin) via USB and mass storage emulation.
 
+That works as following:
+Send via USB CDC serial terminal a "goto bootloader" command.
+The dongle restarts and goes into bootloader mode.
+Now the dongle is detected by host as a mass storage device.
+Copy firmware binary to the mass storage device and *eject the device* afterwards:
+    sudo eject /dev/{devices name, usually sdb, sdc, sdd, or any...}
+or:
+    sudo umount {MOUNTPOINT}
+    sudo udisk --detach /dev/{devices name, usually sdb, sdc, sdd, or any...}
+
+
+
 Bootloader source: https://github.com/openxc/openlpc-USB_Bootloader
 
 

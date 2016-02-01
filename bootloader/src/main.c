@@ -90,6 +90,8 @@ int main (void) {
     LPC_GPIO[LED_PORT].DIR |= 1UL << LED_PIN;
 	skynet_led(true);
 
+	// DEBUG
+	//goto_bootloader = 0xAA;
 
     // Check to see if there is a user application in the LPC1769's flash memory.
     //if(user_code_present()) {
@@ -110,4 +112,25 @@ int main (void) {
     // Note - should never actually return from enter_usb_isp ().
     while (1);        // loop forever
     return 0;
+}
+
+void eject(void) {
+	skynet_led(false);
+	// check integrity
+
+	// goto user program next time
+	goto_bootloader = 0x00;
+
+	// wait some time for sure...
+	for (volatile unsigned int i = 0; i < 5000000; ++i) { __asm volatile("nop"); }
+
+
+	// reset (adapted from core_cm3.h from lpc_chip_175x_6x)
+	__asm volatile ("dsb"); // Ensure all outstanding memory accesses included buffered write are completed before reset
+	SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) |
+				 (SCB->AIRCR & SCB_AIRCR_PRIGROUP_Msk) |
+				 SCB_AIRCR_SYSRESETREQ_Msk);   // Keep priority group unchanged
+	__asm volatile ("dsb");                     // Ensure completion of memory access
+	while(1);                                  // wait until reset
+
 }

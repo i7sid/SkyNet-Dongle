@@ -52,6 +52,7 @@
 #include "msc_scsi.h"
 #include "disk.h"
 
+
 #ifndef MIN
 #define MIN(a,b)	((a)<(b)?(a):(b))
 #endif
@@ -350,6 +351,8 @@ uint8_t* SCSIHandleData(uint8_t* pbCDB, uint8_t iCDBLen, uint8_t* pbData, uint32
 
 // Code Red - added to support eject command from Windows
     case SCSI_CMD_STARTSTOPUNIT_1B:
+    	goto_eject = 0xBB; // add support for unmount detection
+
         // dummy implementation
         break;
     default:
