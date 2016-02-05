@@ -13,6 +13,10 @@
 #define MAC_FRAME_DATA_H
 
 #include "mac_config.h"
+#include "util.h"
+
+#define mac_frame_data_calc_crc(frame) { \
+        mac_frame_calc_crc((uint8_t*)frame, sizeof(mac_frame_data)); }
 
 
 typedef struct mac_frame_data {
@@ -24,6 +28,5 @@ typedef struct mac_frame_data {
     uint8_t fcs[2];
 } mac_frame_data;
 //} __attribute__((packed)) mac_frame_data;
-
 
 #endif /* !MAC_FRAME_H */

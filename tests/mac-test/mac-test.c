@@ -14,34 +14,21 @@
 #include <inttypes.h>
 
 #include "../../firmware/src/mac/mac_frame_data.h"
+#include "../../firmware/src/mac/mac_frame_ack.h"
 
-unsigned short crc16(const unsigned char* data_p, unsigned char length) {
-    unsigned char x;
-    unsigned short crc = 0xFFFF;
-
-    while (length--) {
-        x = crc >> 8 ^ *data_p++;
-        x ^= x >> 4;
-        crc =   (crc << 8) ^
-                ((unsigned short)(x << 12)) ^
-                ((unsigned short)(x << 5)) ^
-                ((unsigned short)x);
-    }
-    return crc;
-}
-
-void mac_frame_data_calc_crc(mac_frame_data* frame) {
-    printf("sizeof: %lu\n", sizeof(mac_frame_data));
-    unsigned short crc = crc16((const unsigned char*)frame, sizeof(mac_frame_data) - 2);
-    printf("crc: %u\n", crc);
-}
 
 int main(int argc, char** argv) {
     mac_frame_data frame;
     memset(&frame, 0, sizeof(mac_frame_data));
 
     mac_frame_data_calc_crc(&frame);
+    printf("crc: 0x%x 0x%x\n", frame.fcs[0], frame.fcs[1]);
 
-    printf("Hallo\n");
+    mac_frame_ack ack;
+    memset(&ack, 0, sizeof(mac_frame_ack));
+    mac_frame_ack_calc_crc(&ack);
+    printf("crc: 0x%x 0x%x\n", ack.fcs[0], ack.fcs[1]);
+
+
     return EXIT_SUCCESS;
 }
