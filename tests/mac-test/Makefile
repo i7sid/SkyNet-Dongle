@@ -9,7 +9,7 @@ clean:
 	rm -rf mac-test
 
 mac-test:
-	gcc -pedantic -Werror -std=c99 -o mac-test mac-test.c
+	gcc -pedantic -Werror -std=c99 -o mac-test mac-test.c ../../firmware/src/mac/mac.c
 
 # vim:ft=make
 #
