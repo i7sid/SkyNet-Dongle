@@ -5,10 +5,10 @@
 
 
 ///@brief Send a usb debug packet each second.
-#define DEBUG_SEND_USB_TEST
+//#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-//#define DEBUG_SEND_RF_TEST
+#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -44,12 +44,16 @@
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
 
+#include "mac/mac.h"
+
 #if defined(NO_BOARD_LIB)
 const uint32_t OscRateIn = 12000000; // 12 MHz
 const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
 #endif
 
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
+extern RTC_TIME_T FullTime;
+
 
 
 void skynet_cdc_received_message(usb_message *msg);
@@ -122,6 +126,11 @@ int main(void) {
     radio_init();
     msDelay(50);  // wait a moment to ensure that all systems are up and ready
 
+    // init RNG
+    Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+    srand(FullTime.time[RTC_TIMETYPE_SECOND] * FullTime.time[RTC_TIMETYPE_MINUTE] *
+    		FullTime.time[RTC_TIMETYPE_HOUR] * FullTime.time[RTC_TIMETYPE_DAYOFYEAR]);
+    // TODO better seed
 
     // usb init
     skynet_cdc_init();
@@ -181,8 +190,23 @@ int main(void) {
 			case EVENT_DEBUG_2:
 			{
 				// DEBUG: send RF packet
+				uint8_t p[] = "Test-Payload";
+				mac_frame_data frame;
+				mac_frame_data_init(&frame);
+				frame.payload = p;
+				frame.payload_size = strlen((char*)p) + 1;
+
+				uint8_t buffer[mac_frame_data_get_size(&frame)];
+				mac_frame_data_pack(&frame, buffer);
+				mac_frame_calc_crc(buffer, sizeof(buffer));
+
+				mac_transmit_packet(buffer, sizeof(buffer));
+
+				/*
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
 				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
+				*/
+
 				skynet_led_blink_passive(100);
 				break;
 			}

@@ -13,6 +13,7 @@
 #define MAC_FRAME_DATA_H
 
 #include <string.h>
+#include "mac.h"
 #include "mac_config.h"
 #include "util.h"
 
@@ -33,6 +34,13 @@ typedef struct mac_frame_data {
 
 static inline size_t mac_frame_data_get_size(mac_frame_data *frame) {
     return sizeof(frame->mhr) + frame->payload_size + sizeof(frame->fcs);
+}
+
+static inline void mac_frame_data_init(mac_frame_data *frame) {
+	memset(frame, 0, sizeof(mac_frame_data));
+	MHR_FC_SET_FRAME_TYPE(frame->mhr.frame_control, MAC_FRAME_DATA);
+
+	// TODO set new seq_no
 }
 
 static inline void mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {

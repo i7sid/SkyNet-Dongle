@@ -12,8 +12,18 @@
 #ifndef MAC_H
 #define MAC_H
 
-#include <inttypes.h>
+#include "../misc/misc.h"
+#include "../cpu/systick.h"
+#include <stdlib.h>
 #include "mac_config.h"
+
+
+/**
+ * @brief	Tries to send a packet over PHY using CSMA/CA.
+ *
+ * @return	True, if sent successfully, false otherwise.
+ */
+bool mac_transmit_packet(uint8_t* data, uint16_t length);
 
 
 typedef enum mac_frame_types {
@@ -24,13 +34,13 @@ typedef enum mac_frame_types {
 } mac_frame_types;
 
 
-#define MHR_FC_GET_FRAME_TYPE(x) { (x[0] >> 5) & 0x7  }
-#define MHR_FC_SET_FRAME_TYPE(x, n) { x[0] = (x[0] & 0xF8) | (n & 0x7) }
+#define MHR_FC_GET_FRAME_TYPE(x) { (x[0] >> 5) & 0x7;  }
+#define MHR_FC_SET_FRAME_TYPE(x, n) { x[0] = (x[0] & 0xF8) | (n & 0x7); }
 
-#define MHR_FC_GET_SECURITY_ENABLED(x) { (x[0] >> 4) & 0x1  }
-#define MHR_FC_GET_FRAME_PENDING(x) { (x[0] >> 3) & 0x1  }
-#define MHR_FC_GET_ACK_REQUEST(x) { (x[0] >> 2) & 0x1  }
-#define MHR_FC_GET_PAN_ID_COMPRESSION(x) { (x[0] >> 1) & 0x1  }
+#define MHR_FC_GET_SECURITY_ENABLED(x) { (x[0] >> 4) & 0x1;  }
+#define MHR_FC_GET_FRAME_PENDING(x) { (x[0] >> 3) & 0x1;  }
+#define MHR_FC_GET_ACK_REQUEST(x) { (x[0] >> 2) & 0x1;  }
+#define MHR_FC_GET_PAN_ID_COMPRESSION(x) { (x[0] >> 1) & 0x1;  }
 
 
 /*
@@ -48,5 +58,9 @@ typedef struct mac_frame_control {
 } __attribute__((packed))  mac_frame_control;
 */
 
+
+#include "mac_frame_data.h"
+#include "mac_frame_ack.h"
+#include "util.h"
 
 #endif /* !MAC_H */

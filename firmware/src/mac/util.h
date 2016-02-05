@@ -30,7 +30,6 @@ static inline uint16_t crc16(const uint8_t* data_p, uint8_t length) {
 
 
 static inline void mac_frame_calc_crc(uint8_t* frame, size_t frame_size) {
-    printf("%lu\n", frame_size);
     uint16_t crc = crc16((const uint8_t*)frame, frame_size - 2);
     frame[frame_size-2] = (crc >> 8) & 0xFF;
     frame[frame_size-1] = (crc     ) & 0xFF;

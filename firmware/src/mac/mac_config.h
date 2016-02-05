@@ -23,6 +23,8 @@
 #define MAC_CONST_aBaseSlotDuration         (60)
 */
 
+#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in ms?
+
 #define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (20) // in "symbols"
 #define MAC_CONST_MAX_BE                    (8)
 #define MAC_CONST_MIN_BE                    (3)
