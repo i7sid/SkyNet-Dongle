@@ -11,12 +11,14 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-
+#include <chrono>
+#include <thread>
 #include <string.h>
 
 #include <thread>         // std::thread (C++11!)
 #include <vector>
 
+#include "tap.h"
 #include "usbtty.h"
 
 using namespace std;
@@ -34,11 +36,14 @@ using namespace std;
 #define COLOR_RESET()		if (prompt_colored) { cerr << ANSI_COLOR_RESET; }
 
 #define MAGIC_NO_COLOR		513
+#define MAGIC_TAP_DEBUG		512
 
+string cmd_tap = "tapsn0";
 string cmd_tty = "/dev/ttyACM0";
 bool cmd_flash = false;
 bool cmd_reset = false;
 bool prompt_colored = true;
+bool tap_debug = false;
 int verbosity = 0;
 
 void parseCmd(int argc, char** argv);
@@ -48,6 +53,7 @@ void parseCmd(int argc, char** argv);
  */
 void usbReceiveHandler(usb_message msg);
 
+void do_tap_debug(string);
 
 int main(int argc, char** argv) {
 	parseCmd(argc, argv);
@@ -56,8 +62,14 @@ int main(int argc, char** argv) {
 		cerr << "verbosity:       " << verbosity << endl;
 		cerr << "colored prompt:  " << prompt_colored << endl;
 		cerr << "tty:             " << cmd_tty << endl;
+		cerr << "tap:             " << cmd_tap << endl;
 		cerr << "goto bootloader: " << cmd_flash << endl;
+		cerr << "tap debug:       " << tap_debug << endl;
 		cerr << endl;
+	}
+
+	if (tap_debug) {
+		do_tap_debug(cmd_tap);
 	}
 
 	// init serial port on linux systems
@@ -142,6 +154,8 @@ void parseCmd(int argc, char** argv) {
         {"verbose",  no_argument,       0, 'v'},
         {"help",     no_argument,       0, 'h'},
         {"tty",      required_argument, 0, 't'},
+        {"tap",      required_argument, 0, 'a'},
+        {"debug-tap",no_argument, 		0, MAGIC_TAP_DEBUG},
         {"reset",    no_argument,       0, 'r'},
         {"flash",    no_argument,       0, 'f'},
         {"color",    no_argument,       0, 'c'},
@@ -150,10 +164,13 @@ void parseCmd(int argc, char** argv) {
     };
 
     int opt_index = 0; // getopt_long stores the option index here.
-	while ((c = getopt_long(argc, argv, "rcvh?ft:", long_options, &opt_index)) != -1) {
+	while ((c = getopt_long(argc, argv, "rcvh?ft:a:", long_options, &opt_index)) != -1) {
 		switch (c) {
 			case 't':
 				cmd_tty = string(optarg);
+				break;
+			case 'a':
+				cmd_tap = string(optarg);
 				break;
 			case 'r':
 				cmd_reset = true;
@@ -169,6 +186,9 @@ void parseCmd(int argc, char** argv) {
 				break;
 			case MAGIC_NO_COLOR:
 				prompt_colored = false;
+				break;
+			case MAGIC_TAP_DEBUG:
+				tap_debug = true;
 				break;
 			case 'h':
 			case '?':
@@ -208,5 +228,38 @@ void usbReceiveHandler(usb_message pkt) {
 	}
 
 	delete[] pkt.payload;
+}
+
+void do_tap_debug(string dev) {
+	char buffer[4196];
+	int nread = 0;
+
+	try {
+		tap t(dev);
+		cerr << "Tap device opened." << endl;
+
+		while (true) {
+			// Now read data coming from the kernel
+			while(1) {
+				// Note that "buffer" should be at least the MTU size of the interface, eg 1500 bytes
+				nread = read(t.get_fd(), buffer, sizeof(buffer));
+				if(nread < 0) {
+					perror("Reading from interface");
+					close(t.get_fd());
+					exit(1);
+				}
+
+				// Do whatever with the data
+				cerr << "Read " << nread << " bytes from device." << endl;
+			}
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(20));
+		}
+	} catch (int i) {
+		cerr << "ERROR: " << i << endl;
+		cerr << "Is it possible that you forgot to call setup-tap.sh " <<
+				"with correct user name and group?" << endl;
+		exit(0);
+	}
 }
 
