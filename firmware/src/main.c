@@ -245,7 +245,7 @@ void skynet_cdc_received_message(usb_message *msg) {
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
-			radio_send_variable_packet((uint8_t*)msg->payload, msg->payload_length);
+			mac_transmit_packet((uint8_t*)msg->payload, msg->payload_length);
 			break;
 		}
 		case USB_CONTROL: {

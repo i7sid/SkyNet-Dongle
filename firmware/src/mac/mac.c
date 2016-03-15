@@ -19,8 +19,12 @@ uint8_t nb; ///<@brief How many backoff-times have been needed in current try?
 uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waited
 
 /// @brief  Returns a pseudo random number (strictly) smaller than max.
-inline int random(int max) {
+static inline int random(int max) {
     return (rand() % max);
+}
+
+uint64_t mac_mhr_get_dest_addr(uint8_t *pkt) {
+	// TODO
 }
 
 bool channel_idle(void) {
@@ -30,7 +34,6 @@ bool channel_idle(void) {
     DBG("%d, %d\n", rssi, latched);
     return (latched != 1);
 }
-
 
 
 bool mac_transmit_packet(uint8_t* data, uint16_t length) {
@@ -45,7 +48,7 @@ bool mac_transmit_packet(uint8_t* data, uint16_t length) {
         msDelay(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
 
         if (channel_idle()) {
-        	radio_send_variable_packet(data, length); 		// send to PHY
+        	phy_transmit(data, length); 		// send to PHY
             return true;
         }
         else {

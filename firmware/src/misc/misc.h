@@ -18,6 +18,8 @@
 
 #include "../misc/debug.h"
 
+#define phy_transmit(x,y) 	radio_send_variable_packet(x,y)
+
 // general handler for EINT3 sources (EINT3, GPIO, ...)
 #define GPIO_IRQ_HANDLER 		EINT3_IRQHandler
 
