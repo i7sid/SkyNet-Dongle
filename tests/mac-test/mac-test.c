@@ -13,11 +13,32 @@
 #include <string.h>
 #include <inttypes.h>
 
+#include "../../firmware/src/mac/mac.h"
 #include "../../firmware/src/mac/mac_frame_data.h"
 #include "../../firmware/src/mac/mac_frame_ack.h"
 
-
 int main(int argc, char** argv) {
+    mac_frame_data *frame = mac_frame_data_calloc();
+
+    MHR_FC_SET_FRAME_TYPE(frame->mhr.frame_control, MAC_FRAME_DATA);
+    MHR_FC_SET_PAN_ID_COMPRESSION(frame->mhr.frame_control, 0);
+    MHR_FC_SET_DEST_ADDR_MODE(frame->mhr.frame_control, MAC_ADDR_MODE_LONG);
+    MHR_FC_SET_SRC_ADDR_MODE(frame->mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+    frame->mhr.src_pan_id[0] = 0xAA;
+    frame->mhr.src_pan_id[1] = 0xAA;
+    frame->mhr.dest_pan_id[0] = 0xAA;
+    frame->mhr.dest_pan_id[1] = 0xAA;
+
+    printf("0x%x\n", (uint8_t)(MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control)));
+    printf("0x%x\n", (uint8_t)(MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control)));
+    frame->payload = calloc(7, sizeof(uint8_t));
+    memcpy(frame->payload, "Hallo!", 7);
+    frame->payload_size = (uint16_t)strlen((char*)frame->payload) + 1;
+
+    mac_transmit_packet(frame);
+
+/*
     mac_frame_data frame;
     memset(&frame, 0, sizeof(mac_frame_data));
     frame.payload = (uint8_t*)"Hallo!";
@@ -30,7 +51,8 @@ int main(int argc, char** argv) {
     frame.mhr.address[1]        = 0x5;
     frame.mhr.address[2]        = 0x6;
     frame.mhr.address[3]        = 0x7;
-
+*/
+/*
     size_t size = mac_frame_data_get_size(&frame);
     printf("%i %lu\n", frame.payload_size, size);
 
@@ -51,6 +73,9 @@ int main(int argc, char** argv) {
         printf("0x%x  ", buffer[i]);
     }
     printf("\n");
+*/
+
+//    mac_transmit_packet(&frame);
 
     /*
 
@@ -82,3 +107,48 @@ int main(int argc, char** argv) {
 
     return EXIT_SUCCESS;
 }
+
+
+void si446x_get_modem_status(uint8_t i) {
+    // TODO stub
+}
+void msDelay(uint32_t i) {
+    // TODO stub
+}
+void radio_send_variable_packet(uint8_t* buf, uint16_t length) {
+    printf("######################################################################\n");
+    printf("Sending packet of length: %d\n\n", length);
+    printf("Bytes:");
+
+    for (int i = 0; i < length; ++i) {
+        if (!(i % 8)) {
+            printf("\n%d\t", i);
+        }
+        printf("0x%02x ", buf[i]);
+    }
+
+    printf("\n######################################################################\n");
+}
+
+
+
+
+struct si446x_reply_GET_MODEM_STATUS_map {
+    uint8_t  MODEM_PEND;
+    uint8_t  MODEM_STATUS;
+    uint8_t  CURR_RSSI;
+    uint8_t  LATCH_RSSI;
+    uint8_t  ANT1_RSSI;
+    uint8_t  ANT2_RSSI;
+    uint16_t AFC_FREQ_OFFSET;
+};
+
+
+
+/* The union that stores the reply written back to the host registers */
+union si446x_cmd_reply_union {
+    uint8_t RAW[16];
+    struct  si446x_reply_GET_MODEM_STATUS_map  GET_MODEM_STATUS;
+};
+
+union si446x_cmd_reply_union Si446xCmd;

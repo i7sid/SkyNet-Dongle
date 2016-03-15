@@ -196,11 +196,15 @@ int main(void) {
 				frame.payload = p;
 				frame.payload_size = strlen((char*)p) + 1;
 
+				mac_transmit_packet(&frame);
+				/*
 				uint8_t buffer[mac_frame_data_get_size(&frame)];
 				mac_frame_data_pack(&frame, buffer);
 				mac_frame_calc_crc(buffer, sizeof(buffer));
 
 				mac_transmit_packet(buffer, sizeof(buffer));
+				*/
+
 
 				/*
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
@@ -245,7 +249,9 @@ void skynet_cdc_received_message(usb_message *msg) {
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
-			mac_transmit_packet((uint8_t*)msg->payload, msg->payload_length);
+			// TODO richtig auspacken und senden
+			mac_transmit_data((uint8_t*)msg->payload, msg->payload_length);
+//			mac_transmit_packet((uint8_t*)msg->payload, msg->payload_length);
 			break;
 		}
 		case USB_CONTROL: {

@@ -8,6 +8,7 @@
  * @date    2016-02-05
  */
 
+
 #include "mac.h"
 #include "../radio/skynet_radio.h"
 #include "../radio/si446x_defs.h"
@@ -35,8 +36,23 @@ bool channel_idle(void) {
     return (latched != 1);
 }
 
+bool mac_transmit_packet(mac_frame_data *frame) {
+	uint16_t est_size = mac_frame_data_estimate_size(frame);
+	uint8_t buf[est_size];
+	memset(buf, 0, sizeof(buf));								// TODO remove, DEBUG!
+	uint16_t size = mac_frame_data_pack(frame, buf);
+	mac_frame_calc_crc(buf, size);
+	return mac_transmit_data(buf, size);
+	/*
+	uint16_t size = mac_frame_data_get_size(frame);
+	uint8_t buf[size];
+	mac_frame_data_pack(frame, buf);
+	mac_frame_calc_crc(buf, sizeof(buf));
+	return mac_transmit_data(buf, size);
+	*/
+}
 
-bool mac_transmit_packet(uint8_t* data, uint16_t length) {
+bool mac_transmit_data(uint8_t* data, uint16_t length) {
     // if (is_beacon or is_ack) phy_transmit(data, length) // TODO don't wait!
     
     nb = 0;

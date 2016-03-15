@@ -8,6 +8,13 @@
 #ifndef MISC_H_
 #define MISC_H_
 
+#ifdef CORE_M3
+#include <chip.h>
+#else
+#include "linux_incs.h"
+#endif
+
+/*
 #if defined (__USE_LPCOPEN)
 #if defined(NO_BOARD_LIB)
 #include "chip.h"
@@ -15,6 +22,8 @@
 #include "board.h"
 #endif
 #endif
+*/
+
 
 #include "../misc/debug.h"
 

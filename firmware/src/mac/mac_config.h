@@ -12,7 +12,8 @@
 #ifndef MAC_CONFIG_H
 #define MAC_CONFIG_H
 
-#define MAC_CONFIG_ADDRESS_LENGTH           (4)     /// @brief 4 to 20
+#define MAC_MAX_ADDRESS_LENGTH              (8)     /// @brief maximum address length
+#define MAC_CONFIG_ADDRESS_LENGTH           (4)     /// @brief 4 to 20  // DEBUG TODO REMOVE
 
 /*
 #define MAC_CONST_aMinMPDUOverhead          (9)
