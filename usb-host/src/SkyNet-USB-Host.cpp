@@ -68,9 +68,11 @@ int main(int argc, char** argv) {
 		cerr << endl;
 	}
 
+    /*
 	if (tap_debug) {
 		do_tap_debug(cmd_tap);
 	}
+    */
 
 	// init serial port on linux systems
 	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";

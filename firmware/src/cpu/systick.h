@@ -19,7 +19,7 @@
  * This value is used to instantiate the queue, so be aware that a high value
  * may consume unnecessarily much memory.
  */
-#define MAX_DELAYED_EVENTS (32)
+#define MAX_DELAYED_EVENTS (16)
 
 
 /**

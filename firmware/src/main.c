@@ -5,10 +5,10 @@
 
 
 ///@brief Send a usb debug packet each second.
-//#define DEBUG_SEND_USB_TEST
+#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-#define DEBUG_SEND_RF_TEST
+//#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -116,14 +116,15 @@ int main(void) {
 	skynet_led(false);
 
 
-    DBG("Initialize input...\n");
-	input_init();
+    //DBG("Initialize input...\n");
+	//input_init();
+
     DBG("Initialize ADC...\n");
-	adc_init();
-	adc_start_buffered_measure();
+	//adc_init();
+	//adc_start_buffered_measure();
 
     DBG("Initialize radio module...\n");
-    radio_init();
+    //radio_init();
     msDelay(50);  // wait a moment to ensure that all systems are up and ready
 
     // init RNG

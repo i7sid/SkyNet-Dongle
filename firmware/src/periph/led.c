@@ -28,7 +28,7 @@ INLINE void skynet_led(bool on) {
 	Chip_GPIO_SetPinState(LPC_GPIO, LED_PORT, LED_PIN, !on);
 }
 
-STATIC void skynet_led_off() {
+void skynet_led_off() {
 	skynet_led(false);
 }
 

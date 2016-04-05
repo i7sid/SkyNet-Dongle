@@ -330,7 +330,6 @@ void skynet_cdc_receive_data(void) {
 				//usb_message_avail = true;
 				//printf("event\n");
 			}
-
 		}
 	}
 }

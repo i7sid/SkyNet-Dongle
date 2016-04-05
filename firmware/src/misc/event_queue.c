@@ -10,8 +10,9 @@
 
 #include "event_queue.h"
 
-RINGBUFF_T events_ringbuf;
-char events_buf[MAX_QUEUED_EVENTS * sizeof(queued_event)];
+static RINGBUFF_T events_ringbuf;
+//char events_buf[MAX_QUEUED_EVENTS * sizeof(queued_event)];
+queued_event events_buf[MAX_QUEUED_EVENTS];
 
 void events_init(void) {
 	//queued_event
