@@ -21,6 +21,13 @@
 #include "tap.h"
 #include "usbtty.h"
 
+#include <net/ethernet.h>
+#include <netinet/ether.h>
+#include <arpa/inet.h>
+
+#include <linux/ip.h>
+
+
 using namespace std;
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -68,11 +75,11 @@ int main(int argc, char** argv) {
 		cerr << endl;
 	}
 
-    /*
+
 	if (tap_debug) {
 		do_tap_debug(cmd_tap);
 	}
-    */
+
 
 	// init serial port on linux systems
 	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
@@ -253,7 +260,25 @@ void do_tap_debug(string dev) {
 				}
 
 				// Do whatever with the data
-				cerr << "Read " << nread << " bytes from device." << endl;
+				//cerr << "Read " << nread << " bytes from device." << endl;
+				struct ether_header* frame = (struct ether_header*)(buffer+4);
+				cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
+				cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
+				cerr << "type:      " << ntohs(frame->ether_type) << endl;
+
+				// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
+
+				struct iphdr* iph = (struct iphdr*)(buffer + 4 + sizeof(struct ether_header));
+				cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
+				cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
+				cerr << "version:   " << (int)(iph->version) << endl;
+				cerr << "protocol:  " << (int)(iph->protocol) << endl;
+
+
+				for (unsigned int i = 0; i < nread; ++i) {
+					cout << (char)buffer[i];
+				}
+				cout << endl;
 			}
 
 			std::this_thread::sleep_for(std::chrono::milliseconds(20));

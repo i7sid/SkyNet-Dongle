@@ -48,7 +48,7 @@ void radio_init(void) {
 	si446x_part_info();
 	si446x_func_info();
 
-	/*
+
 	DBG("--- radio chip version information following ---\n");
 	DBG("CHIPREV:   0x%x\n", Si446xCmd.PART_INFO.CHIPREV);
 	DBG("CUSTOMER:  0x%x\n", Si446xCmd.PART_INFO.CUSTOMER);
@@ -63,7 +63,7 @@ void radio_init(void) {
 	DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
 	DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
 	DBG("------ end radio chip version information ------\n");
-	*/
+
 
 	// This interrupt should have highest priority to assure that we do not miss packets
 	NVIC_SetPriority(EINT3_IRQn, 0);
@@ -225,11 +225,11 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 	}
-	DBG("remaining: %d\n", remaining);
+	//DBG("remaining: %d\n", remaining);
 
 #ifdef DEBUG
 	for (int j = 0; j < i; ++j) {
-		DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+		//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 	}
 #endif
 
@@ -326,7 +326,7 @@ void radio_packet_handler(void) {
 		}
 
 		ptr = data;
-		DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
+		//DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
 
 		// copy packet
 		int copy_length = length;
@@ -351,7 +351,7 @@ void radio_packet_handler(void) {
 
 #ifdef DEBUG
 		for (int j = 0; j < i; ++j) {
-			DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+			//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 		}
 #endif
 

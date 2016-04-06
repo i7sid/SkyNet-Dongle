@@ -78,8 +78,11 @@ void msDelayCallback(void) {
 	tick_occured = true;
 }
 
+
 void msDelay(uint32_t ms)
 {
+	msDelayActive(ms);
+	/*
 	tick_occured = false;
 
 	register_delayed_event(ms, msDelayCallback);
@@ -88,7 +91,9 @@ void msDelay(uint32_t ms)
 	while (!tick_occured) {
 		cpu_sleep();
 	}
+	*/
 }
+
 
 void msDelayActive(uint32_t ms)
 {

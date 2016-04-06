@@ -79,7 +79,9 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 			// copy dest address
 			if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
 				// TODO copy 2 bytes (short address)
-				pos += 2;
+				//pos += 2;
+				buffer[pos++] = frame->mhr.address[0]; // TODO endianness?
+				buffer[pos++] = frame->mhr.address[1];
 			}
 			else if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_LONG) {
 				// TODO copy 8 bytes (long address)

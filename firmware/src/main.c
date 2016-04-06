@@ -5,7 +5,7 @@
 
 
 ///@brief Send a usb debug packet each second.
-#define DEBUG_SEND_USB_TEST
+//#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
@@ -110,7 +110,7 @@ int main(void) {
 
     DBG("Initialize ADC...\n");
 	adc_init();
-	adc_start_buffered_measure();
+	//adc_start_buffered_measure();
 
     DBG("Initialize radio module...\n");
     radio_init();
@@ -131,6 +131,8 @@ int main(void) {
 #ifdef IS_BASESTATION
     // base station init
     skynetbase_init();
+
+    // TODO send regularily data events
 #endif
 
 
@@ -154,11 +156,13 @@ int main(void) {
     msDelay(50);
     skynet_led_blink_active(100);
 
+    // TODO Watchdog
 	while (1) {
 		skynet_cdc_receive_data();
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
+		//if (event_type) DBG("dequeued: %d\n", event_type);
 		switch (event_type) {
 			case EVENT_USB_RX_MESSAGE:
 				skynet_cdc_received_message(event.data);
@@ -190,6 +194,9 @@ int main(void) {
 				mac_frame_data_init(&frame);
 				frame.payload = p;
 				frame.payload_size = strlen((char*)p) + 1;
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				frame.mhr.dest_pan_id = 3;
+				frame.mhr.address = 42;
 
 				mac_transmit_packet(&frame);
 				/*
@@ -216,13 +223,14 @@ int main(void) {
 
 		// Sleep until next IRQ happens
 		cpu_sleep();
+		//msDelay(1);
 	}
 
     return 0;
 }
 
 void skynet_received_packet(skynet_packet *pkt) {
-	DBG("pkt recv (length: %d)\n", pkt->length);
+	//DBG("pkt recv (length: %d)\n", pkt->length);
 
 	// send to host
 	usb_message msg;
