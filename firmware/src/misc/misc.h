@@ -14,31 +14,12 @@
 #include "linux_incs.h"
 #endif
 
-/*
-#if defined (__USE_LPCOPEN)
-#if defined(NO_BOARD_LIB)
-#include "chip.h"
-#else
-#include "board.h"
-#endif
-#endif
-*/
-
-
 #include "../misc/debug.h"
 
 #define phy_transmit(x,y) 	radio_send_variable_packet(x,y)
 
 // general handler for EINT3 sources (EINT3, GPIO, ...)
 #define GPIO_IRQ_HANDLER 		EINT3_IRQHandler
-
-
-// defines for input switch
-#define INPUT_SWITCH_HANDLER	EINT1_IRQHandler
-#define INPUT_SWITCH_IRQn		EINT1_IRQn
-#define INPUT_SWITCH_IRQ		EINT1
-#define INPUT_SWITCH_PORT		2	///< PORT and PIN where input switch is connected
-#define INPUT_SWITCH_PIN		11	///< @copydoc  INPUT_SWITCH_PORT
 
 
 // defines for radio communication (some for SI lib)
@@ -54,49 +35,6 @@
 #define RADIO_IRQ_SOURCE	EINT3
 #define RADIO_ON_PORT		0
 #define RADIO_ON_PIN		9
-
-
-// Bluetooth configuration
-#define BLUETOOTH_DEVICE_NAME		"SKYNET3v1b"			// alphanumeric (max. 31 characters)
-#define BLUETOOTH_DEVICE_PIN		"1234"    			// alphanumeric (max. 16 characters)
-#define BLUETOOTH_BUFFER_SIZE		512
-#define BLUETOOTH_UART 				LPC_UART3
-#define BLUETOOTH_UART_IRQn			UART3_IRQn
-#define BLUETOOTH_UART_IRQ_HANDLER	UART3_IRQHandler
-#define BLUETOOTH_AT_PORT			0
-#define BLUETOOTH_AT_PIN			25
-#define BLUETOOTH_RESET_PORT		3
-#define BLUETOOTH_RESET_PIN			25
-#define BLUETOOTH_CONNECTED_PORT	0
-#define BLUETOOTH_CONNECTED_PIN		24
-#define BLUETOOTH_ON_PORT			3
-#define BLUETOOTH_ON_PIN			26
-
-// charger configuration
-#define CHARGER_STAT1_PORT			0
-#define CHARGER_STAT1_PIN			22
-#define CHARGER_STAT2_PORT			0
-#define CHARGER_STAT2_PIN			21
-#define CHARGER_EXTPWR_PORT			2
-#define CHARGER_EXTPWR_PIN			12
-#define CHARGER_SEL_H_PORT			2
-#define CHARGER_SEL_H_PIN			3
-#define CHARGER_SEL_L_PORT			2
-#define CHARGER_SEL_L_PIN			4
-#define CHARGER_EXTPWR_HANDLER		EINT2_IRQHandler
-#define CHARGER_EXTPWR_IRQn			EINT2_IRQn
-#define CHARGER_EXTPWR_IRQ			EINT2
-#define CHARGER_USBDP_PORT			0
-#define CHARGER_USBDP_PIN			29
-#define CHARGER_USBDM_PORT			0
-#define CHARGER_USBDM_PIN			30
-#define CHARGER_USBCON_PORT			2
-#define CHARGER_USBCON_PIN			9
-
-
-// DCDC configuration
-#define DCDC_PS_PORT				0
-#define DCDC_PS_PIN					8
 
 
 // LED configuration

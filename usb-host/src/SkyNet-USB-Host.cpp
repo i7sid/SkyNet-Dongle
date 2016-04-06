@@ -76,7 +76,8 @@ int main(int argc, char** argv) {
 
 	// init serial port on linux systems
 	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
-	string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
+	//string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
+	string init = "stty -F " + cmd_tty + " raw pass8 -echo -hupcl clocal 115200";
 
 	int s = system(init.c_str());
 	if (s != 0) {
@@ -86,7 +87,7 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
-	// creyte usb_tty object and start rx thread
+	// create usb_tty object and start rx thread
 	usb_tty tty(cmd_tty, usbReceiveHandler);
 
 	if (cmd_flash) {

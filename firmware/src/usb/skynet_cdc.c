@@ -246,6 +246,7 @@ void skynet_cdc_receive_data(void) {
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];
 
+
 		// expect magic number
 		if (usb_rx_state == USB_RECEIVE_IDLE) {
 			if (buf == USB_MAGIC_BYTE1) {

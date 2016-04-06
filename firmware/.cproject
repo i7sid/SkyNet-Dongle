@@ -372,7 +372,6 @@
 			<resource resourceType="PROJECT" workspacePath="/SkyNet-Dongle-firmware"/>
 		</configuration>
 		<configuration configurationName="Release RXtest"/>
-		<configuration configurationName="Debug Semihosting"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

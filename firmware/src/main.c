@@ -32,7 +32,6 @@
 #include "misc/misc.h"
 
 #include "radio/skynet_radio.h"
-#include "periph/input.h"
 #include "periph/led.h"
 #include "periph/adc.h"
 #include "cpu/rtc.h"
@@ -45,7 +44,6 @@
 #include "mac/mac.h"
 
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
-//volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
 
 
