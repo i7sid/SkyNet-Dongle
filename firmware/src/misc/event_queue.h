@@ -16,7 +16,7 @@
 
 
 /// @brief 	Defines the maximum amount of events that can wait in the event queue.
-#define MAX_QUEUED_EVENTS 	(16)
+#define MAX_QUEUED_EVENTS 	(32)
 
 /**
  * @brief	All possible types of events that can be queued and processed.
@@ -40,8 +40,8 @@ typedef enum event_types {
 } event_types;
 
 typedef struct queued_event {
-	char	type;	///< @brief Should be one of \ref event_types .
 	void*	data;	///< @brief May point to a data structure, must be known.
+	char	type;	///< @brief Should be one of \ref event_types .
 } queued_event;
 
 

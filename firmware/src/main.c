@@ -34,9 +34,7 @@
 #include "radio/skynet_radio.h"
 #include "periph/input.h"
 #include "periph/led.h"
-#include "periph/charger.h"
 #include "periph/adc.h"
-#include "periph/dcdc.h"
 #include "cpu/rtc.h"
 #include "cpu/cpu.h"
 #include "misc/event_queue.h"
@@ -46,14 +44,9 @@
 
 #include "mac/mac.h"
 
-#if defined(NO_BOARD_LIB)
-const uint32_t OscRateIn = 12000000; // 12 MHz
-const uint32_t RTCOscRateIn = 32768; // 32.768 kHz
-#endif
-
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
+//volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
-
 
 
 void skynet_cdc_received_message(usb_message *msg);
@@ -106,9 +99,9 @@ int main(void) {
 	Chip_IOCON_Init(LPC_IOCON);
 	events_init();
 	skynet_led_init();
-	charger_init();
-	dcdc_init();
-
+	//charger_init();
+	//dcdc_init();
+	enable_systick();
 
 	// give visual feedback that program started
 	skynet_led(true);
@@ -116,15 +109,13 @@ int main(void) {
 	skynet_led(false);
 
 
-    //DBG("Initialize input...\n");
-	//input_init();
 
     DBG("Initialize ADC...\n");
-	//adc_init();
-	//adc_start_buffered_measure();
+	adc_init();
+	adc_start_buffered_measure();
 
     DBG("Initialize radio module...\n");
-    //radio_init();
+    radio_init();
     msDelay(50);  // wait a moment to ensure that all systems are up and ready
 
     // init RNG
@@ -186,6 +177,10 @@ int main(void) {
 				// DEBUG: send usb packet
 				char debugstr[] = "This is a debug string.";
 				skynet_cdc_write_debug("%s\n", debugstr);
+
+				skynet_led_blink_active(50);
+				msDelayActive(50);
+				skynet_led_blink_active(50);
 				break;
 			}
 			case EVENT_DEBUG_2:
