@@ -69,13 +69,8 @@ int skynet_cdc_init(void) {
 
 	Chip_USB_Init();
 
-	Chip_IOCON_PinMuxSet(LPC_IOCON, 2, 9, IOCON_FUNC1);					// USB_CONNECT
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 29, IOCON_MODE_INACT, IOCON_FUNC1);	// P0.29 D1+
-	Chip_IOCON_PinMux(LPC_IOCON, 0, 30, IOCON_MODE_INACT, IOCON_FUNC1); // P0.30 D1-
-
 	LPC_USB->USBClkCtrl = 0x12;                /* Dev, AHB clock enable */
 	while ((LPC_USB->USBClkSt & 0x12) != 0x12);
-
 
 	/* initialize call back structures */
 	memset((void *) &usb_param, 0, sizeof(USBD_API_INIT_PARAM_T));
@@ -245,7 +240,7 @@ void skynet_cdc_receive_data(void) {
 
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];
-
+		//DBG("%d\n", buf);
 
 		// expect magic number
 		if (usb_rx_state == USB_RECEIVE_IDLE) {

@@ -84,6 +84,11 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	// LED
 	{LED_PORT,  LED_PIN,						IOCON_MODE_INACT | IOCON_FUNC0},
 
+	// USB
+	{USB_CONNECT_PORT,  USB_CONNECT_PIN,		IOCON_MODE_INACT | IOCON_FUNC1},
+	{USB_D_PLUS_PORT,  USB_D_PLUS_PIN,			IOCON_MODE_INACT | IOCON_FUNC1},
+	{USB_D_MINUS_PORT,  USB_D_MINUS_PIN,		IOCON_MODE_INACT | IOCON_FUNC1},
+
 	// reset unused pins
 	// (By default they are set as inputs with pull up. See: AN10915
 	//  To reduce current consumption, we disable the pull up.)

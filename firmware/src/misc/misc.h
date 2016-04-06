@@ -42,6 +42,15 @@
 #define LED_PIN						21
 
 
+// USB configuration
+#define USB_CONNECT_PORT			2
+#define USB_CONNECT_PIN				9
+#define USB_D_PLUS_PORT				0
+#define USB_D_PLUS_PIN				29
+#define USB_D_MINUS_PORT			0
+#define USB_D_MINUS_PIN				30
+
+
 
 // ADC configuration
 #define ADC_PWR_PORT				1

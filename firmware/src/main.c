@@ -114,7 +114,6 @@ int main(void) {
 
     DBG("Initialize radio module...\n");
     radio_init();
-    msDelay(50);  // wait a moment to ensure that all systems are up and ready
 
     // init RNG
     Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
@@ -124,6 +123,8 @@ int main(void) {
 
     // usb init
     skynet_cdc_init();
+    msDelay(700); // wait a moment to ensure that all systems are up and ready
+
 
 
 
