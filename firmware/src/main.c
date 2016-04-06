@@ -223,7 +223,8 @@ int main(void) {
 
 void skynet_received_packet(skynet_packet *pkt) {
 	DBG("pkt recv (length: %d)\n", pkt->length);
-	// send debug message
+
+	// send to host
 	usb_message msg;
 	msg.seqno = 0; 							// chose automatically next one
 	msg.type = USB_SKYNET_PACKET;
@@ -234,6 +235,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 	skynet_cdc_write_message(&msg);
 
+	// Must be done! Memory was allocated dynamically.
 	free(pkt->data);
 	free(pkt);
 }

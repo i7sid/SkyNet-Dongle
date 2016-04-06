@@ -99,6 +99,11 @@ int skynet_cdc_init(void) {
 			/*  enable USB interrupts */
 			NVIC_EnableIRQ(USB_IRQn);
 
+			// first disable to simulate re-plug
+			skynet_cdc_disconnect();
+
+			msDelay(100);
+
 			// and now enable connection
 			skynet_cdc_connect();
 
@@ -236,11 +241,10 @@ void skynet_cdc_receive_data(void) {
 	usb_received_message.payload = usb_payload_buf;
 
 	unsigned char b[64];
-	int c = skynet_cdc_read(b, 64);
+	int c = skynet_cdc_read(b, sizeof(b));
 
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];
-		//DBG("%d\n", buf);
 
 		// expect magic number
 		if (usb_rx_state == USB_RECEIVE_IDLE) {
