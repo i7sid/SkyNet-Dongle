@@ -41,6 +41,9 @@
 #define MAX_PACKET_SIZE    64
 #define LE_WORD(x)        ((x)&0xFF),((x)>>8)
 
+uint8_t goto_eject = 0x0;
+void eject(void);
+
 static uint8_t abClassReqData[4];
 
 static const uint8_t abDescriptors[] = {
@@ -182,7 +185,16 @@ void usb_msc_start (void) {
     USBHwConnect(true);
 
     // call USB interrupt handler continuously
+    volatile unsigned int wait_count = 2000000;
     while (1) {
         USBHwISR();
+
+        if (goto_eject == 0xBB) {
+        	// now wait for about ~2 seconds to allow host to recognize correct shutdown
+        	wait_count--;
+        	if (wait_count < 1) {
+        		eject();
+        	}
+        }
     }
 }

@@ -64,22 +64,76 @@ $(document).ready(function(){initNavTree('compass_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">compass.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
+<div class="textblock"><code>#include &quot;<a class="el" href="compass_8h_source.html">compass.h</a>&quot;</code><br />
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac557367104b8f12099606becdcd04496"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a> (void)</td></tr>
 <tr class="memdesc:ac557367104b8f12099606becdcd04496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the compass.  <a href="#ac557367104b8f12099606becdcd04496">More...</a><br /></td></tr>
 <tr class="separator:ac557367104b8f12099606becdcd04496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a47d74c65f2dc4fd9524e4f120e5adc74">skynetbase_compass_read</a> (void)</td></tr>
+<tr class="memdesc:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read compass module.  <a href="#a47d74c65f2dc4fd9524e4f120e5adc74">More...</a><br /></td></tr>
+<tr class="separator:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a2000ad28c6446a41bd85dcee5d6dd5c7">skynetbase_compass_calibrate</a> (void)</td></tr>
+<tr class="memdesc:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start calibration routine.  <a href="#a2000ad28c6446a41bd85dcee5d6dd5c7">More...</a><br /></td></tr>
+<tr class="separator:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a5dc6bc52a11c64ec7880a5067ff40894"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a5dc6bc52a11c64ec7880a5067ff40894">magneticdeclination</a> = 0</td></tr>
+<tr class="memdesc:a5dc6bc52a11c64ec7880a5067ff40894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Error of the earth's local magnetic field.  <a href="#a5dc6bc52a11c64ec7880a5067ff40894">More...</a><br /></td></tr>
+<tr class="separator:a5dc6bc52a11c64ec7880a5067ff40894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09aaabfde590c6eee480db7061378c56"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a09aaabfde590c6eee480db7061378c56">xmax</a> = 403</td></tr>
+<tr class="separator:a09aaabfde590c6eee480db7061378c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c35acdb36f05e7cede2803f10054ff"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a97c35acdb36f05e7cede2803f10054ff">xmin</a> = -57</td></tr>
+<tr class="separator:a97c35acdb36f05e7cede2803f10054ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9767d3c5fee00d75496e3a3295d1fc8a"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a9767d3c5fee00d75496e3a3295d1fc8a">ymax</a> = 39</td></tr>
+<tr class="separator:a9767d3c5fee00d75496e3a3295d1fc8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f275e2850598f114217ad31734178ac"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a6f275e2850598f114217ad31734178ac">ymin</a> = -379</td></tr>
+<tr class="separator:a6f275e2850598f114217ad31734178ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6512fc62636d54e1ed98ca5d5fc537ba"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a6512fc62636d54e1ed98ca5d5fc537ba">zmax</a> = 252</td></tr>
+<tr class="separator:a6512fc62636d54e1ed98ca5d5fc537ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ecdaa7333ab2283546b7ad072eb1ba"><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#aa2ecdaa7333ab2283546b7ad072eb1ba">zmin</a> = -199</td></tr>
+<tr class="separator:aa2ecdaa7333ab2283546b7ad072eb1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a053ece41589dd9880336364cd84b3e8b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a053ece41589dd9880336364cd84b3e8b">xoffset</a> = 0</td></tr>
+<tr class="separator:a053ece41589dd9880336364cd84b3e8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27d4b7df566caadfc72a580287fe10bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a27d4b7df566caadfc72a580287fe10bf">yoffset</a> = 0</td></tr>
+<tr class="separator:a27d4b7df566caadfc72a580287fe10bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af013ac233e6adaa47a7ed026612af6b0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#af013ac233e6adaa47a7ed026612af6b0">zoffset</a> = 0</td></tr>
+<tr class="separator:af013ac233e6adaa47a7ed026612af6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0efc777e8e5dbca130c0ca42778b7ee9"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a0efc777e8e5dbca130c0ca42778b7ee9">scaley</a> = 1</td></tr>
+<tr class="separator:a0efc777e8e5dbca130c0ca42778b7ee9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39a77ae588b7c517b2aa73f052421f84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8c.html#a39a77ae588b7c517b2aa73f052421f84">scalez</a> = 1</td></tr>
+<tr class="separator:a39a77ae588b7c517b2aa73f052421f84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>09.11.2015 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a2000ad28c6446a41bd85dcee5d6dd5c7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void skynetbase_compass_calibrate </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start calibration routine. </p>
+
+</div>
+</div>
 <a class="anchor" id="ac557367104b8f12099606becdcd04496"></a>
 <div class="memitem">
 <div class="memproto">
@@ -98,13 +152,179 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a47d74c65f2dc4fd9524e4f120e5adc74"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float skynetbase_compass_read </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read compass module. </p>
+<dl class="section return"><dt>Returns</dt><dd>Compass direction in degrees. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="a5dc6bc52a11c64ec7880a5067ff40894"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float magneticdeclination = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Error of the earth's local magnetic field. </p>
+
+</div>
+</div>
+<a class="anchor" id="a0efc777e8e5dbca130c0ca42778b7ee9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scaley = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a39a77ae588b7c517b2aa73f052421f84"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float scalez = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a09aaabfde590c6eee480db7061378c56"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t xmax = 403</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a97c35acdb36f05e7cede2803f10054ff"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t xmin = -57</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a053ece41589dd9880336364cd84b3e8b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float xoffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9767d3c5fee00d75496e3a3295d1fc8a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t ymax = 39</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6f275e2850598f114217ad31734178ac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t ymin = -379</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a27d4b7df566caadfc72a580287fe10bf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float yoffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6512fc62636d54e1ed98ca5d5fc537ba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t zmax = 252</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa2ecdaa7333ab2283546b7ad072eb1ba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t zmin = -199</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="af013ac233e6adaa47a7ed026612af6b0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float zoffset = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_79a358baf18e5a64f29b44b47849d0b7.html">compass</a></li><li class="navelem"><a class="el" href="compass_8c.html">compass.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:41 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

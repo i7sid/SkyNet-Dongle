@@ -33,6 +33,7 @@ typedef enum event_types {
 	EVENT_EXT_PWR_PLUGGED,	///< @brief External power supplied, can charge.
 	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
 	EVENT_USB_RX_MESSAGE,	///< @brief USB CDC data available.
+	EVENT_GPS_DATA_AVAILABLE, ///< @brief GPS data available.
 	EVENT_DEBUG_1,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_2,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_3,			///< @brief Reserved for debugging purposes.

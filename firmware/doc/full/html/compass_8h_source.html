@@ -71,18 +71,59 @@ $(document).ready(function(){initNavTree('compass_8h_source.html','');});
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef BASESTATION_COMPASS_COMPASS_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define BASESTATION_COMPASS_COMPASS_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">int</span> <a class="code" href="compass_8h.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_COMPASS_COMPASS_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="compass_8h_html_ac557367104b8f12099606becdcd04496"><div class="ttname"><a href="compass_8h.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a></div><div class="ttdeci">int skynetbase_compass_init(void)</div><div class="ttdoc">Initializes the compass. </div><div class="ttdef"><b>Definition:</b> compass.c:8</div></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;math.h&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;chip.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;../../misc/misc.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;../../misc/debug.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;../../cpu/systick.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="compass_8h.html#a38d1030166e3fff060e4bbd35363d3c1">   18</a></span>&#160;<span class="preprocessor">#define read_Addr           0x3D                // 0b111101</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="compass_8h.html#a35dd65a75025a057c4da458d2c028984">   19</a></span>&#160;<span class="preprocessor">#define write_Addr          0x3C                // 0b111100</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="compass_8h.html#ad1b01066fd7c15624d33895bdc00b60a">   20</a></span>&#160;<span class="preprocessor">#define HMC5883L_Addr       0x1E                // 0x3d or 0x3c &gt;&gt; 1</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="compass_8h.html#a598a3330b3c21701223ee0ca14316eca">   21</a></span>&#160;<span class="preprocessor">#define PI                  (float)3.141592653589793</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="compass_8h.html#acefc4bf04c22674d110448e3723873fb">   23</a></span>&#160;<span class="preprocessor">#define COMPASS_UNCAL_MAX   -32766</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="compass_8h.html#a6f608bcfea500b73f147deed56a35fc6">   24</a></span>&#160;<span class="preprocessor">#define COMPASS_UNCAL_MIN   32766</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">// Taken from HMC5883L datasheet:</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="compass_8h.html#aa8660d5a409115a359070a187188a644">   28</a></span>&#160;<span class="preprocessor">#define HMC5883L_CRA        (0x0)   </span></div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="compass_8h.html#ac638eb06b6060175d4be2e5db9f64406">   29</a></span>&#160;<span class="preprocessor">#define HMC5883L_CRB        (0x1)   </span></div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="compass_8h.html#a0e32eeb11f0b893996d2ab33b8a1267d">   30</a></span>&#160;<span class="preprocessor">#define HMC5883L_MODE       (0x2)   </span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="compass_8h.html#a812f2e1358c1391b810dae51b024426d">   31</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_X_H   (0x3)   </span></div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="compass_8h.html#a117d3b5b414e614c59b5de8cf4c5be72">   32</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_X_L   (0x4)   </span></div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="compass_8h.html#a6ee50f89ab36c020661689840d20481d">   33</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_Y_H   (0x5)   </span></div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="compass_8h.html#a42bac7a700f048c76edac3a3283fe56e">   34</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_Y_L   (0x6)   </span></div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="compass_8h.html#accfbafcfede0c39c91ffb3a2ff2b4cfc">   35</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_Z_H   (0x7)   </span></div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="compass_8h.html#a4825aad0eb7dac7202a6dfa6b9821302">   36</a></span>&#160;<span class="preprocessor">#define HMC5883L_DATA_Z_L   (0x8)   </span></div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="compass_8h.html#a2b28b4e5cce4f827cc64081db1400dec">   37</a></span>&#160;<span class="preprocessor">#define HMC5883L_STATUS     (0x9)   </span></div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="compass_8h.html#aaebd5b247a487262e88c1ddd736001ac">   38</a></span>&#160;<span class="preprocessor">#define HMC5883L_ID_A       (0xA)   </span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="compass_8h.html#ad494c9b9088d4a8883ebba4cc1912ed9">   39</a></span>&#160;<span class="preprocessor">#define HMC5883L_ID_B       (0xB)   </span></div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="compass_8h.html#a828eb4741ec1a4457fc952388fd153a5">   40</a></span>&#160;<span class="preprocessor">#define HMC5883L_ID_C       (0xC)   </span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">int</span> <a class="code" href="compass_8h.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keywordtype">float</span> <a class="code" href="compass_8h.html#a47d74c65f2dc4fd9524e4f120e5adc74">skynetbase_compass_read</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keywordtype">void</span> <a class="code" href="compass_8h.html#a2000ad28c6446a41bd85dcee5d6dd5c7">skynetbase_compass_calibrate</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_COMPASS_COMPASS_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="compass_8h_html_a47d74c65f2dc4fd9524e4f120e5adc74"><div class="ttname"><a href="compass_8h.html#a47d74c65f2dc4fd9524e4f120e5adc74">skynetbase_compass_read</a></div><div class="ttdeci">float skynetbase_compass_read(void)</div><div class="ttdoc">Read compass module. </div><div class="ttdef"><b>Definition:</b> compass.c:109</div></div>
+<div class="ttc" id="compass_8h_html_a2000ad28c6446a41bd85dcee5d6dd5c7"><div class="ttname"><a href="compass_8h.html#a2000ad28c6446a41bd85dcee5d6dd5c7">skynetbase_compass_calibrate</a></div><div class="ttdeci">void skynetbase_compass_calibrate(void)</div><div class="ttdoc">Start calibration routine. </div><div class="ttdef"><b>Definition:</b> compass.c:133</div></div>
+<div class="ttc" id="compass_8h_html_ac557367104b8f12099606becdcd04496"><div class="ttname"><a href="compass_8h.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a></div><div class="ttdeci">int skynetbase_compass_init(void)</div><div class="ttdoc">Initializes the compass. </div><div class="ttdef"><b>Definition:</b> compass.c:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_79a358baf18e5a64f29b44b47849d0b7.html">compass</a></li><li class="navelem"><a class="el" href="compass_8h.html">compass.h</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:41 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -71,16 +71,25 @@ $(document).ready(function(){initNavTree('skynet__basestation_8h_source.html',''
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef BASESTATION_SKYNET_BASESTATION_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define BASESTATION_SKYNET_BASESTATION_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a89eb365d9bc35a5eeb14323103f27ba8">skynetbase_init</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="windspeed_8h.html">wind/windspeed/windspeed.h</a>&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="windvane_8h.html">wind/windvane/windvane.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="compass_8h.html">compass/compass.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="gps_8h.html">gps/gps.h</a>&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a56f929c3a427bba11ca159acc40dea83">skynetbase_start_measurement</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a89eb365d9bc35a5eeb14323103f27ba8">skynetbase_init</a>(<span class="keywordtype">void</span>);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a988f3309663b5e87f084067932fc70f9">skynetbase_stop_measurement</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a56f929c3a427bba11ca159acc40dea83">skynetbase_start_measurement</a>(<span class="keywordtype">void</span>);</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_SKYNET_BASESTATION_H_ */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keywordtype">void</span> <a class="code" href="skynet__basestation_8h.html#a988f3309663b5e87f084067932fc70f9">skynetbase_stop_measurement</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_SKYNET_BASESTATION_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="windspeed_8h_html"><div class="ttname"><a href="windspeed_8h.html">windspeed.h</a></div></div>
 <div class="ttc" id="skynet__basestation_8h_html_a988f3309663b5e87f084067932fc70f9"><div class="ttname"><a href="skynet__basestation_8h.html#a988f3309663b5e87f084067932fc70f9">skynetbase_stop_measurement</a></div><div class="ttdeci">void skynetbase_stop_measurement(void)</div><div class="ttdoc">Stops collection and sending data. </div><div class="ttdef"><b>Definition:</b> skynet_basestation.c:60</div></div>
+<div class="ttc" id="gps_8h_html"><div class="ttname"><a href="gps_8h.html">gps.h</a></div></div>
+<div class="ttc" id="compass_8h_html"><div class="ttname"><a href="compass_8h.html">compass.h</a></div></div>
+<div class="ttc" id="windvane_8h_html"><div class="ttname"><a href="windvane_8h.html">windvane.h</a></div></div>
 <div class="ttc" id="skynet__basestation_8h_html_a89eb365d9bc35a5eeb14323103f27ba8"><div class="ttname"><a href="skynet__basestation_8h.html#a89eb365d9bc35a5eeb14323103f27ba8">skynetbase_init</a></div><div class="ttdeci">void skynetbase_init(void)</div><div class="ttdoc">Initializes all components of the basestation. </div><div class="ttdef"><b>Definition:</b> skynet_basestation.c:25</div></div>
 <div class="ttc" id="skynet__basestation_8h_html_a56f929c3a427bba11ca159acc40dea83"><div class="ttname"><a href="skynet__basestation_8h.html#a56f929c3a427bba11ca159acc40dea83">skynetbase_start_measurement</a></div><div class="ttdeci">void skynetbase_start_measurement(void)</div><div class="ttdoc">Starts collecting and sending the collected data. </div><div class="ttdef"><b>Definition:</b> skynet_basestation.c:56</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -89,7 +98,7 @@ $(document).ready(function(){initNavTree('skynet__basestation_8h_source.html',''
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="skynet__basestation_8h.html">skynet_basestation.h</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:41 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

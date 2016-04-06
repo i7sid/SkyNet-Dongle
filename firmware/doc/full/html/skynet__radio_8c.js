@@ -17,6 +17,5 @@ var skynet__radio_8c =
     [ "pwrLvl", "skynet__radio_8c.html#a8fa6aa9ca589799ef52eb57be4c7986b", null ],
     [ "pwrLvlIdx", "skynet__radio_8c.html#a1e2f4901c98c62091cd7e41c869f3675", null ],
     [ "radio_initialized", "skynet__radio_8c.html#af80dfd8d0b5d8f9012fcc1c8f94e914f", null ],
-    [ "rf_packet_rx_buf", "skynet__radio_8c.html#ad1b7df8e91ee02d4d3106bcec96df915", null ],
     [ "timeStr", "skynet__radio_8c.html#ae3499a74ce470c1ff19d65b4a70ce5c8", null ]
 ];

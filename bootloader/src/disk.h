@@ -32,6 +32,9 @@
 
 #define DIRECTORY_ENTRY_SIZE 32
 
+/// @brief Set to 0xBB when eject is requested
+extern uint8_t goto_eject;
+
 typedef struct FatBootSector {
     uint8_t       bootjmp[3];
     uint8_t       oem_name[8];

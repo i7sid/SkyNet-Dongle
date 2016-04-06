@@ -16,8 +16,6 @@
 #include "../periph/adc.h"
 #include "../periph/input.h"
 #include "../periph/led.h"
-#include "../periph/dcdc.h"
-#include "../periph/charger.h"
 
 
 volatile bool cpu_powered_down = false;

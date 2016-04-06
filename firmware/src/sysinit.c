@@ -41,12 +41,11 @@
  * Private types/enumerations/variables
  ****************************************************************************/
 
-//#define USER_START_SECTOR 16
 #define SECTOR_5_START      0x00005000
 #define SECTOR_8_START      0x00008000
 #define SECTOR_10_START     0x0000a000
 #define SECTOR_16_START     0x00010000
-//#define USER_FLASH_START (SECTOR_16_START)
+
 #define USER_FLASH_START (SECTOR_16_START)
 
 #define NVIC_NUM_VECTORS          (16 + 33)     // CORE + MCU Peripherals
@@ -84,8 +83,6 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 
 	// LED
 	{LED_PORT,  LED_PIN,						IOCON_MODE_INACT | IOCON_FUNC0},
-
-	// TODO: 0-8,
 
 	// reset unused pins
 	// (By default they are set as inputs with pull up. See: AN10915
@@ -146,9 +143,6 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 
 };
 
-/*****************************************************************************
- * Private functions
- ****************************************************************************/
 
 /*****************************************************************************
  * Public functions
@@ -225,8 +219,6 @@ void Board_SetupMuxing(void)
 }
 
 
-// TODO clocking übernehmen?
-
 /* Setup system clocking */
 void SystemSetupClocking(void)
 {
@@ -254,7 +246,6 @@ void SystemSetupClocking(void)
 
 	/* Setup FLASH access to 5 clocks (120MHz clock) */
 	Chip_SYSCTL_SetFLASHAccess(FLASHTIM_120MHZ_CPU);
-
 }
 
 /* Set up and initialize hardware prior to call to main */
@@ -281,7 +272,6 @@ void SystemInit(void)
 #endif
 
 
-#if defined(NO_BOARD_LIB)
 	/* Chip specific SystemInit */
 	Chip_SystemInit();
 
@@ -289,6 +279,11 @@ void SystemInit(void)
 
 	SystemSetupClocking();
 
+/*
+	// We do not need BOD, so think green and disable this power consumer
+	Chip_SYSCTL_DisableBODReset();
+	Chip_SYSCTL_DisableBOD();
+*/
 
 	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); 			// TODO: woher?
 
@@ -300,10 +295,6 @@ void SystemInit(void)
 
 	SCB->VTOR = (uint32_t)vectors;
 
-#else
-	/* Setup system clocking and muxing */
-	Board_SystemInit();
-#endif
+
 }
 
-// crt_emu_cm_redlink -flash-mass -g -2  -vendor=NXP -pLPC1769 -load-base=0x0    -reset=vectreset -flash-driver=LPC175x_6x_512.cfx -x /home/michi/projects/LPCXpresso-new/firmware-new/Release

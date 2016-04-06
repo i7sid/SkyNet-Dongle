@@ -74,6 +74,7 @@ $(document).ready(function(){initNavTree('skynet__radio_8c.html','');});
 <p>Contains functionality for communication with RF module.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="skynet__radio_8h_source.html">skynet_radio.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="radio__config_8h_source.html">radio_config.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="radio__hal_8h_source.html">radio_hal.h</a>&quot;</code><br />
@@ -133,8 +134,6 @@ Variables</h2></td></tr>
 <tr class="separator:a8fa6aa9ca589799ef52eb57be4c7986b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae3499a74ce470c1ff19d65b4a70ce5c8"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__radio_8c.html#ae3499a74ce470c1ff19d65b4a70ce5c8">timeStr</a> [] = {0, 0, 0, 0, 0, 0}</td></tr>
 <tr class="separator:ae3499a74ce470c1ff19d65b4a70ce5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1b7df8e91ee02d4d3106bcec96df915"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__radio_8c.html#ad1b7df8e91ee02d4d3106bcec96df915">rf_packet_rx_buf</a> [<a class="el" href="skynet__radio_8h.html#a64679f65056513a626345b0efbbb8899">SKYNET_RADIO_MAX_SIZE</a>+1]</td></tr>
-<tr class="separator:ad1b7df8e91ee02d4d3106bcec96df915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af80dfd8d0b5d8f9012fcc1c8f94e914f"><td class="memItemLeft" align="right" valign="top">volatile bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="skynet__radio_8c.html#af80dfd8d0b5d8f9012fcc1c8f94e914f">radio_initialized</a> = false</td></tr>
 <tr class="separator:af80dfd8d0b5d8f9012fcc1c8f94e914f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -465,18 +464,6 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ad1b7df8e91ee02d4d3106bcec96df915"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">char rf_packet_rx_buf[<a class="el" href="skynet__radio_8h.html#a64679f65056513a626345b0efbbb8899">SKYNET_RADIO_MAX_SIZE</a>+1]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="ae3499a74ce470c1ff19d65b4a70ce5c8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -495,7 +482,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_b03d4d2f2989fee5b442dbe7579df1d0.html">radio</a></li><li class="navelem"><a class="el" href="skynet__radio_8c.html">skynet_radio.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

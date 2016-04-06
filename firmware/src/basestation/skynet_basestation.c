@@ -26,7 +26,6 @@ void skynetbase_init(void) {
 	DBG("Init Basestation...\n");
 
 	int r = 0;
-
 	r = skynetbase_compass_init();
 	if (!r) {
 		// TODO error: no compass

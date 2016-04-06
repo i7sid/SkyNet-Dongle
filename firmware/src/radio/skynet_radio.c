@@ -48,6 +48,7 @@ void radio_init(void) {
 	si446x_part_info();
 	si446x_func_info();
 
+	/*
 	DBG("--- radio chip version information following ---\n");
 	DBG("CHIPREV:   0x%x\n", Si446xCmd.PART_INFO.CHIPREV);
 	DBG("CUSTOMER:  0x%x\n", Si446xCmd.PART_INFO.CUSTOMER);
@@ -62,6 +63,7 @@ void radio_init(void) {
 	DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
 	DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
 	DBG("------ end radio chip version information ------\n");
+	*/
 
 	// This interrupt should have highest priority to assure that we do not miss packets
 	NVIC_SetPriority(EINT3_IRQn, 0);
@@ -264,7 +266,7 @@ void radio_packet_handler(void) {
 	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
 			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
-		DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		//DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
 		skynet_led_blink_passive(500);
 
 		// reset chip to assure correct behaviour next time

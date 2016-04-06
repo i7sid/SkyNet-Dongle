@@ -1,10 +1,10 @@
 //*****************************************************************************
 // LPC175x_6x Microcontroller Startup code for use with LPCXpresso IDE
 //
-// Version : 140114
+// Version : 150706
 //*****************************************************************************
 //
-// Copyright(C) NXP Semiconductors, 2014
+// Copyright(C) NXP Semiconductors, 2014-2015
 // All rights reserved.
 //
 // Software that is described herein is for illustrative purposes only
@@ -144,6 +144,13 @@ extern int main(void);
 extern void _vStackTop(void);
 
 //*****************************************************************************
+//
+// External declaration for LPC MCU vector table checksum from  Linker Script
+//
+//*****************************************************************************
+WEAK extern void __valid_user_code_checksum();
+
+//*****************************************************************************
 #if defined (__cplusplus)
 } // extern "C"
 #endif
@@ -154,7 +161,7 @@ extern void _vStackTop(void);
 //
 //*****************************************************************************
 extern void (* const g_pfnVectors[])(void);
-__attribute__ ((section(".isr_vector")))
+__attribute__ ((used,section(".isr_vector")))
 void (* const g_pfnVectors[])(void) = {
     // Core Level - CM3
     &_vStackTop, // The initial stack pointer
@@ -164,7 +171,7 @@ void (* const g_pfnVectors[])(void) = {
     MemManage_Handler,                      // The MPU fault handler
     BusFault_Handler,                       // The bus fault handler
     UsageFault_Handler,                     // The usage fault handler
-    0,                                      // Reserved
+    __valid_user_code_checksum,             // LPC MCU Checksum
     0,                                      // Reserved
     0,                                      // Reserved
     0,                                      // Reserved

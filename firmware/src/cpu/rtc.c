@@ -11,7 +11,7 @@
 
 #include "rtc.h"
 
-extern RTC_TIME_T FullTime;
+RTC_TIME_T FullTime;
 
 
 void rtc_init() {

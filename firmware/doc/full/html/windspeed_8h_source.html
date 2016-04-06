@@ -71,19 +71,35 @@ $(document).ready(function(){initNavTree('windspeed_8h_source.html','');});
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef BASESTATION_WIND_WINDSPEED_WINDSPEED_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define BASESTATION_WIND_WINDSPEED_WINDSPEED_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keywordtype">int</span> <a class="code" href="windspeed_8h.html#a7d5aa97b3455afc6702b66fef171bc21">skynetbase_windspeed_init</a>(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_WIND_WINDSPEED_WINDSPEED_H_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="windspeed_8h_html_a7d5aa97b3455afc6702b66fef171bc21"><div class="ttname"><a href="windspeed_8h.html#a7d5aa97b3455afc6702b66fef171bc21">skynetbase_windspeed_init</a></div><div class="ttdeci">int skynetbase_windspeed_init(void)</div><div class="ttdoc">Initializes the windspeed measurement unit. </div><div class="ttdef"><b>Definition:</b> windspeed.c:8</div></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#if defined (__USE_LPCOPEN)</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#if defined(NO_BOARD_LIB)</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;chip.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;board.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;../../../misc/misc.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;../../../misc/debug.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;../../../gpio/gpio_irq.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;../../../cpu/systick.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keywordtype">int</span> <a class="code" href="windspeed_8h.html#a7d5aa97b3455afc6702b66fef171bc21">skynetbase_windspeed_init</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> <a class="code" href="windspeed_8h.html#a4b835b25b48b971cdfbfbc4cbe7023cb">skynetbase_windspeed_tickhandler</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* BASESTATION_WIND_WINDSPEED_WINDSPEED_H_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="windspeed_8h_html_a4b835b25b48b971cdfbfbc4cbe7023cb"><div class="ttname"><a href="windspeed_8h.html#a4b835b25b48b971cdfbfbc4cbe7023cb">skynetbase_windspeed_tickhandler</a></div><div class="ttdeci">void skynetbase_windspeed_tickhandler(void)</div><div class="ttdoc">Called in GPIO ISR to count rotations. </div><div class="ttdef"><b>Definition:</b> windspeed.c:39</div></div>
+<div class="ttc" id="windspeed_8h_html_a7d5aa97b3455afc6702b66fef171bc21"><div class="ttname"><a href="windspeed_8h.html#a7d5aa97b3455afc6702b66fef171bc21">skynetbase_windspeed_init</a></div><div class="ttdeci">int skynetbase_windspeed_init(void)</div><div class="ttdoc">Initializes the windspeed measurement unit. </div><div class="ttdef"><b>Definition:</b> windspeed.c:43</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_a46908330a9351c3de579107ef4a6f0c.html">wind</a></li><li class="navelem"><a class="el" href="dir_00077a7ae5a0d519e656debaea191357.html">windspeed</a></li><li class="navelem"><a class="el" href="windspeed_8h.html">windspeed.h</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:41 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -64,7 +64,9 @@ $(document).ready(function(){initNavTree('main_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">main.c File Reference</div>  </div>
 </div><!--header-->
@@ -75,7 +77,6 @@ $(document).ready(function(){initNavTree('main_8c.html','');});
 <code>#include &quot;stopwatch.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="misc_8h_source.html">misc/misc.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="skynet__radio_8h_source.html">radio/skynet_radio.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="bluetooth_8h_source.html">bluetooth/bluetooth.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="input_8h_source.html">periph/input.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="led_8h_source.html">periph/led.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="charger_8h_source.html">periph/charger.h</a>&quot;</code><br />
@@ -88,16 +89,116 @@ $(document).ready(function(){initNavTree('main_8c.html','');});
 <code>#include &quot;<a class="el" href="skynet__cdc_8h_source.html">skynet_cdc.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="skynet__basestation_8h_source.html">basestation/skynet_basestation.h</a>&quot;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ad1cd4a00fd5d6ae8396f7fed465d1db8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#ad1cd4a00fd5d6ae8396f7fed465d1db8">DEBUG_BASESTATION_TEST</a></td></tr>
+<tr class="memdesc:ad1cd4a00fd5d6ae8396f7fed465d1db8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a usb debug packet each second.  <a href="#ad1cd4a00fd5d6ae8396f7fed465d1db8">More...</a><br /></td></tr>
+<tr class="separator:ad1cd4a00fd5d6ae8396f7fed465d1db8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc005216fdc8fbbb7380d9cc4eaf63fb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#acc005216fdc8fbbb7380d9cc4eaf63fb">IS_BASESTATION</a></td></tr>
+<tr class="memdesc:acc005216fdc8fbbb7380d9cc4eaf63fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">This module is a basestation.  <a href="#acc005216fdc8fbbb7380d9cc4eaf63fb">More...</a><br /></td></tr>
+<tr class="separator:acc005216fdc8fbbb7380d9cc4eaf63fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
-<tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa46feac6a6ed67f8948c0cfdb2721cf2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#aa46feac6a6ed67f8948c0cfdb2721cf2">skynet_cdc_received_message</a> (<a class="el" href="structusb__message.html">usb_message</a> *msg)</td></tr>
 <tr class="separator:aa46feac6a6ed67f8948c0cfdb2721cf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af99a131a26b29fc5574d60f1b1d7a2e6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#af99a131a26b29fc5574d60f1b1d7a2e6">skynet_received_packet</a> (<a class="el" href="structskynet__packet.html">skynet_packet</a> *pkt)</td></tr>
+<tr class="separator:af99a131a26b29fc5574d60f1b1d7a2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9310b55127af1e2fcdf5a90af9089ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#ae9310b55127af1e2fcdf5a90af9089ee">debug_send_usb</a> (void)</td></tr>
+<tr class="separator:ae9310b55127af1e2fcdf5a90af9089ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e2bfcb4f09c1c9fa665812b48990c30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a9e2bfcb4f09c1c9fa665812b48990c30">debug_send_rf</a> (void)</td></tr>
+<tr class="separator:a9e2bfcb4f09c1c9fa665812b48990c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e531f173a3c6089033d965b39a484d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a1e531f173a3c6089033d965b39a484d4">debug_basestation</a> (void)</td></tr>
+<tr class="separator:a1e531f173a3c6089033d965b39a484d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a840291bc02cba5474a4cb46a9b9566fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#a840291bc02cba5474a4cb46a9b9566fe">main</a> (void)</td></tr>
+<tr class="separator:a840291bc02cba5474a4cb46a9b9566fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:aa6c8005d5219d62fe5990af0dba81d63"><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8c.html#aa6c8005d5219d62fe5990af0dba81d63">goto_bootloader</a></td></tr>
+<tr class="separator:aa6c8005d5219d62fe5990af0dba81d63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="ad1cd4a00fd5d6ae8396f7fed465d1db8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEBUG_BASESTATION_TEST</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Send a usb debug packet each second. </p>
+<p>Send a rf debug packet each second. Test various basestation stuff. </p>
+
+</div>
+</div>
+<a class="anchor" id="acc005216fdc8fbbb7380d9cc4eaf63fb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define IS_BASESTATION</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This module is a basestation. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a1e531f173a3c6089033d965b39a484d4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void debug_basestation </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9e2bfcb4f09c1c9fa665812b48990c30"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void debug_send_rf </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae9310b55127af1e2fcdf5a90af9089ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void debug_send_usb </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a840291bc02cba5474a4cb46a9b9566fe"></a>
 <div class="memitem">
 <div class="memproto">
@@ -130,13 +231,42 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="af99a131a26b29fc5574d60f1b1d7a2e6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void skynet_received_packet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structskynet__packet.html">skynet_packet</a> *&#160;</td>
+          <td class="paramname"><em>pkt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="aa6c8005d5219d62fe5990af0dba81d63"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t goto_bootloader</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="main_8c.html">main.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

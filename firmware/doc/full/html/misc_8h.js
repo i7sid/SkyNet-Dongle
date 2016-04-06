@@ -42,6 +42,12 @@ var misc_8h =
     [ "CHARGER_USBDM_PORT", "misc_8h.html#a16a95fb86c578691b829076c3f0f0794", null ],
     [ "CHARGER_USBDP_PIN", "misc_8h.html#a0746532ebbc84fde481ebed649a7c324", null ],
     [ "CHARGER_USBDP_PORT", "misc_8h.html#ad32ebaba3d8c4b09898876906ac839d4", null ],
+    [ "COMPASS_I2C", "misc_8h.html#a16af19f54d088066a46a59531a77ca78", null ],
+    [ "COMPASS_I2C_IRQn", "misc_8h.html#a2d4fed74f7af6a6692b5ae25ae4fe4a7", null ],
+    [ "COMPASS_I2C_SCL_PIN", "misc_8h.html#aa919353554b9371fa052ca5878ef4449", null ],
+    [ "COMPASS_I2C_SCL_PORT", "misc_8h.html#aba606919fae215193b32f268e840801a", null ],
+    [ "COMPASS_I2C_SDA_PIN", "misc_8h.html#ab3b02d07795befb7bcaff2e13a4726ad", null ],
+    [ "COMPASS_I2C_SDA_PORT", "misc_8h.html#a112e1b272c6ba2c0cc9f0d9a4f92e37a", null ],
     [ "DCDC_PS_PIN", "misc_8h.html#a976d7afc4e5b2efe6d9b6c53323e4cb8", null ],
     [ "DCDC_PS_PORT", "misc_8h.html#ac7586e05c0b54be4751ccf27ea40e033", null ],
     [ "EINT0", "misc_8h.html#a8899fb5e8900b83ae56526dbdac73819", null ],
@@ -71,5 +77,9 @@ var misc_8h =
     [ "SI_LIB_NSEL_PIN", "misc_8h.html#a5b8fe46b9c7e41db8d7407ee7c044e3b", null ],
     [ "SI_LIB_NSEL_PORT", "misc_8h.html#a25a1af56150791b2e3ea94cfc12d7ef3", null ],
     [ "SI_LIB_SDN_PIN", "misc_8h.html#a0cae6f1616533f241a2cb99c2f5ca06a", null ],
-    [ "SI_LIB_SDN_PORT", "misc_8h.html#a761a5968720f46ef0fc781bcb5f0d36e", null ]
+    [ "SI_LIB_SDN_PORT", "misc_8h.html#a761a5968720f46ef0fc781bcb5f0d36e", null ],
+    [ "WINCUPS_PIN", "misc_8h.html#acf52060867fae78d9bee28fa1a17b5f3", null ],
+    [ "WINCUPS_PORT", "misc_8h.html#a7703a2773ce27d2af97a8888986675a5", null ],
+    [ "WINVANE_PIN", "misc_8h.html#a83aafcced4df75f2ca9f5560d2704ad1", null ],
+    [ "WINVANE_PORT", "misc_8h.html#a1808969a67a8cace1f0aa1f0c549e36b", null ]
 ];
