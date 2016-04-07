@@ -12,6 +12,12 @@
 #ifndef MAC_FRAME_DATA_H
 #define MAC_FRAME_DATA_H
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include <string.h>
 #include "mac_config.h"
 #include "util.h"
@@ -68,5 +74,9 @@ void mac_frame_data_init(mac_frame_data *frame);
  */
 uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer);
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* !MAC_FRAME_H */

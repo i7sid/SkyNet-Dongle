@@ -19,14 +19,17 @@
 
 class tap {
 public:
-	tap(std::string dev);
+	tap(std::string dev, void(*rxHandler)(void*, size_t));
 	virtual ~tap();
 	int get_fd();
 
+	void tap_rx_worker(void);
+	//TODO method for sending packet
 
 private:
 	int fd;
 	std::string dev_name;
+	void (*rxHandler)(void*, size_t);
 };
 
 #endif /* TAP_H_ */

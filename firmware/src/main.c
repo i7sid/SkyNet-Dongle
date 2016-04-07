@@ -195,8 +195,11 @@ int main(void) {
 				frame.payload = p;
 				frame.payload_size = strlen((char*)p) + 1;
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+				/*
 				frame.mhr.dest_pan_id = 3;
 				frame.mhr.address = 42;
+				*/
 
 				mac_transmit_packet(&frame);
 				/*

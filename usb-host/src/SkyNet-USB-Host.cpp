@@ -7,7 +7,6 @@
 #include <getopt.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <usb/message.h>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -17,6 +16,9 @@
 
 #include <thread>         // std::thread (C++11!)
 #include <vector>
+
+#include <usb/message.h>
+#include <mac/mac.h>
 
 #include "tap.h"
 #include "usbtty.h"
@@ -53,12 +55,20 @@ bool prompt_colored = true;
 bool tap_debug = false;
 int verbosity = 0;
 
+tap* ptr_tap;
+usb_tty* ptr_tty;
+
 void parseCmd(int argc, char** argv);
 
 /**
  * @brief	Will be called when a usb message was received.
  */
 void usbReceiveHandler(usb_message msg);
+
+/**
+ * @brief	Will be called when a ethernet frame was received on tap interface.
+ */
+void tapReceiveHandler(void* msg, size_t length);
 
 void do_tap_debug(string);
 
@@ -75,12 +85,6 @@ int main(int argc, char** argv) {
 		cerr << endl;
 	}
 
-
-	if (tap_debug) {
-		do_tap_debug(cmd_tap);
-	}
-
-
 	// init serial port on linux systems
 	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
 	//string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
@@ -96,6 +100,7 @@ int main(int argc, char** argv) {
 
 	// create usb_tty object and start rx thread
 	usb_tty tty(cmd_tty, usbReceiveHandler);
+	ptr_tty = &tty;
 
 	if (cmd_flash) {
 		usb_message m;
@@ -132,15 +137,30 @@ int main(int argc, char** argv) {
 	}
 	*/
 
-	std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+	// create tap object and start rx thread
+	try {
+		tap tap(cmd_tap, tapReceiveHandler);
+		ptr_tap = &tap;
+		cerr << "Tap device  " << cmd_tap << "  opened." << endl;
+
+		std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+		std::thread tap_rx_thread(&tap::tap_rx_worker, &tap);
 
 
-	// you can do fancy stuff in here
+		// you can do fancy stuff in here
 
 
-	// wait for thread to exit
-	usb_rx_thread.join();
-
+		// wait for thread to exit
+		usb_rx_thread.join();
+		tap_rx_thread.join();
+	} catch (int i) {
+		COLOR_ERR();
+		cerr << "ERROR: " << i << endl;
+		cerr << "Is it possible that you forgot to call setup-tap.sh " <<
+				"with correct user name and group?" << endl;
+		exit(-1);
+		COLOR_RESET();
+	}
 	return 0;
 }
 
@@ -151,6 +171,8 @@ void printUsage(int argc, char** argv) {
 	cerr << "               (default: /dev/ttyUSB0)" << endl;
 	cerr << "-f, --flash    Tell connected dongle to enter bootloader to flash new firmware." << endl;
 	cerr << "-r, --reset    Tell connected dongle to reset." << endl;
+	cerr << "-t, --tap      Specifies which tap interface to use." << endl;
+	cerr << "               (default: tapsn0)" << endl;
 	cerr << "-c, --color    Color console output. (default)" << endl;
 	cerr << "--no-color     Do not color console output." << endl;
 	cerr << "-h, -?, --help Print this usage message." << endl;
@@ -240,54 +262,63 @@ void usbReceiveHandler(usb_message pkt) {
 	delete[] pkt.payload;
 }
 
-void do_tap_debug(string dev) {
-	char buffer[4196];
-	int nread = 0;
+void tapReceiveHandler(void *pkt, size_t nread) {
+	char *p = (char*)pkt;
+	struct ether_header* frame = (struct ether_header*)(p);
 
-	try {
-		tap t(dev);
-		cerr << "Tap device opened." << endl;
+	// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
+	if (ETHERTYPE_IP != ntohs(frame->ether_type)) return;
 
-		while (true) {
-			// Now read data coming from the kernel
-			while(1) {
-				// Note that "buffer" should be at least the MTU size of the interface, eg 1500 bytes
-				nread = read(t.get_fd(), buffer, sizeof(buffer));
-				if(nread < 0) {
-					perror("Reading from interface");
-					close(t.get_fd());
-					exit(1);
-				}
-
-				// Do whatever with the data
-				//cerr << "Read " << nread << " bytes from device." << endl;
-				struct ether_header* frame = (struct ether_header*)(buffer+4);
-				cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
-				cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
-				cerr << "type:      " << ntohs(frame->ether_type) << endl;
-
-				// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
-
-				struct iphdr* iph = (struct iphdr*)(buffer + 4 + sizeof(struct ether_header));
-				cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
-				cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
-				cerr << "version:   " << (int)(iph->version) << endl;
-				cerr << "protocol:  " << (int)(iph->protocol) << endl;
+	cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
+	cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
+	cerr << "type:      " << ntohs(frame->ether_type) << endl;
 
 
-				for (unsigned int i = 0; i < nread; ++i) {
-					cout << (char)buffer[i];
-				}
-				cout << endl;
-			}
+	struct iphdr* iph = (struct iphdr*)(p + sizeof(struct ether_header));
+	cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
+	cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
+	cerr << "version:   " << (int)(iph->version) << endl;
+	cerr << "protocol:  " << (int)(iph->protocol) << endl;
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(20));
-		}
-	} catch (int i) {
-		cerr << "ERROR: " << i << endl;
-		cerr << "Is it possible that you forgot to call setup-tap.sh " <<
-				"with correct user name and group?" << endl;
-		exit(0);
+	// data:
+	cerr << "data len:  " << (int)(nread - sizeof(struct ether_header) - sizeof(struct iphdr)) << endl;
+
+	cerr << "dest ip:   " << (int)((iph->daddr & 0xff000000) >> 24) << endl;
+	cerr << "dest ip:   " << (int)((iph->daddr & 0x00ff0000) >> 16) << endl;
+	return;
+
+	for (unsigned int i = 0; i < nread; ++i) {
+		cout << p[i];
 	}
-}
+	cout << endl;
 
+
+	size_t data_len = nread - sizeof(struct ether_header) - sizeof(struct iphdr);
+	if (USB_MAX_PAYLOAD_LENGTH < data_len) {
+		COLOR_ERR();
+		cerr << "Packet received via network too large for usb tty. Ignoring." << endl;
+		COLOR_RESET();
+		return;
+	}
+
+	// construct real skynet-mac-packet
+	mac_frame_data mac_frame;
+	mac_frame_data_init(&mac_frame);
+	mac_frame.payload = (uint8_t*)(p + sizeof(struct ether_header) + sizeof(struct iphdr));
+	mac_frame.payload_size = nread;
+
+	MHR_FC_SET_DEST_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+	mac_frame.mhr.dest_pan_id[0] = ((iph->daddr & 0x00ff0000) >> 16);		// TODO so herum?
+	mac_frame.mhr.address[0] = ((iph->daddr & 0xff000000) >> 24);
+	mac_frame.mhr.address[1] = 0;
+
+	uint8_t payload[4096];
+	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
+
+	usb_message m;
+	m.type = USB_SKYNET_PACKET;
+	m.payload_length = mac_cnt;
+	m.payload = (char*)payload;
+
+	ptr_tty->usbSendMessage(m);
+}

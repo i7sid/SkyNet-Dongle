@@ -5,12 +5,15 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef CORE_M3
 #include <chip.h>
 #else
 #include "linux_incs.h"
 #endif
-
 
 #include "mac_frame_data.h"
 #include "mac.h"
@@ -18,6 +21,7 @@
 void* mac_frame_data_calloc(void) {
 	void *frame = calloc(sizeof(mac_frame_data), 1);
 	mac_frame_data_init(frame);
+	return frame;
 }
 
 
@@ -127,3 +131,7 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 
     return pos;
 }
+
+#ifdef __cplusplus
+}
+#endif
