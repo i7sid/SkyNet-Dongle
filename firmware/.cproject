@@ -120,7 +120,7 @@
 					<folderInfo id="com.crt.advproject.config.exe.release.605373028." name="/" resourcePath="">
 						<toolChain id="com.crt.advproject.toolchain.exe.release.21993410" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.release">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.release.848709030" name="ARM-based MCU (Release)" superClass="com.crt.advproject.platform.exe.release"/>
-							<builder buildPath="${workspace_loc:/RF4463PROtest}/Release" id="com.crt.advproject.builder.exe.release.2084979191" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.release"/>
+							<builder buildPath="${ProjDirPath}" id="com.crt.advproject.builder.exe.release.2084979191" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="com.crt.advproject.builder.exe.release"/>
 							<tool id="com.crt.advproject.cpp.exe.release.896078749" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.release"/>
 							<tool id="com.crt.advproject.gcc.exe.release.555555064" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.release">
 								<option id="com.crt.advproject.gcc.arch.1429072302" name="Architecture" superClass="com.crt.advproject.gcc.arch" value="com.crt.advproject.gcc.target.cm3" valueType="enumerated"/>
@@ -360,18 +360,19 @@
 &lt;/TargetConfig&gt;</projectStorage>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Release">
-			<resource resourceType="PROJECT" workspacePath="/SkyNet-Dongle-firmware"/>
-		</configuration>
-		<configuration configurationName="Debug RXtest"/>
+		<configuration configurationName="Debug Semihosting"/>
+		<configuration configurationName="Release RXtest"/>
 		<configuration configurationName="Debug SendTest">
 			<resource resourceType="PROJECT" workspacePath="/SkyNet-Dongle-firmware"/>
 		</configuration>
 		<configuration configurationName="Release SendTest"/>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/SkyNet-Dongle-firmware"/>
+		</configuration>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/SkyNet-Dongle-firmware"/>
 		</configuration>
-		<configuration configurationName="Release RXtest"/>
+		<configuration configurationName="Debug RXtest"/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>

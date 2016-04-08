@@ -8,7 +8,7 @@
 //#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-#define DEBUG_SEND_RF_TEST
+//#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -178,7 +178,8 @@ int main(void) {
 			case EVENT_DEBUG_1:
 			{
 				// DEBUG: send usb packet
-				char debugstr[] = "This is a debug string.";
+				char debugstr[] = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
+				//char debugstr[] = "This is a debug string.";
 				skynet_cdc_write_debug("%s\n", debugstr);
 
 				skynet_led_blink_active(50);
@@ -242,6 +243,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// Must be done! Memory was allocated dynamically.
 	free(pkt->data);
 	free(pkt);
+	skynet_led_blink_passive(25);
 }
 
 
@@ -250,7 +252,6 @@ void skynet_cdc_received_message(usb_message *msg) {
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
-			// TODO richtig auspacken und senden
 			mac_transmit_data((uint8_t*)msg->payload, msg->payload_length);
 //			mac_transmit_packet((uint8_t*)msg->payload, msg->payload_length);
 			break;
@@ -269,9 +270,20 @@ void skynet_cdc_received_message(usb_message *msg) {
 			}
 			break;
 		}
+		case USB_DEBUG:
+			DBG("got usb debug packet, length: %d\n", msg->payload_length);
+			for (uint16_t i = 0; i < msg->payload_length; ++i) {
+				DBG("%d ", msg->payload[i]);
+			}
+			DBG("\n");
+			break;
 	}
 
 	// Must be done! Memory was allocated dynamically.
 	free(msg->payload);
 	free(msg);
+	skynet_led_blink_passive(25);
+	msDelay(100);
+	skynet_led_blink_passive(25);
+
 }

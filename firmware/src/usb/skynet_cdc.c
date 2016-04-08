@@ -36,7 +36,8 @@
  *
  */
 
-#include <skynet_cdc.h>
+#include "skynet_cdc.h"
+#include "../cpu/systick.h"
 
 
 static USBD_HANDLE_T g_hUsb;
@@ -175,20 +176,34 @@ inline uint32_t skynet_cdc_write(uint8_t *pBuf, uint32_t len) {
 unsigned char usb_cdc_write_buf[USB_MAX_MESSAGE_LENGTH];
 unsigned int usb_cdc_write_pos = 0;
 
+extern VCOM_DATA_T g_vCOM;
+
 inline uint32_t skynet_cdc_write_buffered(uint8_t *pBuf, uint32_t len) {
 	int pos = 0;
 	int remaining = len;
 	int written = 0;
+	/*
+	char dbg[100];
+	uint8_t dbgi = 0;
+	memset(dbg, 0, sizeof(dbg));
+	*/
 
 	// TODO: sollte man mal testen bei Gelegenheit
-	while (usb_cdc_write_pos + remaining > USB_MAX_MESSAGE_LENGTH) {
-		int now = USB_MAX_MESSAGE_LENGTH - usb_cdc_write_pos;
+	while (usb_cdc_write_pos + remaining > USB_MAX_PACKET_SIZE) {
+		int now = USB_MAX_PACKET_SIZE - usb_cdc_write_pos;
 		memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, now);
 		usb_cdc_write_pos += now;
 		written += skynet_cdc_flush();
+		//dbg[dbgi++] = g_vCOM.rx_flags;
+		msDelayActiveUs(75);
 		remaining -= now;
 		pos += now;
 	}
+	/*
+	for (uint8_t i = 0; i < dbgi; ++i) {
+		DBG("s(%d): %d\n", i, dbg[i]);
+	}
+	*/
 
 	// remaining part (fits into buffer for sure)
 	memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, remaining);
@@ -214,7 +229,7 @@ uint32_t skynet_cdc_write_message(usb_message *msg) {
 }
 
 uint32_t skynet_cdc_write_debug(const char* format, ... ) {
-	char buf[USB_MAX_PAYLOAD_LENGTH];
+	char buf[USB_MAX_PAYLOAD_LENGTH - USB_HEADER_SIZE];
 
 	va_list args;
 	va_start(args, format);
