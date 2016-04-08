@@ -385,7 +385,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
 	cerr << "dest ip:   " << (int)((iph->daddr & 0xff000000) >> 24) << endl;
 	cerr << "dest ip:   " << (int)((iph->daddr & 0x00ff0000) >> 16) << endl;
-	return;
 
 	for (unsigned int i = 0; i < nread; ++i) {
 		cout << p[i];
