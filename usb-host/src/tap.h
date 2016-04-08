@@ -24,7 +24,7 @@ public:
 	int get_fd();
 
 	void tap_rx_worker(void);
-	//TODO method for sending packet
+	void send_packet(char *data, int length);
 
 private:
 	int fd;

@@ -69,3 +69,7 @@ void tap::tap_rx_worker(void) {
 		rxHandler(buffer+4, nread-4);
 	}
 }
+
+void tap::send_packet(char* data, int length) {
+	write(get_fd(), data, length);
+}

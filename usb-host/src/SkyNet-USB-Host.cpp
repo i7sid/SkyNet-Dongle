@@ -266,29 +266,71 @@ void usbReceiveHandler(usb_message pkt) {
 		}
 		cout << endl << endl;
 
+	}
 
+	if (pkt.type == USB_SKYNET_PACKET) {
 		mac_frame_data frame;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
-		cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
-		cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
-		cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
-		cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
-		cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
-		cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
-		cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
-		cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
-		cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
-		cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
-		cout << "FCS0:     " << (int)frame.fcs[0] << endl;
-		cout << "FCS1:     " << (int)frame.fcs[1] << endl;
-		cout << "Payload:  " << (int)frame.payload_size << endl;
-		cout << "Payload:  " << frame.payload << endl;
+		// construct ethernet frame and write to tap device
+		char ether_frame[sizeof(int) + sizeof(struct ether_header) + sizeof(struct iphdr) + frame.payload_size];
+		memset(ether_frame, 0, sizeof(ether_frame));
 
+		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame + sizeof(int));
+		struct iphdr* ip_hdr = (struct iphdr*)(ether_frame + sizeof(int) + sizeof(struct ether_header));
+		char* ip_data = (char*)(ether_frame + sizeof(int) + sizeof(struct ether_header) + sizeof(struct iphdr));
+
+		memset(ether_hdr->ether_dhost, 0, sizeof(ether_hdr->ether_dhost));
+		memset(ether_hdr->ether_shost, 0, sizeof(ether_hdr->ether_shost));
+		ether_hdr->ether_type = htons(ETHERTYPE_IP);
+
+
+		ip_hdr->ihl = (uint8_t)((uint8_t)0x05 & 0xff);
+		ip_hdr->version = 4;
+		ip_hdr->ttl = 64;
+		ip_hdr->tot_len = htons(frame.payload_size + sizeof(struct iphdr));
+		ip_hdr->saddr =
+				(frame.mhr.src_address[0] << 24) |
+				(frame.mhr.src_pan_id[0]  << 16) |
+				(254                      <<  8) |
+				(10                            );
+		ip_hdr->daddr =
+						(frame.mhr.dest_address[0] << 24) |
+						(frame.mhr.dest_pan_id[0]  << 16) |
+						(254                       <<  8) |
+						(10                             );
+
+		memcpy(ip_data, frame.payload, frame.payload_size);
+
+		int frame_length = htons(sizeof(ether_frame) - 4);
+		memcpy(ether_frame, &frame_length, sizeof(int));
+		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
+
+
+		if (verbosity >= 3) {
+			cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
+			cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
+			cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
+			cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
+			cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
+			cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
+			cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
+			cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
+			cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
+			cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
+			cout << "FCS0:     " << (int)frame.fcs[0] << endl;
+			cout << "FCS1:     " << (int)frame.fcs[1] << endl;
+			cout << "Payload:  " << (int)frame.payload_size << endl;
+			cout << "Payload:  " << frame.payload << endl;
+			cout << endl << endl << endl;
+		}
+
+		// cleanup mac packet
 		free(frame.payload);
-		cout << endl << endl << endl;
+
 	}
 
+	// cleanup usb packet
 	delete[] pkt.payload;
 }
 
@@ -339,11 +381,19 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
 	MHR_FC_SET_DEST_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 	mac_frame.mhr.dest_pan_id[0] = ((iph->daddr & 0x00ff0000) >> 16);		// TODO so herum?
+	mac_frame.mhr.dest_pan_id[1] = 0;
 	mac_frame.mhr.dest_address[0] = ((iph->daddr & 0xff000000) >> 24);
 	mac_frame.mhr.dest_address[1] = 0;
 
+	MHR_FC_SET_SRC_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+	mac_frame.mhr.src_pan_id[0] = ((iph->saddr & 0x00ff0000) >> 16);		// TODO so herum?
+	mac_frame.mhr.src_pan_id[1] = 0;
+	mac_frame.mhr.src_address[0] = ((iph->saddr & 0xff000000) >> 24);
+	mac_frame.mhr.src_address[1] = 0;
+
 	uint8_t payload[4096];
 	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
+	mac_frame_calc_crc(payload, mac_cnt);
 
 	usb_message m;
 	m.type = USB_SKYNET_PACKET;
