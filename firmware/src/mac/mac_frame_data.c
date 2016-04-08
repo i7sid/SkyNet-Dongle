@@ -19,7 +19,7 @@ extern "C" {
 #include "mac.h"
 
 void* mac_frame_data_calloc(void) {
-	void *frame = calloc(sizeof(mac_frame_data), 1);
+	mac_frame_data *frame = (mac_frame_data *)calloc(sizeof(mac_frame_data), 1);
 	mac_frame_data_init(frame);
 	return frame;
 }
@@ -204,7 +204,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 
 	// payload
 	frame->payload_size = length - 2 - pos;
-	frame->payload = malloc(frame->payload_size);
+	frame->payload = (uint8_t*)malloc(frame->payload_size);
 	if (frame->payload == NULL) {
 		// TODO throw error? return -1?
 		return pos;
