@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <iostream>
 
 #include <string.h>
 #include <thread>         // std::thread (C++11!)
@@ -70,6 +71,10 @@ void tap::tap_rx_worker(void) {
 	}
 }
 
-void tap::send_packet(char* data, int length) {
-	write(get_fd(), data, length);
+void tap::send_packet(char* data, size_t length) {
+	size_t written = write(get_fd(), data, length);
+    if (written != length) {
+        std::cerr << "Warning: Not all bytes could be sent to tap device." << std::endl;
+        std::cerr << "Lost " << (length - written) << " bytes."<< std::endl;
+    }
 }

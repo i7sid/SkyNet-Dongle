@@ -285,5 +285,4 @@ void skynet_cdc_received_message(usb_message *msg) {
 	skynet_led_blink_passive(25);
 	msDelay(100);
 	skynet_led_blink_passive(25);
-
 }

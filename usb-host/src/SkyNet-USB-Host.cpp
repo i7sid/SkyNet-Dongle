@@ -268,7 +268,7 @@ void usbReceiveHandler(usb_message pkt) {
 			COLOR_RESET();
 		}
 	}
-	if (verbosity >= 2) {
+	if (verbosity >= 3) {
 		cout << "Received USB message: " << endl;
 		cout << "Type:\t" << (unsigned int)pkt.type << endl;
 		cout << "SeqNo:\t" << (unsigned int)pkt.seqno << endl;
@@ -291,7 +291,7 @@ void usbReceiveHandler(usb_message pkt) {
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
 		// construct ethernet frame and write to tap device
-		char ether_frame[sizeof(int) + sizeof(struct ether_header) + sizeof(struct iphdr) + frame.payload_size];
+		char ether_frame[sizeof(int) + sizeof(struct ether_header) + frame.payload_size];
 		memset(ether_frame, 0, sizeof(ether_frame));
 
 		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame + sizeof(int));
@@ -355,7 +355,6 @@ void usbReceiveHandler(usb_message pkt) {
 
 		// cleanup mac packet
 		free(frame.payload);
-
 	}
 
 	// cleanup usb packet
@@ -369,27 +368,30 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
 	if (ETHERTYPE_IP != ntohs(frame->ether_type)) return;
 
-	cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
-	cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
-	cerr << "type:      " << ntohs(frame->ether_type) << endl;
+    if (verbosity > 3) {
+        cerr << "nread:     " << nread << endl;
+        cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
+        cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
+        cerr << "type:      " << ntohs(frame->ether_type) << endl;
 
 
-	struct iphdr* iph = (struct iphdr*)(p + sizeof(struct ether_header));
-	cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
-	cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
-	cerr << "version:   " << (int)(iph->version) << endl;
-	cerr << "protocol:  " << (int)(iph->protocol) << endl;
+        struct iphdr* iph = (struct iphdr*)(p + sizeof(struct ether_header));
+        cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
+        cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
+        cerr << "version:   " << (int)(iph->version) << endl;
+        cerr << "protocol:  " << (int)(iph->protocol) << endl;
 
-	// data:
-	cerr << "data len:  " << (int)(nread - sizeof(struct ether_header) - sizeof(struct iphdr)) << endl;
+        // data:
+        cerr << "data len:  " << (int)(nread - sizeof(struct ether_header) - sizeof(struct iphdr)) << endl;
 
-	cerr << "dest ip:   " << (int)((iph->daddr & 0xff000000) >> 24) << endl;
-	cerr << "dest ip:   " << (int)((iph->daddr & 0x00ff0000) >> 16) << endl;
+        cerr << "dest ip:   " << (int)((iph->daddr & 0xff000000) >> 24) << endl;
+        cerr << "dest ip:   " << (int)((iph->daddr & 0x00ff0000) >> 16) << endl;
 
-	for (unsigned int i = 0; i < nread; ++i) {
-		cout << p[i];
-	}
-	cout << endl;
+        for (unsigned int i = 0; i < nread; ++i) {
+            cout << p[i];
+        }
+        cout << endl;
+    }
 
 
 	size_t data_len = nread - sizeof(struct ether_header);

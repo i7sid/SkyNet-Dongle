@@ -195,7 +195,7 @@ inline uint32_t skynet_cdc_write_buffered(uint8_t *pBuf, uint32_t len) {
 		usb_cdc_write_pos += now;
 		written += skynet_cdc_flush();
 		//dbg[dbgi++] = g_vCOM.rx_flags;
-		msDelayActiveUs(75);
+		msDelayActiveUs(250);
 		remaining -= now;
 		pos += now;
 	}
