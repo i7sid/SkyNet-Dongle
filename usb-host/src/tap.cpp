@@ -24,8 +24,7 @@ tap::tap(std::string dev, void(*rxHandler)(void*, size_t)) :
 	int err;
 
 	if ((fd = open("/dev/net/tun", O_RDWR)) < 0) {
-		throw 0;
-		return;
+		throw 101;
 	}
 
 	memset(&ifr, 0, sizeof(ifr));
@@ -36,7 +35,7 @@ tap::tap(std::string dev, void(*rxHandler)(void*, size_t)) :
 
 	if ((err = ioctl(fd, TUNSETIFF, (void *) &ifr)) < 0) {
 		close(fd);
-		throw 1; // TODO throw error
+		throw 102; // TODO throw error
 	}
 	dev_name = string(ifr.ifr_name);
 

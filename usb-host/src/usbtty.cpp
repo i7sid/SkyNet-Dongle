@@ -50,6 +50,10 @@ void usb_tty::usb_tty_rx_worker(void) {
 		bool reverse = false;
 		tty.read(&first, 1);
 
+		if (first == 0 && !tty.good()) {
+			throw(202);
+		}
+
 		// wait for first (magic) character
 		if ((unsigned char)first != USB_MAGIC_BYTE1 && (unsigned char)first != USB_MAGIC_BYTE2) {
 			cerr << "Unexpected character received from USB: " << (int)first << endl;

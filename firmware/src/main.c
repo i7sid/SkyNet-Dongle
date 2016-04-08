@@ -8,7 +8,7 @@
 //#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-//#define DEBUG_SEND_RF_TEST
+#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -189,27 +189,20 @@ int main(void) {
 			case EVENT_DEBUG_2:
 			{
 				// DEBUG: send RF packet
-				uint8_t p[] = "Test-Payload";
+				uint8_t p[] = "Test-Payload1234567890";
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = p;
 				frame.payload_size = strlen((char*)p) + 1;
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				frame.mhr.dest_pan_id[0] = 23;
+				frame.mhr.src_pan_id[0] = 23;
+				frame.mhr.src_address[0] = 4;
+				frame.mhr.dest_address[0] = 5;
 
-				/*
-				frame.mhr.dest_pan_id = 3;
-				frame.mhr.address = 42;
-				*/
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 
 				mac_transmit_packet(&frame);
-				/*
-				uint8_t buffer[mac_frame_data_get_size(&frame)];
-				mac_frame_data_pack(&frame, buffer);
-				mac_frame_calc_crc(buffer, sizeof(buffer));
-
-				mac_transmit_packet(buffer, sizeof(buffer));
-				*/
-
 
 				/*
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
@@ -269,6 +262,9 @@ void skynet_cdc_received_message(usb_message *msg) {
 					break;
 				case USB_CTRL_BOOTLOADER:
 					cpu_enter_iap_mode();
+					break;
+				case USB_CTRL_CALIB_COMPASS:
+					// TODO
 					break;
 			}
 			break;

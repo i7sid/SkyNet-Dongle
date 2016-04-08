@@ -20,6 +20,7 @@
 #include <usb/message.h>
 #include <mac/mac.h>
 
+#include "error_handler.h"
 #include "tap.h"
 #include "usbtty.h"
 
@@ -54,6 +55,8 @@ bool cmd_reset = false;
 bool prompt_colored = true;
 bool tap_debug = false;
 int verbosity = 0;
+
+error_handler err;
 
 tap* ptr_tap;
 usb_tty* ptr_tty;
@@ -95,8 +98,9 @@ int main(int argc, char** argv) {
 		COLOR_ERR();
 		cerr << "Could not configure serial port  " << cmd_tty << " . Aborting." << endl;
 		COLOR_RESET();
-		return -1;
+		return 1;
 	}
+	cerr << "Serial port  " << cmd_tty << " opened." << endl;
 
 	// create usb_tty object and start rx thread
 	usb_tty tty(cmd_tty, usbReceiveHandler);
@@ -156,9 +160,13 @@ int main(int argc, char** argv) {
 	} catch (int i) {
 		COLOR_ERR();
 		cerr << "ERROR: " << i << endl;
-		cerr << "Is it possible that you forgot to call setup-tap.sh " <<
+		cerr << err.get_message(i) << endl;
+
+		/*
+		 cerr << "Is it possible that you forgot to call setup-tap.sh " <<
 				"with correct user name and group?" << endl;
-		exit(-1);
+				*/
+		exit(1);
 		COLOR_RESET();
 	}
 	return 0;
@@ -168,7 +176,7 @@ void printUsage(int argc, char** argv) {
 	cerr << "Usage: " << argv[0] << " [-r] [-n] [-f] [-t /dev/tty*] [-h] [-?]" << endl;
 	cerr << endl;
 	cerr << "-t, --tty      Specifies which terminal to use for serial connection." << endl;
-	cerr << "               (default: /dev/ttyUSB0)" << endl;
+	cerr << "               (default: /dev/ttyACM0)" << endl;
 	cerr << "-f, --flash    Tell connected dongle to enter bootloader to flash new firmware." << endl;
 	cerr << "-r, --reset    Tell connected dongle to reset." << endl;
 	cerr << "-t, --tap      Specifies which tap interface to use." << endl;
@@ -244,19 +252,41 @@ void usbReceiveHandler(usb_message pkt) {
 	}
 	if (verbosity >= 2) {
 		cout << "Received USB message: " << endl;
-		cout << "Type:\t" << (int)pkt.type << endl;
-		cout << "SeqNo:\t" << (int)pkt.seqno << endl;
+		cout << "Type:\t" << (unsigned int)pkt.type << endl;
+		cout << "SeqNo:\t" << (unsigned int)pkt.seqno << endl;
 		cout << "Length:\t" << pkt.payload_length << endl;
 		cout << "Payload:" << endl;
 
 		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
-			cout << setfill(' ') << setw(3) << (unsigned int)pkt.payload[i] << " ";
+			cout << setfill(' ') << setw(3) << ((unsigned int)pkt.payload[i] & 0xFF) << " ";
 		}
 		cout << endl;
 		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
 			cout <<  " " << (char)pkt.payload[i] << "  ";
 		}
 		cout << endl << endl;
+
+
+		mac_frame_data frame;
+		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
+
+		cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
+		cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
+		cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
+		cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
+		cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
+		cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
+		cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
+		cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
+		cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
+		cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
+		cout << "FCS0:     " << (int)frame.fcs[0] << endl;
+		cout << "FCS1:     " << (int)frame.fcs[1] << endl;
+		cout << "Payload:  " << (int)frame.payload_size << endl;
+		cout << "Payload:  " << frame.payload << endl;
+
+		free(frame.payload);
+		cout << endl << endl << endl;
 	}
 
 	delete[] pkt.payload;
@@ -309,8 +339,8 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
 	MHR_FC_SET_DEST_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 	mac_frame.mhr.dest_pan_id[0] = ((iph->daddr & 0x00ff0000) >> 16);		// TODO so herum?
-	mac_frame.mhr.address[0] = ((iph->daddr & 0xff000000) >> 24);
-	mac_frame.mhr.address[1] = 0;
+	mac_frame.mhr.dest_address[0] = ((iph->daddr & 0xff000000) >> 24);
+	mac_frame.mhr.dest_address[1] = 0;
 
 	uint8_t payload[4096];
 	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);

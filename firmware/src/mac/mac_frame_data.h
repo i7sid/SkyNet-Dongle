@@ -32,8 +32,9 @@ typedef struct mac_frame_data {
         uint8_t frame_control[2];
         uint8_t seq_no;
         uint8_t dest_pan_id[2];
-        uint8_t address[MAC_MAX_ADDRESS_LENGTH];
+        uint8_t dest_address[8];
         uint8_t src_pan_id[2];
+        uint8_t src_address[8];
         // uint8_t aux_security_header[0];			// for future usage?
     } __attribute__((packed)) mhr;
     uint8_t* payload;
@@ -73,6 +74,16 @@ void mac_frame_data_init(mac_frame_data *frame);
  * @return	Exact number of bytes written.
  */
 uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer);
+
+/**
+ * @brief	Parses the content of a packet from a buffer into a \ref mac_frame_data structure.
+ * @param	frame	Data structure to write data to.
+ * @param	buffer	Data buffer from for example PHY to read data from.
+ * @param	length	Total bytes received (important for correct detection of payload size)
+ *
+ * @return	Exact number of bytes read.
+ */
+uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t length);
 
 
 #ifdef __cplusplus

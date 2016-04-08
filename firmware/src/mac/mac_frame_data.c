@@ -82,14 +82,21 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 
 			// copy dest address
 			if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
-				// TODO copy 2 bytes (short address)
+				// copy 2 bytes (short address)
 				//pos += 2;
-				buffer[pos++] = frame->mhr.address[0]; // TODO endianness?
-				buffer[pos++] = frame->mhr.address[1];
+				buffer[pos++] = frame->mhr.dest_address[0]; // TODO endianness?
+				buffer[pos++] = frame->mhr.dest_address[1];
 			}
 			else if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_LONG) {
-				// TODO copy 8 bytes (long address)
-				pos += 8;
+				// copy 8 bytes (long address)
+				buffer[pos++] = frame->mhr.dest_address[0]; // TODO endianness?
+				buffer[pos++] = frame->mhr.dest_address[1];
+				buffer[pos++] = frame->mhr.dest_address[2];
+				buffer[pos++] = frame->mhr.dest_address[3];
+				buffer[pos++] = frame->mhr.dest_address[4];
+				buffer[pos++] = frame->mhr.dest_address[5];
+				buffer[pos++] = frame->mhr.dest_address[6];
+				buffer[pos++] = frame->mhr.dest_address[7];
 			}
 
 			if (!(MHR_FC_GET_PAN_ID_COMPRESSION(frame->mhr.frame_control)) &&
@@ -100,12 +107,20 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 
 			// copy src address
 			if (MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
-				// TODO copy 2 bytes (short address)
-				pos += 2;
+				// copy 2 bytes (short address)
+				buffer[pos++] = frame->mhr.src_address[0]; // TODO endianness?
+				buffer[pos++] = frame->mhr.src_address[1];
 			}
 			else if (MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_LONG) {
-				// TODO copy 8 bytes (long address)
-				pos += 8;
+				// copy 8 bytes (long address)
+				buffer[pos++] = frame->mhr.src_address[0]; // TODO endianness?
+				buffer[pos++] = frame->mhr.src_address[1];
+				buffer[pos++] = frame->mhr.src_address[2];
+				buffer[pos++] = frame->mhr.src_address[3];
+				buffer[pos++] = frame->mhr.src_address[4];
+				buffer[pos++] = frame->mhr.src_address[5];
+				buffer[pos++] = frame->mhr.src_address[6];
+				buffer[pos++] = frame->mhr.src_address[7];
 			}
 
 			// ignore aux security header for now
@@ -122,14 +137,87 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
     memcpy(buffer + pos, frame->payload, frame->payload_size);
     pos += frame->payload_size;
 
-
-    // copy emptyfcs
+    // copy empty fcs
     buffer[pos++] = 0;
     buffer[pos++] = 0;
-    //memcpy(buffer + sizeof(frame->mhr) + frame->payload_size, frame->fcs,
-    //        sizeof(frame->fcs));
 
     return pos;
+}
+
+uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t length) {
+	// copy frame control
+	uint16_t pos = 0;
+	frame->mhr.frame_control[0] = buffer[pos++];
+	frame->mhr.frame_control[1] = buffer[pos++];
+
+	// copy seqno
+	frame->mhr.seq_no = buffer[pos++];
+
+
+	// copy dest pan id (if it shall be present)
+	if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) != MAC_ADDR_MODE_NOT) {
+		frame->mhr.dest_pan_id[0] = buffer[pos++]; // TODO endianness?
+		frame->mhr.dest_pan_id[1] = buffer[pos++];
+	}
+
+	// copy dest address
+	if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+		// copy 2 bytes (short address)
+		frame->mhr.dest_address[0] = buffer[pos++]; // TODO endianness?
+		frame->mhr.dest_address[1] = buffer[pos++];
+	}
+	else if (MHR_FC_GET_DEST_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+		// copy 8 bytes (long address)
+		frame->mhr.dest_address[0] = buffer[pos++]; // TODO endianness?
+		frame->mhr.dest_address[1] = buffer[pos++];
+		frame->mhr.dest_address[2] = buffer[pos++];
+		frame->mhr.dest_address[3] = buffer[pos++];
+		frame->mhr.dest_address[4] = buffer[pos++];
+		frame->mhr.dest_address[5] = buffer[pos++];
+		frame->mhr.dest_address[6] = buffer[pos++];
+		frame->mhr.dest_address[7] = buffer[pos++];
+	}
+
+	if (!(MHR_FC_GET_PAN_ID_COMPRESSION(frame->mhr.frame_control)) &&
+			(MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control) != MAC_ADDR_MODE_NOT)) {
+		frame->mhr.src_pan_id[0] = buffer[pos++]; // TODO endianess?
+		frame->mhr.src_pan_id[1] = buffer[pos++];
+	}
+
+	// copy src address
+	if (MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+		// copy 2 bytes (short address)
+		frame->mhr.src_address[0] = buffer[pos++]; // TODO endianness?
+		frame->mhr.src_address[1] = buffer[pos++];
+	}
+	else if (MHR_FC_GET_SRC_ADDR_MODE(frame->mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+		// copy 8 bytes (long address)
+		frame->mhr.src_address[0] = buffer[pos++]; // TODO endianness?
+		frame->mhr.src_address[1] = buffer[pos++];
+		frame->mhr.src_address[2] = buffer[pos++];
+		frame->mhr.src_address[3] = buffer[pos++];
+		frame->mhr.src_address[4] = buffer[pos++];
+		frame->mhr.src_address[5] = buffer[pos++];
+		frame->mhr.src_address[6] = buffer[pos++];
+		frame->mhr.src_address[7] = buffer[pos++];
+	}
+
+	// payload
+	frame->payload_size = length - 2 - pos;
+	frame->payload = malloc(frame->payload_size);
+	if (frame->payload == NULL) {
+		// TODO throw error? return -1?
+		return pos;
+	}
+
+	memcpy(frame->payload, buffer + pos, frame->payload_size);
+	pos += frame->payload_size;
+
+	// fcs
+	frame->fcs[0] = buffer[pos++];
+	frame->fcs[1] = buffer[pos++];
+
+	return pos;
 }
 
 #ifdef __cplusplus

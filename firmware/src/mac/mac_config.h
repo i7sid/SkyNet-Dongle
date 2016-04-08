@@ -12,9 +12,6 @@
 #ifndef MAC_CONFIG_H
 #define MAC_CONFIG_H
 
-#define MAC_MAX_ADDRESS_LENGTH              (8)     /// @brief maximum address length
-#define MAC_CONFIG_ADDRESS_LENGTH           (4)     /// @brief 4 to 20  // DEBUG TODO REMOVE
-
 /*
 #define MAC_CONST_aMinMPDUOverhead          (9)
 #define MAC_CONST_aUnitBackoffPeriod        (20)
@@ -24,7 +21,8 @@
 #define MAC_CONST_aBaseSlotDuration         (60)
 */
 
-#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in ms?
+//#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in ms?
+#define MAC_CONST_SYMBOL_LENGTH             (1) // TODO: correct value in ms?
 
 #define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (20) // in "symbols"
 #define MAC_CONST_MAX_BE                    (8)

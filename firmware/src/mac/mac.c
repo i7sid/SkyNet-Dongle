@@ -19,6 +19,8 @@ extern union si446x_cmd_reply_union Si446xCmd;
 uint8_t nb; ///<@brief How many backoff-times have been needed in current try?
 uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waited
 
+uint8_t seq_no = 0; ///<@brief Current sequence number
+
 /// @brief  Returns a pseudo random number (strictly) smaller than max.
 static inline int random(int max) {
     return (rand() % max);
@@ -39,6 +41,7 @@ bool channel_idle(void) {
 bool mac_transmit_packet(mac_frame_data *frame) {
 	uint16_t est_size = mac_frame_data_estimate_size(frame);
 	uint8_t buf[est_size];
+	frame->mhr.seq_no = seq_no++;
 	memset(buf, 0, sizeof(buf));								// TODO remove, DEBUG!
 	uint16_t size = mac_frame_data_pack(frame, buf);
 	mac_frame_calc_crc(buf, size);
