@@ -47,6 +47,7 @@ using namespace std;
 
 #define MAGIC_NO_COLOR		513
 #define MAGIC_TAP_DEBUG		512
+#define MAGIC_USB_DEBUG		511
 
 string cmd_tap = "tapsn0";
 string cmd_tty = "/dev/ttyACM0";
@@ -54,6 +55,7 @@ bool cmd_flash = false;
 bool cmd_reset = false;
 bool prompt_colored = true;
 bool tap_debug = false;
+bool usb_debug = false;
 int verbosity = 0;
 
 error_handler err;
@@ -76,73 +78,84 @@ void tapReceiveHandler(void* msg, size_t length);
 void do_tap_debug(string);
 
 int main(int argc, char** argv) {
-	parseCmd(argc, argv);
-
-	if (verbosity > 0) {
-		cerr << "verbosity:       " << verbosity << endl;
-		cerr << "colored prompt:  " << prompt_colored << endl;
-		cerr << "tty:             " << cmd_tty << endl;
-		cerr << "tap:             " << cmd_tap << endl;
-		cerr << "goto bootloader: " << cmd_flash << endl;
-		cerr << "tap debug:       " << tap_debug << endl;
-		cerr << endl;
-	}
-
-	// init serial port on linux systems
-	//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
-	//string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
-	string init = "stty -F " + cmd_tty + " raw pass8 -echo -hupcl clocal 115200";
-
-	int s = system(init.c_str());
-	if (s != 0) {
-		COLOR_ERR();
-		cerr << "Could not configure serial port  " << cmd_tty << " . Aborting." << endl;
-		COLOR_RESET();
-		return 1;
-	}
-	cerr << "Serial port  " << cmd_tty << " opened." << endl;
-
-	// create usb_tty object and start rx thread
-	usb_tty tty(cmd_tty, usbReceiveHandler);
-	ptr_tty = &tty;
-
-	if (cmd_flash) {
-		usb_message m;
-		char payload[USB_MAX_PAYLOAD_LENGTH];
-		m.type = USB_CONTROL;
-		m.payload_length = 1;
-		m.payload = payload;
-		m.payload[0] = (char)USB_CTRL_BOOTLOADER;
-
-		tty.usbSendMessage(m);
-		exit(0);
-	}
-	else if (cmd_reset) {
-		usb_message m;
-		char payload[USB_MAX_PAYLOAD_LENGTH];
-		m.type = USB_CONTROL;
-		m.payload_length = 1;
-		m.payload = payload;
-		m.payload[0] = (char)USB_CTRL_RESET;
-
-		tty.usbSendMessage(m);
-		exit(0);
-	}
-
-	/*
-	while (true) {
-		usb_message m;
-		m.type = USB_DEBUG;
-		m.payload = (char*)string("test").c_str();
-		m.payload_length = 4;
-		m.seqno = 0;
-		tty.usbSendMessage(m);
-		sleep(1);
-	}
-	*/
-
-	// create tap object and start rx thread
 	try {
+		parseCmd(argc, argv);
+
+		if (verbosity > 0) {
+			cerr << "verbosity:       " << verbosity << endl;
+			cerr << "colored prompt:  " << prompt_colored << endl;
+			cerr << "tty:             " << cmd_tty << endl;
+			cerr << "tap:             " << cmd_tap << endl;
+			cerr << "goto bootloader: " << cmd_flash << endl;
+			cerr << "tap debug:       " << tap_debug << endl;
+			cerr << endl;
+		}
+
+		// init serial port on linux systems
+		//string init = "stty -F " + cmd_tty + " sane raw pass8 -echo -hupcl clocal 115200";
+		//string init = "stty -F " + cmd_tty + " raw pass8 -hupcl clocal 115200";
+		string init = "stty -F " + cmd_tty + " raw pass8 -echo -hupcl clocal 115200";
+
+		int s = system(init.c_str());
+		if (s != 0) {
+			COLOR_ERR();
+			cerr << "Could not configure serial port  " << cmd_tty << " . Aborting." << endl;
+			COLOR_RESET();
+			return 1;
+		}
+		cerr << "Serial port  " << cmd_tty << " opened." << endl;
+
+		// create usb_tty object and start rx thread
+		usb_tty tty(cmd_tty, usbReceiveHandler);
+		ptr_tty = &tty;
+
+		if (cmd_flash) {
+			usb_message m;
+			char payload[USB_MAX_PAYLOAD_LENGTH];
+			m.type = USB_CONTROL;
+			m.payload_length = 1;
+			m.payload = payload;
+			m.payload[0] = (char)USB_CTRL_BOOTLOADER;
+
+			tty.usbSendMessage(m);
+			exit(0);
+		}
+		else if (cmd_reset) {
+			usb_message m;
+			char payload[USB_MAX_PAYLOAD_LENGTH];
+			m.type = USB_CONTROL;
+			m.payload_length = 1;
+			m.payload = payload;
+			m.payload[0] = (char)USB_CTRL_RESET;
+
+			tty.usbSendMessage(m);
+			exit(0);
+		}
+
+		/*
+		while (true) {
+			usb_message m;
+			m.type = USB_DEBUG;
+			m.payload = (char*)string("test").c_str();
+			m.payload_length = 4;
+			m.seqno = 0;
+			tty.usbSendMessage(m);
+			sleep(1);
+		}
+		*/
+
+		if (usb_debug) {
+			string dbg("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456");
+			usb_message m;
+			m.type = USB_DEBUG;
+			m.payload = (char*)dbg.c_str();
+			m.payload_length = dbg.length() + 1;
+			m.seqno = 0;
+			tty.usbSendMessage(m);
+			return 0;
+		}
+
+		// create tap object and start rx thread
 		tap tap(cmd_tap, tapReceiveHandler);
 		ptr_tap = &tap;
 		cerr << "Tap device  " << cmd_tap << "  opened." << endl;
@@ -157,6 +170,7 @@ int main(int argc, char** argv) {
 		// wait for thread to exit
 		usb_rx_thread.join();
 		tap_rx_thread.join();
+
 	} catch (int i) {
 		COLOR_ERR();
 		cerr << "ERROR: " << i << endl;
@@ -195,8 +209,9 @@ void parseCmd(int argc, char** argv) {
         {"help",     no_argument,       0, 'h'},
         {"tty",      required_argument, 0, 't'},
         {"tap",      required_argument, 0, 'a'},
-        {"debug-tap",no_argument, 		0, MAGIC_TAP_DEBUG},
-        {"reset",    no_argument,       0, 'r'},
+		{"debug-tap",no_argument, 		0, MAGIC_TAP_DEBUG},
+		{"debug-usb",no_argument, 		0, MAGIC_USB_DEBUG},
+		{"reset",    no_argument,       0, 'r'},
         {"flash",    no_argument,       0, 'f'},
         {"color",    no_argument,       0, 'c'},
         {"no-color", no_argument,       0, MAGIC_NO_COLOR},
@@ -229,6 +244,9 @@ void parseCmd(int argc, char** argv) {
 				break;
 			case MAGIC_TAP_DEBUG:
 				tap_debug = true;
+				break;
+			case MAGIC_USB_DEBUG:
+				usb_debug = true;
 				break;
 			case 'h':
 			case '?':
@@ -420,7 +438,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.payload = (char*)payload;
 
 	ptr_tty->usbSendMessage(m);
-
 }
 
 
