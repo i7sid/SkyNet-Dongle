@@ -277,6 +277,196 @@ void usbReceiveHandler(usb_message pkt) {
 		memset(ether_frame, 0, sizeof(ether_frame));
 
 		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame + sizeof(int));
+		char* data = (char*)(ether_frame + sizeof(int) + sizeof(struct ether_header));
+
+		memset(ether_hdr->ether_dhost, 0, sizeof(ether_hdr->ether_dhost));
+		memset(ether_hdr->ether_shost, 0, sizeof(ether_hdr->ether_shost));
+
+		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+			ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
+			ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
+		}
+		else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+			ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
+			ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
+			ether_hdr->ether_dhost[2] = frame.mhr.dest_address[2];
+			ether_hdr->ether_dhost[3] = frame.mhr.dest_address[3];
+			ether_hdr->ether_dhost[4] = frame.mhr.dest_address[4];
+			ether_hdr->ether_dhost[5] = frame.mhr.src_address[5];
+		}
+
+		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+			ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
+			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
+		}
+		else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+			ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
+			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
+			ether_hdr->ether_shost[2] = frame.mhr.src_address[2];
+			ether_hdr->ether_shost[3] = frame.mhr.src_address[3];
+			ether_hdr->ether_shost[4] = frame.mhr.src_address[4];
+			ether_hdr->ether_shost[5] = frame.mhr.src_address[5];
+		}
+
+		ether_hdr->ether_type = htons(ETHERTYPE_IP);
+
+		memcpy(data, frame.payload, frame.payload_size);
+
+		int frame_length = htons(sizeof(ether_frame) - 4);
+		memcpy(ether_frame, &frame_length, sizeof(int));
+		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
+
+
+		if (verbosity >= 3) {
+			cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
+			cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
+			cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
+			cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
+			cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
+			cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
+			cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
+			cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
+			cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
+			cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
+			cout << "FCS0:     " << (int)frame.fcs[0] << endl;
+			cout << "FCS1:     " << (int)frame.fcs[1] << endl;
+			cout << "Payload:  " << (int)frame.payload_size << endl;
+			cout << "Payload:  " << frame.payload << endl;
+			cout << endl << endl << endl;
+		}
+
+		// cleanup mac packet
+		free(frame.payload);
+
+	}
+
+	// cleanup usb packet
+	delete[] pkt.payload;
+}
+
+void tapReceiveHandler(void *pkt, size_t nread) {
+	char *p = (char*)pkt;
+	struct ether_header* frame = (struct ether_header*)(p);
+
+	// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
+	if (ETHERTYPE_IP != ntohs(frame->ether_type)) return;
+
+	cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
+	cerr << "dest addr: " << ether_ntoa((struct ether_addr*)frame->ether_dhost) << endl;
+	cerr << "type:      " << ntohs(frame->ether_type) << endl;
+
+
+	struct iphdr* iph = (struct iphdr*)(p + sizeof(struct ether_header));
+	cerr << "src ip:    " << inet_ntoa(*(struct in_addr*)&iph->saddr) << endl;
+	cerr << "dest ip:   " << inet_ntoa(*(struct in_addr*)&iph->daddr) << endl;
+	cerr << "version:   " << (int)(iph->version) << endl;
+	cerr << "protocol:  " << (int)(iph->protocol) << endl;
+
+	// data:
+	cerr << "data len:  " << (int)(nread - sizeof(struct ether_header) - sizeof(struct iphdr)) << endl;
+
+	cerr << "dest ip:   " << (int)((iph->daddr & 0xff000000) >> 24) << endl;
+	cerr << "dest ip:   " << (int)((iph->daddr & 0x00ff0000) >> 16) << endl;
+	return;
+
+	for (unsigned int i = 0; i < nread; ++i) {
+		cout << p[i];
+	}
+	cout << endl;
+
+
+	size_t data_len = nread - sizeof(struct ether_header);
+	if (USB_MAX_PAYLOAD_LENGTH < data_len) {
+		COLOR_ERR();
+		cerr << "Packet received via network too large for usb tty. Ignoring." << endl;
+		COLOR_RESET();
+		return;
+	}
+
+	// construct real skynet-mac-packet
+	mac_frame_data mac_frame;
+	mac_frame_data_init(&mac_frame);
+	mac_frame.payload = (uint8_t*)(p + sizeof(struct ether_header));
+	mac_frame.payload_size = data_len;
+
+	MHR_FC_SET_DEST_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_LONG);
+	mac_frame.mhr.dest_pan_id[0] = 0;
+	mac_frame.mhr.dest_pan_id[1] = 0;
+	mac_frame.mhr.dest_address[0] = frame->ether_dhost[0];
+	mac_frame.mhr.dest_address[1] = frame->ether_dhost[1];
+	mac_frame.mhr.dest_address[2] = frame->ether_dhost[2];
+	mac_frame.mhr.dest_address[3] = frame->ether_dhost[3];
+	mac_frame.mhr.dest_address[4] = frame->ether_dhost[4];
+	mac_frame.mhr.dest_address[5] = frame->ether_dhost[5];
+
+
+	MHR_FC_SET_SRC_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_LONG);
+	mac_frame.mhr.src_pan_id[0] = 0;
+	mac_frame.mhr.src_pan_id[1] = 0;
+	mac_frame.mhr.src_address[0] = frame->ether_shost[0];
+	mac_frame.mhr.src_address[1] = frame->ether_shost[1];
+	mac_frame.mhr.src_address[2] = frame->ether_shost[2];
+	mac_frame.mhr.src_address[3] = frame->ether_shost[3];
+	mac_frame.mhr.src_address[4] = frame->ether_shost[4];
+	mac_frame.mhr.src_address[5] = frame->ether_shost[5];
+
+	uint8_t payload[4096];
+	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
+	mac_frame_calc_crc(payload, mac_cnt);
+
+	usb_message m;
+	m.type = USB_SKYNET_PACKET;
+	m.payload_length = mac_cnt;
+	m.payload = (char*)payload;
+
+	ptr_tty->usbSendMessage(m);
+
+}
+
+
+
+/*//old stuff folling: on ip layer
+ *
+ *
+
+void usbReceiveHandler(usb_message pkt) {
+
+	if (pkt.type == USB_DEBUG) {
+		if (verbosity >= 1) {
+			COLOR_DBG();
+			for (unsigned int i = 0; i < pkt.payload_length; ++i) {
+				cout <<  (char)pkt.payload[i];
+			}
+			COLOR_RESET();
+		}
+	}
+	if (verbosity >= 2) {
+		cout << "Received USB message: " << endl;
+		cout << "Type:\t" << (unsigned int)pkt.type << endl;
+		cout << "SeqNo:\t" << (unsigned int)pkt.seqno << endl;
+		cout << "Length:\t" << pkt.payload_length << endl;
+		cout << "Payload:" << endl;
+
+		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
+			cout << setfill(' ') << setw(3) << ((unsigned int)pkt.payload[i] & 0xFF) << " ";
+		}
+		cout << endl;
+		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
+			cout <<  " " << (char)pkt.payload[i] << "  ";
+		}
+		cout << endl << endl;
+
+	}
+
+	if (pkt.type == USB_SKYNET_PACKET) {
+		mac_frame_data frame;
+		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
+
+		// construct ethernet frame and write to tap device
+		char ether_frame[sizeof(int) + sizeof(struct ether_header) + sizeof(struct iphdr) + frame.payload_size];
+		memset(ether_frame, 0, sizeof(ether_frame));
+
+		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame + sizeof(int));
 		struct iphdr* ip_hdr = (struct iphdr*)(ether_frame + sizeof(int) + sizeof(struct ether_header));
 		char* ip_data = (char*)(ether_frame + sizeof(int) + sizeof(struct ether_header) + sizeof(struct iphdr));
 
@@ -402,3 +592,5 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
 	ptr_tty->usbSendMessage(m);
 }
+
+ */
