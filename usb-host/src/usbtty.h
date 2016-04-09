@@ -21,7 +21,8 @@ public:
 	void usbSendMessage(usb_message msg);
 
 private:
-	std::fstream tty;
+	//std::fstream tty;
+	int tty_fd;
 	void (*rxHandler)(usb_message);
 };
 

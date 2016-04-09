@@ -311,6 +311,13 @@ void usbReceiveHandler(usb_message pkt) {
 			ether_hdr->ether_dhost[3] = frame.mhr.dest_address[3];
 			ether_hdr->ether_dhost[4] = frame.mhr.dest_address[4];
 			ether_hdr->ether_dhost[5] = frame.mhr.src_address[5];
+			// debug
+			ether_hdr->ether_dhost[0] = 0x00;
+			ether_hdr->ether_dhost[1] = 0x00;
+			ether_hdr->ether_dhost[2] = 0x00;
+			ether_hdr->ether_dhost[3] = 0x00;
+			ether_hdr->ether_dhost[4] = 0x00;
+			ether_hdr->ether_dhost[5] = 0x00;
 		}
 
 		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
@@ -318,12 +325,21 @@ void usbReceiveHandler(usb_message pkt) {
 			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
 		}
 		else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+
 			ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
 			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
 			ether_hdr->ether_shost[2] = frame.mhr.src_address[2];
 			ether_hdr->ether_shost[3] = frame.mhr.src_address[3];
 			ether_hdr->ether_shost[4] = frame.mhr.src_address[4];
 			ether_hdr->ether_shost[5] = frame.mhr.src_address[5];
+			// debug
+			ether_hdr->ether_shost[0] = 0x00;
+			ether_hdr->ether_shost[1] = 0x00;
+			ether_hdr->ether_shost[2] = 0x00;
+			ether_hdr->ether_shost[3] = 0x00;
+			ether_hdr->ether_shost[4] = 0x00;
+			ether_hdr->ether_shost[5] = 0x00;
+
 		}
 
 		ether_hdr->ether_type = htons(ETHERTYPE_IP);
