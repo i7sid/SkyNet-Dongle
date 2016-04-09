@@ -15,3 +15,5 @@ tunctl -u $USER -g $GROUP -t $NAME
 ip link set $NAME up
 ip addr add 10.254.0.1/24 dev $NAME
 ip link set dev $NAME arp off
+
+sysctl -w net.ipv4.conf.${NAME}.rp_filter=2
