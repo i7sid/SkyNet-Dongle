@@ -291,11 +291,11 @@ void usbReceiveHandler(usb_message pkt) {
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
 		// construct ethernet frame and write to tap device
-		char ether_frame[sizeof(int) + sizeof(struct ether_header) + frame.payload_size];
+		char ether_frame[sizeof(struct ether_header) + frame.payload_size];
 		memset(ether_frame, 0, sizeof(ether_frame));
 
-		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame + sizeof(int));
-		char* data = (char*)(ether_frame + sizeof(int) + sizeof(struct ether_header));
+		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame);
+		char* data = (char*)(ether_frame + sizeof(struct ether_header));
 
 		memset(ether_hdr->ether_dhost, 0, sizeof(ether_hdr->ether_dhost));
 		memset(ether_hdr->ether_shost, 0, sizeof(ether_hdr->ether_shost));
@@ -354,8 +354,8 @@ void usbReceiveHandler(usb_message pkt) {
 
 		memcpy(data, frame.payload, frame.payload_size);
 
-		int frame_length = htons(sizeof(ether_frame) - 4);
-		memcpy(ether_frame, &frame_length, sizeof(int));
+//		int frame_length = htons(sizeof(ether_frame) - 4);
+//		memcpy(ether_frame, &frame_length, sizeof(int));
 		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
 
 

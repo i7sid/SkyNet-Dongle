@@ -30,7 +30,7 @@ tap::tap(std::string dev, void(*rxHandler)(void*, size_t)) :
 
 	memset(&ifr, 0, sizeof(ifr));
 
-	ifr.ifr_flags = IFF_TAP;
+	ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
 	//ifr.ifr_flags = IFF_TUN;
 	if (!dev.empty()) strncpy(ifr.ifr_name, dev.c_str(), dev.length());
 
@@ -67,7 +67,8 @@ void tap::tap_rx_worker(void) {
 		//cerr << "Read " << nread << " bytes from device." << endl;
 
 		// TODO: weiter zerlegen?
-		rxHandler(buffer+4, nread-4);
+		//rxHandler(buffer+4, nread-4);
+		rxHandler(buffer, nread);
 	}
 }
 
