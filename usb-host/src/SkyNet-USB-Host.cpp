@@ -276,7 +276,8 @@ void usbReceiveHandler(usb_message pkt) {
 		cout << "Payload:" << endl;
 
 		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
-			cout << setfill(' ') << setw(3) << ((unsigned int)pkt.payload[i] & 0xFF) << " ";
+			cout << setfill(' ') << setw(3) << std::hex << "0x" <<
+                ((unsigned int)pkt.payload[i] & 0xFF) << " " << std::dec;
 		}
 		cout << endl;
 		for (unsigned int i = 0; i < pkt.payload_length; ++i) {
@@ -310,7 +311,7 @@ void usbReceiveHandler(usb_message pkt) {
 			ether_hdr->ether_dhost[2] = frame.mhr.dest_address[2];
 			ether_hdr->ether_dhost[3] = frame.mhr.dest_address[3];
 			ether_hdr->ether_dhost[4] = frame.mhr.dest_address[4];
-			ether_hdr->ether_dhost[5] = frame.mhr.src_address[5];
+			ether_hdr->ether_dhost[5] = frame.mhr.dest_address[5];
 		}
 
 		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
