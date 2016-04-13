@@ -290,10 +290,11 @@ void usbReceiveHandler(usb_message pkt) {
 
 	if (pkt.type == USB_SKYNET_PACKET) {
 		mac_frame_data frame;
+        pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
 		// construct ethernet frame and write to tap device
-		char ether_frame[sizeof(struct ether_header) + frame.payload_size + PKT_DBG_OVERHEAD];
+		char ether_frame[sizeof(struct ether_header) + frame.payload_size];
 		memset(ether_frame, 0, sizeof(ether_frame));
 
 		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame);
