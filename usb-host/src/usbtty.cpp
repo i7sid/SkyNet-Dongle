@@ -63,7 +63,8 @@ void usb_tty::usb_tty_rx_worker(void) {
 		// wait for first (magic) character
 		if ((unsigned char)first != USB_MAGIC_BYTE1 && (unsigned char)first != USB_MAGIC_BYTE2) {
 			if (first == 10) continue;
-			cerr << "Unexpected character received from USB: " << (int)first << endl;
+			cerr << "Unexpected character received from USB: " << (int)first <<
+                " (0x" << std::hex << (int)first << ")" << std::dec << endl;
 		}
 		else {
 			char expect = 0;
@@ -122,7 +123,7 @@ void usb_tty::usb_tty_rx_worker(void) {
 				}
 				else {
 					// packet too long
-					cerr << "Expecting too long USB packet, ignoring whole packet." << endl;
+					cerr << "Expecting too long USB packet, ignoring whole packet. (" << length << ")" << endl;
 					char b;
 					for (unsigned int i = 0; i < length; ++i) {
 						read(tty_fd, &b, 1);

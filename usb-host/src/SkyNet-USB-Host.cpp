@@ -337,9 +337,18 @@ void usbReceiveHandler(usb_message pkt) {
 
 //		int frame_length = htons(sizeof(ether_frame) - 4);
 //		memcpy(ether_frame, &frame_length, sizeof(int));
+		cerr << "Sending ethernet frame of size " << sizeof(ether_frame) << "." << endl;
+
+
+		cout << setfill(' ') << setw(3) << std::hex;
+        for (unsigned int i = 0; i < sizeof(ether_frame); ++i) {
+            cout << "0x" << (unsigned int)ether_frame[i] << " ";
+        }
+        cout << std::dec << endl;
+
 		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
 
-
+/*
 		if (verbosity >= 3) {
 			cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
 			cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
@@ -357,6 +366,7 @@ void usbReceiveHandler(usb_message pkt) {
 			cout << "Payload:  " << frame.payload << endl;
 			cout << endl << endl << endl;
 		}
+*/
 
 		// cleanup mac packet
 		free(frame.payload);
@@ -373,6 +383,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
 	//if (ETHERTYPE_IP != ntohs(frame->ether_type)) return;
 
+    /*
     if (verbosity > 3) {
         cerr << "nread:     " << nread << endl;
         cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
@@ -397,7 +408,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
         }
         cout << endl;
     }
-
+    */
 
 	size_t data_len = nread - sizeof(struct ether_header);
 	if (USB_MAX_PAYLOAD_LENGTH < data_len) {
@@ -444,6 +455,16 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.type = USB_SKYNET_PACKET;
 	m.payload_length = mac_cnt;
 	m.payload = (char*)payload;
+
+    COLOR_DBG();
+    cerr << "Packet sending over USB (" << (m.payload_length) << ")" << endl;
+    COLOR_RESET();
+
+    cout << setfill(' ') << setw(3) << std::hex;
+    for (unsigned int i = 0; i < m.payload_length; ++i) {
+        cout << "0x" << ((unsigned int)m.payload[i] & 0xFF) << " ";
+    }
+
 
 	ptr_tty->usbSendMessage(m);
 }
