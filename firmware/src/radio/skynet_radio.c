@@ -157,8 +157,12 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	volatile bool first_run = true;
 	while(remaining > 0) {
 		uint8_t nowLength;
-		if (first_run) {
+		//if (first_run) {
+		if (first_run && RADIO_MAX_PACKET_LENGTH <= remaining) {
 			nowLength = RADIO_MAX_PACKET_LENGTH;
+		}
+		else if (first_run && RADIO_MAX_PACKET_LENGTH > remaining) {
+			nowLength = remaining;
 		}
 		else if (RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
 			nowLength = RADIO_TX_ALMOST_EMPTY_THRESHOLD;
@@ -267,7 +271,14 @@ void radio_packet_handler(void) {
 			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
 		//DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
-		skynet_led_blink_passive(500);
+		DBG("[ERROR] %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
 
 		// reset chip to assure correct behaviour next time
 		events_enqueue(EVENT_RADIO_RESTART, NULL);

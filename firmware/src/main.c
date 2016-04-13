@@ -182,9 +182,9 @@ int main(void) {
 				//char debugstr[] = "This is a debug string.";
 				skynet_cdc_write_debug("%s\n", debugstr);
 
-				skynet_led_blink_active(50);
-				msDelayActive(50);
-				skynet_led_blink_active(50);
+				/*skynet_led_blink_active(10);
+				msDelayActive(30);*/
+				skynet_led_blink_active(10);
 				break;
 			}
 			case EVENT_DEBUG_2:
@@ -210,7 +210,7 @@ int main(void) {
 				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
 				*/
 
-				skynet_led_blink_passive(100);
+				skynet_led_blink_active(10);
 				break;
 			}
 			default: {
@@ -229,6 +229,13 @@ int main(void) {
 void skynet_received_packet(skynet_packet *pkt) {
 	//DBG("pkt recv (length: %d)\n", pkt->length);
 
+	/*
+	for (int i = pkt->length - 8; i < pkt->length; ++i) {
+		DBG("0x%x ", (pkt->data[i] & 0xFF));
+	}
+	DBG("\n");
+	*/
+
 	// send to host
 	usb_message msg;
 	msg.seqno = 0; 							// chose automatically next one
@@ -243,12 +250,17 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// Must be done! Memory was allocated dynamically.
 	free(pkt->data);
 	free(pkt);
-	skynet_led_blink_passive(25);
+	skynet_led_blink_passive(15);
 }
 
 
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
+
+	for (int i = msg->payload_length - 8; i < msg->payload_length; ++i) {
+		DBG("0x%x ", (msg->payload[i] & 0xFF));
+	}
+	DBG("\n");
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
@@ -282,7 +294,5 @@ void skynet_cdc_received_message(usb_message *msg) {
 	// Must be done! Memory was allocated dynamically.
 	free(msg->payload);
 	free(msg);
-	skynet_led_blink_passive(25);
-	msDelay(100);
-	skynet_led_blink_passive(25);
+	skynet_led_blink_passive(15);
 }

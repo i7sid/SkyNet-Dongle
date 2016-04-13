@@ -217,6 +217,8 @@ uint32_t vcom_write(uint8_t *pBuf, uint32_t len)
 	uint32_t ret = 0;
 
 	if ( (pVcom->tx_flags & VCOM_TX_CONNECTED) && ((pVcom->tx_flags & VCOM_TX_BUSY) == 0) ) {
+	//if (pVcom->tx_flags & VCOM_TX_CONNECTED) {
+		//while ((pVcom->tx_flags & VCOM_TX_BUSY) != 0) { }
 		pVcom->tx_flags |= VCOM_TX_BUSY;
 
 		/* enter critical section */

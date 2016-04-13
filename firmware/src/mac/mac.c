@@ -32,7 +32,7 @@ uint64_t mac_mhr_get_dest_addr(uint8_t *pkt) {
 
 bool channel_idle(void) {
     si446x_get_modem_status(0xFF);
-    uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
+    //uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
     uint8_t latched = Si446xCmd.GET_MODEM_STATUS.LATCH_RSSI;
     //DBG("%d, %d\n", rssi, latched);
     return (latched != 1);
@@ -65,7 +65,8 @@ bool mac_transmit_data(uint8_t* data, uint16_t length) {
         // initial delay
         int delay = random((1 << be) - 1);  // is: 2^be - 1
         //DBG("mac sleep: %d\n", delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
-        msDelay(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
+        //msDelay(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
+        msDelayActiveUs(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
         //DBG("mac slept\n");
 
 
