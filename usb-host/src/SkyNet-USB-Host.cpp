@@ -30,6 +30,7 @@
 
 #include <linux/ip.h>
 
+#define PKT_DBG_OVERHEAD    (8)
 
 using namespace std;
 
@@ -292,7 +293,7 @@ void usbReceiveHandler(usb_message pkt) {
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
 		// construct ethernet frame and write to tap device
-		char ether_frame[sizeof(struct ether_header) + frame.payload_size];
+		char ether_frame[sizeof(struct ether_header) + frame.payload_size + PKT_DBG_OVERHEAD];
 		memset(ether_frame, 0, sizeof(ether_frame));
 
 		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame);
@@ -342,7 +343,7 @@ void usbReceiveHandler(usb_message pkt) {
 
 		cout << setfill(' ') << setw(3) << std::hex;
         for (unsigned int i = 0; i < sizeof(ether_frame); ++i) {
-            cout << "0x" << (unsigned int)ether_frame[i] << " ";
+            cout << "0x" << (((unsigned int)ether_frame[i]) & 0xFF) << " ";
         }
         cout << std::dec << endl;
 
@@ -448,12 +449,13 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_frame.mhr.src_address[7] = ((frame->ether_type & 0x00FF)     );
 
 	uint8_t payload[4096];
+    memset(payload, 0, sizeof(payload));
 	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
 	mac_frame_calc_crc(payload, mac_cnt);
 
 	usb_message m;
 	m.type = USB_SKYNET_PACKET;
-	m.payload_length = mac_cnt;
+	m.payload_length = mac_cnt + PKT_DBG_OVERHEAD;
 	m.payload = (char*)payload;
 
     COLOR_DBG();
@@ -462,7 +464,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
     cout << setfill(' ') << setw(3) << std::hex;
     for (unsigned int i = 0; i < m.payload_length; ++i) {
-        cout << "0x" << ((unsigned int)m.payload[i] & 0xFF) << " ";
+        cout << "0x" << (((unsigned int)m.payload[i]) & 0xFF) << " ";
     }
 
 
