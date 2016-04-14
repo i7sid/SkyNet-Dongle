@@ -59,14 +59,20 @@ static const  USBD_API_T g_usbApi = {
 
 const  USBD_API_T *g_pUsbApi = &g_usbApi;
 
-uint8_t current_seqno = 0;
+static uint8_t current_seqno = 0;
 
+#define USB_FIFO_QUEUE_SIZE 	(2048)
+static RINGBUFF_T usb_tx_ringbuf;
+static char usb_tx_buf[USB_FIFO_QUEUE_SIZE * sizeof(uint8_t)];
 
 
 int skynet_cdc_init(void) {
 	USBD_API_INIT_PARAM_T usb_param;
 	USB_CORE_DESCS_T desc;
 	ErrorCode_t ret = LPC_OK;
+
+	RingBuffer_Init(&usb_tx_ringbuf, usb_tx_buf, sizeof(uint8_t), USB_FIFO_QUEUE_SIZE);
+	RingBuffer_Flush(&usb_tx_ringbuf);
 
 	Chip_USB_Init();
 
@@ -179,55 +185,18 @@ unsigned int usb_cdc_write_pos = 0;
 extern VCOM_DATA_T g_vCOM;
 
 inline uint32_t skynet_cdc_write_buffered(uint8_t *pBuf, uint32_t len) {
-	int pos = 0;
-	int remaining = len;
-	int written = 0;
-	/*
-	char dbg[100];
-	uint8_t dbgi = 0;
-	memset(dbg, 0, sizeof(dbg));
-	*/
-
-	// TODO: sollte man mal testen bei Gelegenheit
-	while (usb_cdc_write_pos + remaining > USB_MAX_PACKET_SIZE) {
-		int now = USB_MAX_PACKET_SIZE - usb_cdc_write_pos;
-		memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, now);
-		usb_cdc_write_pos += now;
-		written += skynet_cdc_flush();
-		//dbg[dbgi++] = g_vCOM.rx_flags;
-		//msDelayActiveUs(250);
-		//msDelayActive(2);
-		remaining -= now;
-		pos += now;
-	}
-	/*
-	for (uint8_t i = 0; i < dbgi; ++i) {
-		DBG("s(%d): %d\n", i, dbg[i]);
-	}
-	*/
-
-	// remaining part (fits into buffer for sure)
-	memcpy(usb_cdc_write_buf+usb_cdc_write_pos, pBuf+pos, remaining);
-	usb_cdc_write_pos += remaining;
-	written += remaining;
-	return written;
-}
-
-inline uint32_t skynet_cdc_flush(void) {
-	msDelayActive(2);
-	int n = vcom_write(usb_cdc_write_buf, usb_cdc_write_pos);
-	usb_cdc_write_pos = 0;
-	return n;
+	return RingBuffer_InsertMult(&usb_tx_ringbuf, pBuf, len);
 }
 
 uint32_t skynet_cdc_write_message(usb_message *msg) {
 	msg->magic = USB_MAGIC_NUMBER;
 	if (msg->seqno == 0) msg->seqno = current_seqno++;
 
-	skynet_cdc_write_buffered((unsigned char*)msg, USB_HEADER_SIZE);
-	skynet_cdc_write_buffered((unsigned char*)msg->payload, msg->payload_length);
+	uint16_t cnt = 0;
+	cnt += skynet_cdc_write_buffered((unsigned char*)msg, USB_HEADER_SIZE);
+	cnt += skynet_cdc_write_buffered((unsigned char*)msg->payload, msg->payload_length);
 
-	return skynet_cdc_flush();
+	return cnt;
 }
 
 uint32_t skynet_cdc_write_debug(const char* format, ... ) {
@@ -241,6 +210,7 @@ uint32_t skynet_cdc_write_debug(const char* format, ... ) {
 	if (n < 0) return n; // error case
 
 	usb_message msg;
+	memset(&msg, 0, sizeof(usb_message));
 	msg.type = USB_DEBUG;
 	msg.payload_length = n;
 	msg.payload = buf;
@@ -347,7 +317,22 @@ void skynet_cdc_receive_data(void) {
 				//usb_message_avail = true;
 				//printf("event\n");
 			}
-
 		}
 	}
 }
+
+void skynet_cdc_task(void) {
+	// send
+	if (!RingBuffer_IsEmpty(&usb_tx_ringbuf)) {
+		uint8_t buf[USB_MAX_PACKET0];
+		uint16_t cnt = RingBuffer_PopMult(&usb_tx_ringbuf, buf, USB_MAX_PACKET0);
+		vcom_write(buf, cnt);
+	}
+
+	// receive
+	skynet_cdc_receive_data();
+
+	// reschedule
+	register_delayed_event(1, skynet_cdc_task);
+}
+

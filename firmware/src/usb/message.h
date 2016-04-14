@@ -11,7 +11,7 @@
 
 #define USB_HEADER_SIZE			(8)
 //#define USB_MAX_PAYLOAD_LENGTH	(56)
-#define USB_MAX_PAYLOAD_LENGTH	(256)
+#define USB_MAX_PAYLOAD_LENGTH	(503)
 #define USB_MAX_PACKET_SIZE		(64)
 #define USB_MAGIC_NUMBER		(43981)
 #define USB_MAGIC_BYTE1			((unsigned char)0xAB)

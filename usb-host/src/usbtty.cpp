@@ -26,7 +26,7 @@
 
 using namespace std;
 
-char rx_buf[USB_MAX_PAYLOAD_LENGTH];
+uint8_t rx_buf[USB_MAX_PAYLOAD_LENGTH];
 
 usb_tty::usb_tty(string path, void(*rxh)(usb_message)) : rxHandler(rxh) {
 	tty_fd = open(path.c_str(), O_RDWR | O_NOCTTY );
@@ -89,26 +89,32 @@ void usb_tty::usb_tty_rx_worker(void) {
 				char raw_seqno;
 				read(tty_fd, &raw_seqno, 1);
 
-				char raw_length[4];
+				uint8_t raw_length[4];
 				uint32_t length = 0;
 				read(tty_fd, raw_length, 4);
 
 				if (reverse) {
-					length = length + (int)raw_length[0];
-					length = length + ((int)raw_length[1] << 8);
-					length = length + ((int)raw_length[2] << 16);
-					length = length + ((int)raw_length[3] << 24);
+					length = length + (uint32_t)raw_length[0];
+					length = length + ((uint32_t)raw_length[1] << 8);
+					length = length + ((uint32_t)raw_length[2] << 16);
+					length = length + ((uint32_t)raw_length[3] << 24);
 				}
 				else {
-					length = length + (int)raw_length[3];
-					length = length + ((int)raw_length[2] << 8);
-					length = length + ((int)raw_length[1] << 16);
-					length = length + ((int)raw_length[0] << 24);
+					length = length + (uint32_t)raw_length[3];
+					length = length + ((uint32_t)raw_length[2] << 8);
+					length = length + ((uint32_t)raw_length[1] << 16);
+					length = length + ((uint32_t)raw_length[0] << 24);
 				}
+				cerr << length << endl;
 
 				if (length <= USB_MAX_PAYLOAD_LENGTH) {
 					// and now receive
-					read(tty_fd, rx_buf, length);
+					//read(tty_fd, rx_buf, length);
+
+					uint8_t* ptr = rx_buf;
+					for (uint32_t i = 0; i < length; ++i) {
+						read(tty_fd, ptr++, 1);
+					}
 
 					usb_message pkt;
 					pkt.payload_length = length;
