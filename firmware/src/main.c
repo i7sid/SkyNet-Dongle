@@ -119,7 +119,7 @@ int main(void) {
     Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
     srand(FullTime.time[RTC_TIMETYPE_SECOND] * FullTime.time[RTC_TIMETYPE_MINUTE] *
     		FullTime.time[RTC_TIMETYPE_HOUR] * FullTime.time[RTC_TIMETYPE_DAYOFYEAR]);
-    // TODO better seed
+    // TODO better seed (perhaps via adc?)
 
     // usb init
     skynet_cdc_init();
