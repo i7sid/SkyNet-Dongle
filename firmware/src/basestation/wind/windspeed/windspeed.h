@@ -30,6 +30,10 @@ int skynetbase_windspeed_init(void);
  */
 void skynetbase_windspeed_tickhandler(void);
 
+/**
+ * @brief	Returns the current measured value.
+ */
+float skynetbase_windspeed_get(void);
 
 
 #endif /* BASESTATION_WIND_WINDSPEED_WINDSPEED_H_ */

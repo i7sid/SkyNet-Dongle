@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-//#define IS_BASESTATION
+#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -46,6 +46,7 @@
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
 
+extern uint8_t* gpsout;
 
 void skynet_cdc_received_message(usb_message *msg);
 void skynet_received_packet(skynet_packet *pkt);
@@ -59,6 +60,11 @@ void debug_send_usb(void) {
 void debug_send_rf(void) {
 	events_enqueue(EVENT_DEBUG_2, NULL);
 	register_delayed_event(1000, debug_send_rf);
+}
+
+void generate_event_send_base(void) {
+	events_enqueue(EVENT_SEND_BASE_DATA, NULL);
+	register_delayed_event(1000, generate_event_send_base);
 }
 
 
@@ -133,7 +139,8 @@ int main(void) {
     // base station init
     skynetbase_init();
 
-    // TODO send regularily data events
+    // send regularily data events
+    register_delayed_event(1000, generate_event_send_base);
 #endif
 
 
@@ -157,6 +164,7 @@ int main(void) {
     msDelay(50);
     skynet_led_blink_active(100);
 
+#ifndef DEBUG
     // initalize Watchdog
     Chip_WWDT_Init(LPC_WWDT);
     Chip_WWDT_SelClockSource(LPC_WWDT, WWDT_CLKSRC_WATCHDOG_PCLK);
@@ -165,13 +173,22 @@ int main(void) {
     Chip_WWDT_SetOption(LPC_WWDT, WWDT_WDMOD_WDRESET);
     Chip_WWDT_ClearStatusFlag(LPC_WWDT, WWDT_WDMOD_WDTOF | WWDT_WDMOD_WDINT);
     Chip_WWDT_Start(LPC_WWDT);
-
+#endif
 
 	while (1) {
+#ifndef DEBUG
 		Chip_WWDT_Feed(LPC_WWDT);
+#endif
 
 		// receive from usb
 		skynet_cdc_receive_data();
+
+
+#ifdef IS_BASESTATION
+		// receive GPS uart data
+    	skynetbase_gps_receive_data();
+#endif
+
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -185,9 +202,49 @@ int main(void) {
 				break;
 
 			case EVENT_RADIO_RESTART:
-				// TODO restart radio chip
+				// force restart
+				NVIC_SystemReset();
 				break;
 
+			case EVENT_SEND_BASE_DATA:
+			{
+				/*
+				gps_pubx_data* gps = skynetbase_gps_get_data();
+				*/
+				float windspeed = skynetbase_windspeed_get();
+				uint16_t wind_dir = skynetbase_windvane_measure();
+				float compass = skynetbase_compass_read();
+
+				skynetbase_gps_query();
+
+				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+
+				uint8_t buf[128];
+
+				snprintf((char*)buf, sizeof(buf), "%d-%d-%d|%d:%d:%d|%s|%f|%d|%f\n",
+						FullTime.time[RTC_TIMETYPE_YEAR], FullTime.time[RTC_TIMETYPE_MONTH],
+						FullTime.time[RTC_TIMETYPE_DAYOFMONTH], FullTime.time[RTC_TIMETYPE_HOUR],
+						FullTime.time[RTC_TIMETYPE_MINUTE], FullTime.time[RTC_TIMETYPE_SECOND],
+						gpsout, windspeed, wind_dir, compass);
+
+				DBG("%s", buf);
+
+				mac_frame_data frame;
+				mac_frame_data_init(&frame);
+				frame.payload = buf;
+				frame.payload_size = strlen((char*)buf) + 1;
+
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+				mac_transmit_packet(&frame);
+
+				break;
+			}
+			case EVENT_GPS_DATA_AVAILABLE:
+			{
+				DBG("GPS data received.\n");
+			}
 			case EVENT_DEBUG_1:
 			{
 				// DEBUG: send usb packet

@@ -13,6 +13,10 @@ static float current_speed = 0;
 
 #define WAY_PER_ROTATION	(0.37699112f)	// 2 * 6cm * PI
 
+float skynetbase_windspeed_get(void) {
+	return current_speed;
+}
+
 static void measurement(void) {
 	volatile uint32_t curtick;	// temporary buffer
 

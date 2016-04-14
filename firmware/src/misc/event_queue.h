@@ -34,6 +34,7 @@ typedef enum event_types {
 	EVENT_RADIO_RESTART,	///< @brief Radio chip needs restart due to error.
 	EVENT_USB_RX_MESSAGE,	///< @brief USB CDC data available.
 	EVENT_GPS_DATA_AVAILABLE, ///< @brief GPS data available.
+	EVENT_SEND_BASE_DATA,   ///< @brief Send data of basestation.
 	EVENT_DEBUG_1,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_2,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_3,			///< @brief Reserved for debugging purposes.
