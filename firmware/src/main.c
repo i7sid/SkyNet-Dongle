@@ -124,6 +124,7 @@ int main(void) {
     // usb init
     skynet_cdc_init();
     msDelay(700); // wait a moment to ensure that all systems are up and ready
+    register_delayed_event(1, skynet_cdc_task);
 
 
 
@@ -156,8 +157,10 @@ int main(void) {
     msDelay(50);
     skynet_led_blink_active(100);
 
+
     // TODO Watchdog
 	while (1) {
+		// receive from usb
 		skynet_cdc_receive_data();
 
 		queued_event event;
