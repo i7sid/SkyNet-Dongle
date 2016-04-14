@@ -157,9 +157,19 @@ int main(void) {
     msDelay(50);
     skynet_led_blink_active(100);
 
+    // initalize Watchdog
+    Chip_WWDT_Init(LPC_WWDT);
+    Chip_WWDT_SelClockSource(LPC_WWDT, WWDT_CLKSRC_WATCHDOG_PCLK);
+    uint32_t wdtFreq = Chip_Clock_GetPeripheralClockRate(SYSCTL_PCLK_WDT) / 4;
+    Chip_WWDT_SetTimeOut(LPC_WWDT, 3 * wdtFreq);   // seconds * wdtFreq
+    Chip_WWDT_SetOption(LPC_WWDT, WWDT_WDMOD_WDRESET);
+    Chip_WWDT_ClearStatusFlag(LPC_WWDT, WWDT_WDMOD_WDTOF | WWDT_WDMOD_WDINT);
+    Chip_WWDT_Start(LPC_WWDT);
 
-    // TODO Watchdog
+
 	while (1) {
+		Chip_WWDT_Feed(LPC_WWDT);
+
 		// receive from usb
 		skynet_cdc_receive_data();
 
