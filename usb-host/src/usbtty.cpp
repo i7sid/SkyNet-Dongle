@@ -123,11 +123,13 @@ void usb_tty::usb_tty_rx_worker(void) {
 				}
 				else {
 					// packet too long
-					cerr << "Expecting too long USB packet, ignoring whole packet. (" << length << ")" << endl;
+					cerr << "Expecting too long USB packet, waiting for next packet. (" << length << ")" << endl;
+                    /*
 					char b;
 					for (unsigned int i = 0; i < length; ++i) {
 						read(tty_fd, &b, 1);
 					}
+                    */
 				}
 			}
 			else {
