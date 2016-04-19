@@ -261,13 +261,11 @@ void parseCmd(int argc, char** argv) {
 void usbReceiveHandler(usb_message pkt) {
 
 	if (pkt.type == USB_DEBUG) {
-		if (verbosity >= 1) {
-			COLOR_DBG();
-			for (unsigned int i = 0; i < pkt.payload_length; ++i) {
-				cout <<  (char)pkt.payload[i];
-			}
-			COLOR_RESET();
-		}
+        COLOR_DBG();
+        for (unsigned int i = 0; i < pkt.payload_length; ++i) {
+            cout <<  (char)pkt.payload[i];
+        }
+        COLOR_RESET();
 	}
 	if (verbosity >= 3) {
 		cout << "Received USB message: " << endl;
@@ -339,6 +337,7 @@ void usbReceiveHandler(usb_message pkt) {
 
 //		int frame_length = htons(sizeof(ether_frame) - 4);
 //		memcpy(ether_frame, &frame_length, sizeof(int));
+		/*
 		cerr << "Sending ethernet frame of size " << sizeof(ether_frame) << "." << endl;
 
 
@@ -347,6 +346,7 @@ void usbReceiveHandler(usb_message pkt) {
             cout << "0x" << (((unsigned int)ether_frame[i]) & 0xFF) << " ";
         }
         cout << std::dec << endl;
+        */
 
 		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
 
@@ -459,6 +459,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.payload_length = mac_cnt + PKT_DBG_OVERHEAD;
 	m.payload = (char*)payload;
 
+    /*
     COLOR_DBG();
     cerr << "Packet sending over USB (" << (m.payload_length) << ")" << endl;
     COLOR_RESET();
@@ -467,6 +468,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
     for (unsigned int i = 0; i < m.payload_length; ++i) {
         cout << "0x" << (((unsigned int)m.payload[i]) & 0xFF) << " ";
     }
+    */
 
 
 	ptr_tty->usbSendMessage(m);

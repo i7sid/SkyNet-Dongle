@@ -105,7 +105,6 @@ void usb_tty::usb_tty_rx_worker(void) {
 					length = length + ((uint32_t)raw_length[1] << 16);
 					length = length + ((uint32_t)raw_length[0] << 24);
 				}
-				cerr << length << endl;
 
 				if (length <= USB_MAX_PAYLOAD_LENGTH) {
 					// and now receive
