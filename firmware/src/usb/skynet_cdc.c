@@ -333,6 +333,6 @@ void skynet_cdc_task(void) {
 //	skynet_cdc_receive_data();
 
 	// reschedule
-	register_delayed_event(1, skynet_cdc_task);
+	register_delayed_event(5, skynet_cdc_task);
 }
 
