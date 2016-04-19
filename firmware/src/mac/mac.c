@@ -22,12 +22,8 @@ uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waite
 uint8_t seq_no = 0; ///<@brief Current sequence number
 
 /// @brief  Returns a pseudo random number (strictly) smaller than max.
-static inline int random(int max) {
+inline int random(int max) {
     return (rand() % max);
-}
-
-uint64_t mac_mhr_get_dest_addr(uint8_t *pkt) {
-	// TODO
 }
 
 bool channel_idle(void) {

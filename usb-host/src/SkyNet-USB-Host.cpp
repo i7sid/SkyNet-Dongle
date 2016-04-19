@@ -44,11 +44,16 @@ using namespace std;
 
 #define COLOR_DBG()			if (prompt_colored) { cerr << ANSI_COLOR_YELLOW; }
 #define COLOR_ERR()			if (prompt_colored) { cerr << ANSI_COLOR_RED; }
+#define COLOR_OK()			if (prompt_colored) { cerr << ANSI_COLOR_GREEN; }
 #define COLOR_RESET()		if (prompt_colored) { cerr << ANSI_COLOR_RESET; }
 
 #define MAGIC_NO_COLOR		513
 #define MAGIC_TAP_DEBUG		512
 #define MAGIC_USB_DEBUG		511
+#define MAGIC_SET_MAC		510
+#define MAGIC_SET_IP 		509
+#define MAGIC_GET_MAC		508
+#define MAGIC_GET_IP 		507
 
 string cmd_tap = "tapsn0";
 string cmd_tty = "/dev/ttyACM0";
@@ -57,6 +62,10 @@ bool cmd_reset = false;
 bool prompt_colored = true;
 bool tap_debug = false;
 bool usb_debug = false;
+string cmd_set_mac = "";
+string cmd_set_ip = "";
+bool cmd_get_mac = false;
+bool cmd_get_ip = false;
 int verbosity = 0;
 
 error_handler err;
@@ -110,6 +119,8 @@ int main(int argc, char** argv) {
 		usb_tty tty(cmd_tty, usbReceiveHandler);
 		ptr_tty = &tty;
 
+        std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+
 		if (cmd_flash) {
 			usb_message m;
 			char payload[USB_MAX_PAYLOAD_LENGTH];
@@ -132,6 +143,86 @@ int main(int argc, char** argv) {
 			tty.usbSendMessage(m);
 			exit(0);
 		}
+		else if (cmd_set_mac.length() > 0) {
+            int values[6];
+            if (cmd_set_mac.length() == 17 &&
+                6 == sscanf(cmd_set_mac.c_str(), "%x:%x:%x:%x:%x:%x",
+                            &values[0], &values[1], &values[2],
+                            &values[3], &values[4], &values[5])) {
+
+                    usb_message m;
+                    char payload[USB_MAX_PAYLOAD_LENGTH];
+                    m.type = USB_CONTROL;
+                    m.payload_length = 7;
+                    m.payload = payload;
+                    m.payload[0] = (char)USB_CTRL_SET_MAC_ADDR;
+                    m.payload[1] = (uint8_t)(values[0] & 0xFF);
+                    m.payload[2] = (uint8_t)(values[1] & 0xFF);
+                    m.payload[3] = (uint8_t)(values[2] & 0xFF);
+                    m.payload[4] = (uint8_t)(values[3] & 0xFF);
+                    m.payload[5] = (uint8_t)(values[4] & 0xFF);
+                    m.payload[6] = (uint8_t)(values[5] & 0xFF);
+                    tty.usbSendMessage(m);
+                    sleep(1);
+                    exit(0);
+            }
+            else {
+                cerr << "MAC address malformed. Please use format   aa:bb:cc:dd:ee:ff ." << endl;
+                exit(1);
+            }
+        }
+		else if (cmd_set_ip.length() > 0) {
+            short unsigned int values[4];
+            if (cmd_set_ip.length() <= 15 && cmd_set_ip.length() >= 7 &&
+                4 == sscanf(cmd_set_ip.c_str(), "%hu.%hu.%hu.%hu",
+                            &values[0], &values[1], &values[2], &values[3])) {
+
+                    usb_message m;
+                    char payload[USB_MAX_PAYLOAD_LENGTH];
+                    m.type = USB_CONTROL;
+                    m.payload_length = 5;
+                    m.payload = payload;
+                    m.payload[0] = (char)USB_CTRL_SET_IP_ADDR;
+                    m.payload[1] = (uint8_t)(values[0] & 0xFF);
+                    m.payload[2] = (uint8_t)(values[1] & 0xFF);
+                    m.payload[3] = (uint8_t)(values[2] & 0xFF);
+                    m.payload[4] = (uint8_t)(values[3] & 0xFF);
+                    tty.usbSendMessage(m);
+                    sleep(1);
+                    exit(0);
+            }
+            else {
+                cerr << "IP address malformed. Please use format   127.0.0.1 ." << endl;
+                exit(1);
+            }
+
+
+            exit(0);
+        }
+		else if (cmd_get_mac) {
+			usb_message m;
+			char payload[USB_MAX_PAYLOAD_LENGTH];
+			m.type = USB_CONTROL;
+			m.payload_length = 1;
+			m.payload = payload;
+			m.payload[0] = (char)USB_CTRL_GET_MAC_ADDR;
+
+			tty.usbSendMessage(m);
+			sleep(1);
+			exit(0);
+        }
+		else if (cmd_get_ip) {
+			usb_message m;
+			char payload[USB_MAX_PAYLOAD_LENGTH];
+			m.type = USB_CONTROL;
+			m.payload_length = 1;
+			m.payload = payload;
+			m.payload[0] = (char)USB_CTRL_GET_IP_ADDR;
+
+			tty.usbSendMessage(m);
+			sleep(1);
+			exit(0);
+        }
 
 		/*
 		while (true) {
@@ -161,7 +252,6 @@ int main(int argc, char** argv) {
 		ptr_tap = &tap;
 		cerr << "Tap device  " << cmd_tap << "  opened." << endl;
 
-		std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
 		std::thread tap_rx_thread(&tap::tap_rx_worker, &tap);
 
 
@@ -215,6 +305,10 @@ void parseCmd(int argc, char** argv) {
 		{"reset",    no_argument,       0, 'r'},
         {"flash",    no_argument,       0, 'f'},
         {"color",    no_argument,       0, 'c'},
+        {"set-mac",  required_argument, 0, MAGIC_SET_MAC},
+        {"set-ip",   required_argument, 0, MAGIC_SET_IP},
+        {"get-mac",  no_argument,       0, MAGIC_GET_MAC},
+        {"get-ip",   no_argument,       0, MAGIC_GET_IP},
         {"no-color", no_argument,       0, MAGIC_NO_COLOR},
         {0, 0, 0, 0}
     };
@@ -249,6 +343,18 @@ void parseCmd(int argc, char** argv) {
 			case MAGIC_USB_DEBUG:
 				usb_debug = true;
 				break;
+			case MAGIC_SET_MAC:
+				cmd_set_mac = string(optarg);
+				break;
+			case MAGIC_SET_IP:
+				cmd_set_ip = string(optarg);
+				break;
+			case MAGIC_GET_MAC:
+				cmd_get_mac = true;
+				break;
+			case MAGIC_GET_IP:
+				cmd_get_ip = true;
+				break;
 			case 'h':
 			case '?':
 				printUsage(argc, argv);
@@ -259,15 +365,12 @@ void parseCmd(int argc, char** argv) {
 }
 
 void usbReceiveHandler(usb_message pkt) {
-
 	if (pkt.type == USB_DEBUG) {
-		if (verbosity >= 1) {
-			COLOR_DBG();
-			for (unsigned int i = 0; i < pkt.payload_length; ++i) {
-				cout <<  (char)pkt.payload[i];
-			}
-			COLOR_RESET();
-		}
+        COLOR_DBG();
+        for (unsigned int i = 0; i < pkt.payload_length; ++i) {
+            cout <<  (char)pkt.payload[i];
+        }
+        COLOR_RESET();
 	}
 	if (verbosity >= 3) {
 		cout << "Received USB message: " << endl;
@@ -339,14 +442,16 @@ void usbReceiveHandler(usb_message pkt) {
 
 //		int frame_length = htons(sizeof(ether_frame) - 4);
 //		memcpy(ether_frame, &frame_length, sizeof(int));
+
+
+        /*
 		cerr << "Sending ethernet frame of size " << sizeof(ether_frame) << "." << endl;
-
-
 		cout << setfill(' ') << setw(3) << std::hex;
         for (unsigned int i = 0; i < sizeof(ether_frame); ++i) {
             cout << "0x" << (((unsigned int)ether_frame[i]) & 0xFF) << " ";
         }
         cout << std::dec << endl;
+        */
 
 		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
 
@@ -459,6 +564,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.payload_length = mac_cnt + PKT_DBG_OVERHEAD;
 	m.payload = (char*)payload;
 
+    /*
     COLOR_DBG();
     cerr << "Packet sending over USB (" << (m.payload_length) << ")" << endl;
     COLOR_RESET();
@@ -467,6 +573,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
     for (unsigned int i = 0; i < m.payload_length; ++i) {
         cout << "0x" << (((unsigned int)m.payload[i]) & 0xFF) << " ";
     }
+    */
 
 
 	ptr_tty->usbSendMessage(m);

@@ -87,6 +87,9 @@ typedef struct mac_frame_control {
  */
 bool mac_transmit_packet(mac_frame_data* frame);
 
-
+/**
+ * @brief	Rrturns a random integer strict smaller than max.
+ */
+int random(int max);
 
 #endif /* !MAC_H */

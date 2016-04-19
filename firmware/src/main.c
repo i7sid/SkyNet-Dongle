@@ -8,10 +8,10 @@
 //#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-//#define DEBUG_SEND_RF_TEST
+#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-#define IS_BASESTATION
+//#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -40,8 +40,11 @@
 #include "cmsis_175x_6x.h"
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
+#include "cpu/nv_storage.h"
 
 #include "mac/mac.h"
+#include "ip/udp.h"
+
 
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
@@ -103,15 +106,12 @@ int main(void) {
 	Chip_IOCON_Init(LPC_IOCON);
 	events_init();
 	skynet_led_init();
-	//charger_init();
-	//dcdc_init();
 	enable_systick();
 
 	// give visual feedback that program started
 	skynet_led(true);
 	msDelay(250);
 	skynet_led(false);
-
 
 
     DBG("Initialize ADC...\n");
@@ -126,6 +126,8 @@ int main(void) {
     srand(FullTime.time[RTC_TIMETYPE_SECOND] * FullTime.time[RTC_TIMETYPE_MINUTE] *
     		FullTime.time[RTC_TIMETYPE_HOUR] * FullTime.time[RTC_TIMETYPE_DAYOFYEAR]);
     // TODO better seed (perhaps via adc?)
+
+    skynet_nv_init();
 
     // usb init
     skynet_cdc_init();
@@ -234,8 +236,8 @@ int main(void) {
 				frame.payload = buf;
 				frame.payload_size = strlen((char*)buf) + 1;
 
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_LONG);
+				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_LONG);
 
 				mac_transmit_packet(&frame);
 
@@ -261,6 +263,13 @@ int main(void) {
 			{
 				// DEBUG: send RF packet
 				uint8_t p[] = "Test-Payload1234567890";
+				uint8_t d[4] = {10,254,0,1};
+
+				udp_send(d, 24681, 24680, p, strlen((char*)p));
+				skynet_led_blink_active(10);
+
+				break;
+
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = p;
@@ -327,10 +336,12 @@ void skynet_received_packet(skynet_packet *pkt) {
 void skynet_cdc_received_message(usb_message *msg) {
 	DBG("Received usb message of type %d.\n", msg->type);
 
+	/*
 	for (int i = msg->payload_length - 8; i < msg->payload_length; ++i) {
 		DBG("0x%x ", (msg->payload[i] & 0xFF));
 	}
 	DBG("\n");
+	*/
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
@@ -349,6 +360,56 @@ void skynet_cdc_received_message(usb_message *msg) {
 				case USB_CTRL_CALIB_COMPASS:
 					// TODO
 					break;
+				case USB_CTRL_SET_MAC_ADDR:
+				{
+					NV_DATA_T *config = skynet_nv_get();
+					config->mac_addr[0] = msg->payload[1];
+					config->mac_addr[1] = msg->payload[2];
+					config->mac_addr[2] = msg->payload[3];
+					config->mac_addr[3] = msg->payload[4];
+					config->mac_addr[4] = msg->payload[5];
+					config->mac_addr[5] = msg->payload[6];
+					bool r = skynet_nv_write(config);
+					if (r) {
+						skynet_cdc_write_debug("OK\n");
+					}
+					else {
+						skynet_cdc_write_debug("Error\n");
+					}
+					break;
+				}
+				case USB_CTRL_GET_MAC_ADDR:
+				{
+					NV_DATA_T *config = skynet_nv_get();
+					skynet_cdc_write_debug("MAC: %02x:%02x:%02x:%02x:%02x:%02x\n",
+							config->mac_addr[0], config->mac_addr[1], config->mac_addr[2],
+							config->mac_addr[3], config->mac_addr[4], config->mac_addr[5]);
+					break;
+				}
+				case USB_CTRL_SET_IP_ADDR:
+				{
+					NV_DATA_T *config = skynet_nv_get();
+					config->ipv4_addr[0] = msg->payload[1];
+					config->ipv4_addr[1] = msg->payload[2];
+					config->ipv4_addr[2] = msg->payload[3];
+					config->ipv4_addr[3] = msg->payload[4];
+					bool r = skynet_nv_write(config);
+					if (r) {
+						skynet_cdc_write_debug("OK\n");
+					}
+					else {
+						skynet_cdc_write_debug("Error\n");
+					}
+					break;
+				}
+				case USB_CTRL_GET_IP_ADDR:
+				{
+					NV_DATA_T *config = skynet_nv_get();
+					skynet_cdc_write_debug("IP: %d.%d.%d.%d\n",
+							config->ipv4_addr[0], config->ipv4_addr[1],
+							config->ipv4_addr[2], config->ipv4_addr[3]);
+					break;
+				}
 			}
 			break;
 		}
