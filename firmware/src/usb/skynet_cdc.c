@@ -61,7 +61,7 @@ const  USBD_API_T *g_pUsbApi = &g_usbApi;
 
 static uint8_t current_seqno = 0;
 
-#define USB_FIFO_QUEUE_SIZE 	(2048)
+#define USB_FIFO_QUEUE_SIZE 	(4096)
 static RINGBUFF_T usb_tx_ringbuf;
 static char usb_tx_buf[USB_FIFO_QUEUE_SIZE * sizeof(uint8_t)];
 
