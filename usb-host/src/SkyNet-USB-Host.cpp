@@ -162,6 +162,7 @@ int main(int argc, char** argv) {
 		cerr << "Tap device  " << cmd_tap << "  opened." << endl;
 
 		std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
 		std::thread tap_rx_thread(&tap::tap_rx_worker, &tap);
 
 

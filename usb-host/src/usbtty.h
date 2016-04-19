@@ -18,12 +18,14 @@ public:
 	virtual ~usb_tty();
 
 	void usb_tty_rx_worker(void);
+	void usb_tty_tx_worker(void);
 	void usbSendMessage(usb_message msg);
 
 private:
 	//std::fstream tty;
 	int tty_fd;
 	void (*rxHandler)(usb_message);
+	void usbTransmitMessage(usb_message msg);
 };
 
 #endif /* USBTTY_H_ */

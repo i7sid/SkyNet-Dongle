@@ -23,10 +23,15 @@
 #include <fcntl.h>
 #include <termios.h>
 
+#include <queue>
+#include <mutex>
+
 
 using namespace std;
 
 uint8_t rx_buf[USB_MAX_PAYLOAD_LENGTH];
+static queue<usb_message> txq;
+static mutex tx_mtx;
 
 usb_tty::usb_tty(string path, void(*rxh)(usb_message)) : rxHandler(rxh) {
 	tty_fd = open(path.c_str(), O_RDWR | O_NOCTTY );
@@ -39,11 +44,29 @@ usb_tty::~usb_tty() {
 
 
 void usb_tty::usbSendMessage(usb_message msg) {
+    tx_mtx.lock();
+    txq.push(msg);
+    tx_mtx.unlock();
+}
+
+void usb_tty::usbTransmitMessage(usb_message msg) {
 	usb_message* msg_ptr = &msg;
 	msg.magic = USB_MAGIC_NUMBER;
 
 	write(tty_fd, ((char*)(msg_ptr)), 8);
 	write(tty_fd, msg.payload, msg.payload_length);
+}
+
+void usb_tty::usb_tty_tx_worker(void) {
+    while(true) {
+        tx_mtx.lock();
+        if (!txq.empty()) {
+            this->usbTransmitMessage(txq.front());
+            txq.pop();
+        }
+        tx_mtx.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
 }
 
 void usb_tty::usb_tty_rx_worker(void) {
