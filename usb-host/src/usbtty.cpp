@@ -59,13 +59,16 @@ void usb_tty::usbTransmitMessage(usb_message msg) {
 
 void usb_tty::usb_tty_tx_worker(void) {
     while(true) {
+        int last_len = 100;
         tx_mtx.lock();
         if (!txq.empty()) {
-            this->usbTransmitMessage(txq.front());
+            usb_message &m = txq.front();
+            last_len = m.payload_length;
+            this->usbTransmitMessage(m);
             txq.pop();
         }
         tx_mtx.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        std::this_thread::sleep_for(std::chrono::milliseconds(last_len/2));
     }
 }
 
