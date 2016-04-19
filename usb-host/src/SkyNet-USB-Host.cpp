@@ -30,7 +30,7 @@
 
 #include <linux/ip.h>
 
-#define PKT_DBG_OVERHEAD    (4)
+#define PKT_DBG_OVERHEAD    (8)
 
 using namespace std;
 
@@ -104,11 +104,14 @@ int main(int argc, char** argv) {
 			COLOR_RESET();
 			return 1;
 		}
-		cerr << "Serial port  " << cmd_tty << " opened." << endl;
 
 		// create usb_tty object and start rx thread
 		usb_tty tty(cmd_tty, usbReceiveHandler);
 		ptr_tty = &tty;
+
+		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
+		
+        cerr << "Serial port  " << cmd_tty << " opened." << endl;
 
 		if (cmd_flash) {
 			usb_message m;
@@ -119,6 +122,7 @@ int main(int argc, char** argv) {
 			m.payload[0] = (char)USB_CTRL_BOOTLOADER;
 
 			tty.usbSendMessage(m);
+            sleep(1);
 			exit(0);
 		}
 		else if (cmd_reset) {
@@ -130,6 +134,7 @@ int main(int argc, char** argv) {
 			m.payload[0] = (char)USB_CTRL_RESET;
 
 			tty.usbSendMessage(m);
+            sleep(1);
 			exit(0);
 		}
 
@@ -153,6 +158,7 @@ int main(int argc, char** argv) {
 			m.payload_length = dbg.length() + 1;
 			m.seqno = 0;
 			tty.usbSendMessage(m);
+            sleep(1);
 			return 0;
 		}
 
@@ -162,7 +168,6 @@ int main(int argc, char** argv) {
 		cerr << "Tap device  " << cmd_tap << "  opened." << endl;
 
 		std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
-		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
 		std::thread tap_rx_thread(&tap::tap_rx_worker, &tap);
 
 
@@ -386,7 +391,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	// IPv4 data: ETHERTYPE_IP == ntohs(frame->ether_type)
 	//if (ETHERTYPE_IP != ntohs(frame->ether_type)) return;
 
-    /*
     if (verbosity > 3) {
         cerr << "nread:     " << nread << endl;
         cerr << "src addr:  " << ether_ntoa((struct ether_addr*)frame->ether_shost) << endl;
@@ -411,7 +415,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
         }
         cout << endl;
     }
-    */
 
 	size_t data_len = nread - sizeof(struct ether_header);
 	if (USB_MAX_PAYLOAD_LENGTH < data_len) {
@@ -450,8 +453,9 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_frame.mhr.src_address[6] = ((frame->ether_type & 0xFF00) >> 8);
 	mac_frame.mhr.src_address[7] = ((frame->ether_type & 0x00FF)     );
 
-	uint8_t payload[4096];
-    memset(payload, 0, sizeof(payload));
+	//uint8_t payload[4096];
+	uint8_t *payload = new uint8_t[4096];
+    memset(payload, 0, 4096);
 	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
 	mac_frame_calc_crc(payload, mac_cnt);
 
