@@ -58,11 +58,11 @@ void usb_tty::usbTransmitMessage(usb_message msg) {
 
 void usb_tty::usb_tty_tx_worker(void) {
     while(true) {
-        int last_len = 100;
+//        int last_len = 100;
         tx_mtx.lock();
         if (!txq.empty()) {
             usb_message &m = txq.front();
-            last_len = m.payload_length;
+//            last_len = m.payload_length;
             this->usbTransmitMessage(m);
             delete[] m.payload;
             txq.pop();
