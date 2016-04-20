@@ -48,6 +48,7 @@ void radio_init(void) {
 	si446x_part_info();
 	si446x_func_info();
 
+
 	DBG("--- radio chip version information following ---\n");
 	DBG("CHIPREV:   0x%x\n", Si446xCmd.PART_INFO.CHIPREV);
 	DBG("CUSTOMER:  0x%x\n", Si446xCmd.PART_INFO.CUSTOMER);
@@ -62,6 +63,7 @@ void radio_init(void) {
 	DBG("REVEXT:    0x%x\n", Si446xCmd.FUNC_INFO.REVEXT);
 	DBG("REVINT:    0x%x\n", Si446xCmd.FUNC_INFO.REVINT);
 	DBG("------ end radio chip version information ------\n");
+
 
 	// This interrupt should have highest priority to assure that we do not miss packets
 	NVIC_SetPriority(EINT3_IRQn, 0);
@@ -155,8 +157,12 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	volatile bool first_run = true;
 	while(remaining > 0) {
 		uint8_t nowLength;
-		if (first_run) {
+		//if (first_run) {
+		if (first_run && RADIO_MAX_PACKET_LENGTH <= remaining) {
 			nowLength = RADIO_MAX_PACKET_LENGTH;
+		}
+		else if (first_run && RADIO_MAX_PACKET_LENGTH > remaining) {
+			nowLength = remaining;
 		}
 		else if (RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
 			nowLength = RADIO_TX_ALMOST_EMPTY_THRESHOLD;
@@ -223,11 +229,11 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 	}
-	DBG("remaining: %d\n", remaining);
+	//DBG("remaining: %d\n", remaining);
 
 #ifdef DEBUG
 	for (int j = 0; j < i; ++j) {
-		DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+		//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 	}
 #endif
 
@@ -264,11 +270,21 @@ void radio_packet_handler(void) {
 	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
 			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
-		DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
-		skynet_led_blink_passive(500);
+		//DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		DBG("[ERROR] %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		/*
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
+		msDelayActive(50);
+		skynet_led_blink_active(40);
+		*/
 
 		// reset chip to assure correct behaviour next time
 		events_enqueue(EVENT_RADIO_RESTART, NULL);
+
 		return;
 	}
 	// Packet beginning or completely received
@@ -324,7 +340,7 @@ void radio_packet_handler(void) {
 		}
 
 		ptr = data;
-		DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
+		//DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
 
 		// copy packet
 		int copy_length = length;
@@ -349,7 +365,7 @@ void radio_packet_handler(void) {
 
 #ifdef DEBUG
 		for (int j = 0; j < i; ++j) {
-			DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
+			//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
 		}
 #endif
 

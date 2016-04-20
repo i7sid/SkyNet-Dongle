@@ -19,40 +19,87 @@
 #include <thread>         // std::thread (C++11!)
 #include <vector>
 
+#include <stdio.h>
+#include <fcntl.h>
+#include <termios.h>
+
+#include <queue>
+#include <mutex>
+
+
 using namespace std;
 
-char rx_buf[USB_MAX_PAYLOAD_LENGTH];
+uint8_t rx_buf[USB_MAX_PAYLOAD_LENGTH];
+static queue<usb_message> txq;
+static mutex tx_mtx;
 
-usb_tty::usb_tty(string path, void(*rxh)(usb_message)) :
-	tty(path.c_str(), ios::in | ios::out | ios::binary), rxHandler(rxh) {
+static string tty_path;
 
+usb_tty::usb_tty(string path, void(*rxh)(usb_message)) : rxHandler(rxh) {
+	tty_fd = open(path.c_str(), O_RDWR | O_NOCTTY );
+    tty_path = path;
+	//ioctl(tty_fd, );
 }
 
 usb_tty::~usb_tty() {
-	tty.flush();
-	tty.close();
+	close(tty_fd);
 }
 
 
 void usb_tty::usbSendMessage(usb_message msg) {
+    tx_mtx.lock();
+    txq.push(msg);
+    tx_mtx.unlock();
+}
+
+void usb_tty::usbTransmitMessage(usb_message msg) {
 	usb_message* msg_ptr = &msg;
 	msg.magic = USB_MAGIC_NUMBER;
+	write(tty_fd, ((char*)(msg_ptr)), 8);
+	write(tty_fd, msg.payload, msg.payload_length);
+}
 
-	tty.write(((char*)(msg_ptr)), 8);
-	tty.flush();
-	tty.write(msg.payload, msg.payload_length);
-	tty.flush();
+void usb_tty::usb_tty_tx_worker(void) {
+    while(true) {
+//        int last_len = 100;
+        tx_mtx.lock();
+        if (!txq.empty()) {
+            usb_message &m = txq.front();
+//            last_len = m.payload_length;
+            this->usbTransmitMessage(m);
+            delete[] m.payload;
+            txq.pop();
+        }
+        tx_mtx.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 
 void usb_tty::usb_tty_rx_worker(void) {
-	if (tty.good()) while(true) {
+	while(true) {
 		char first = 0;
 		bool reverse = false;
-		tty.read(&first, 1);
+		//read(tty_fd, &first, 1);
+		read(tty_fd, &first, 1);
+
+
+		if (first == 0) {
+			cerr << "usb_tty stream not good: EOF." << endl;
+            close(tty_fd);
+            while ((tty_fd = open(tty_path.c_str(), O_RDWR | O_NOCTTY)) <= -1) {
+                cerr << "Could not reconnect. Waiting..." << endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            }
+            continue;
+			//throw(202);
+		}
+
 
 		// wait for first (magic) character
 		if ((unsigned char)first != USB_MAGIC_BYTE1 && (unsigned char)first != USB_MAGIC_BYTE2) {
-			cerr << "Unexpected character received from USB: " << (int)first << endl;
+			if (first == 10) continue;
+			cerr << "Unexpected character received from USB: " << (int)first <<
+                " (0x" << std::hex << (int)first << ")" << std::dec << endl;
 		}
 		else {
 			char expect = 0;
@@ -67,36 +114,41 @@ void usb_tty::usb_tty_rx_worker(void) {
 
 			// now try to receive second byte
 			char second = 0;
-			tty.read(&second, 1);
+			read(tty_fd, &second, 1);
 
 			if (second == expect) {
 				// now try to receive packet
 				char raw_type;
-				tty.read(&raw_type, 1);
+				read(tty_fd, &raw_type, 1);
 
 				char raw_seqno;
-				tty.read(&raw_seqno, 1);
+				read(tty_fd, &raw_seqno, 1);
 
-				char raw_length[4];
+				uint8_t raw_length[4];
 				uint32_t length = 0;
-				tty.read(raw_length, 4);
+				read(tty_fd, raw_length, 4);
 
 				if (reverse) {
-					length = length + (int)raw_length[0];
-					length = length + ((int)raw_length[1] << 8);
-					length = length + ((int)raw_length[2] << 16);
-					length = length + ((int)raw_length[3] << 24);
+					length = length + (uint32_t)raw_length[0];
+					length = length + ((uint32_t)raw_length[1] << 8);
+					length = length + ((uint32_t)raw_length[2] << 16);
+					length = length + ((uint32_t)raw_length[3] << 24);
 				}
 				else {
-					length = length + (int)raw_length[3];
-					length = length + ((int)raw_length[2] << 8);
-					length = length + ((int)raw_length[1] << 16);
-					length = length + ((int)raw_length[0] << 24);
+					length = length + (uint32_t)raw_length[3];
+					length = length + ((uint32_t)raw_length[2] << 8);
+					length = length + ((uint32_t)raw_length[1] << 16);
+					length = length + ((uint32_t)raw_length[0] << 24);
 				}
 
 				if (length <= USB_MAX_PAYLOAD_LENGTH) {
 					// and now receive
-					tty.read(rx_buf, length);
+					//read(tty_fd, rx_buf, length);
+
+					uint8_t* ptr = rx_buf;
+					for (uint32_t i = 0; i < length; ++i) {
+						read(tty_fd, ptr++, 1);
+					}
 
 					usb_message pkt;
 					pkt.payload_length = length;
@@ -111,11 +163,13 @@ void usb_tty::usb_tty_rx_worker(void) {
 				}
 				else {
 					// packet too long
-					cerr << "Expecting too long USB packet, ignoring whole packet." << endl;
+					cerr << "Expecting too long USB packet, waiting for next packet. (" << length << ")" << endl;
+                    /*
 					char b;
 					for (unsigned int i = 0; i < length; ++i) {
-						tty.read(&b, 1);
+						read(tty_fd, &b, 1);
 					}
+                    */
 				}
 			}
 			else {

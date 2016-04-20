@@ -72,7 +72,8 @@ $(document).ready(function(){initNavTree('message_8h.html','');});
 <div class="title">message.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &quot;stdint.h&quot;</code><br />
+</div>
 <p><a href="message_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -83,15 +84,17 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:abf8fb7071ddd2ae8e546952f02548cba"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>&#160;&#160;&#160;(1024)</td></tr>
+<tr class="memitem:abef8e22072754761d5e28a030eb2941f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#abef8e22072754761d5e28a030eb2941f">USB_HEADER_SIZE</a>&#160;&#160;&#160;(8)</td></tr>
+<tr class="separator:abef8e22072754761d5e28a030eb2941f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf8fb7071ddd2ae8e546952f02548cba"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a>&#160;&#160;&#160;(56)</td></tr>
 <tr class="separator:abf8fb7071ddd2ae8e546952f02548cba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f582509cf0a195d52d0e42f9eeba2af"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a1f582509cf0a195d52d0e42f9eeba2af">USB_MAGIC_NUMBER</a>&#160;&#160;&#160;(43981)</td></tr>
 <tr class="separator:a1f582509cf0a195d52d0e42f9eeba2af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e9e2e9998c0fdbfe17d4c0e5d64b315"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a3e9e2e9998c0fdbfe17d4c0e5d64b315">USB_MAGIC_BYTE1</a>&#160;&#160;&#160;((char)0xAB)</td></tr>
+<tr class="memitem:a3e9e2e9998c0fdbfe17d4c0e5d64b315"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a3e9e2e9998c0fdbfe17d4c0e5d64b315">USB_MAGIC_BYTE1</a>&#160;&#160;&#160;((unsigned char)0xAB)</td></tr>
 <tr class="separator:a3e9e2e9998c0fdbfe17d4c0e5d64b315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa2d6320608692ae8fd37516b04903c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#aaa2d6320608692ae8fd37516b04903c0">USB_MAGIC_BYTE2</a>&#160;&#160;&#160;((char)0xCD)</td></tr>
+<tr class="memitem:aaa2d6320608692ae8fd37516b04903c0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#aaa2d6320608692ae8fd37516b04903c0">USB_MAGIC_BYTE2</a>&#160;&#160;&#160;((unsigned char)0xCD)</td></tr>
 <tr class="separator:aaa2d6320608692ae8fd37516b04903c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a573d2f5fe7b80ffe399033fe93af6363"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a573d2f5fe7b80ffe399033fe93af6363">USB_MAX_MESSAGE_LENGTH</a>&#160;&#160;&#160;(<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a> + 7)</td></tr>
+<tr class="memitem:a573d2f5fe7b80ffe399033fe93af6363"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a573d2f5fe7b80ffe399033fe93af6363">USB_MAX_MESSAGE_LENGTH</a>&#160;&#160;&#160;(<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a> + <a class="el" href="message_8h.html#abef8e22072754761d5e28a030eb2941f">USB_HEADER_SIZE</a>)</td></tr>
 <tr class="separator:a573d2f5fe7b80ffe399033fe93af6363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -99,30 +102,51 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a015fd5eae80303cd87e55121385ebe5b"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fc">usb_packet_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a015fd5eae80303cd87e55121385ebe5b">usb_packet_type</a></td></tr>
 <tr class="memdesc:a015fd5eae80303cd87e55121385ebe5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Different types of data transferred over USB.  <a href="#a015fd5eae80303cd87e55121385ebe5b">More...</a><br /></td></tr>
 <tr class="separator:a015fd5eae80303cd87e55121385ebe5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fbfdc0236002035df011f568d7f436f"><td class="memItemLeft" align="right" valign="top">typedef enum <a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">usb_ctrl_msg_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a7fbfdc0236002035df011f568d7f436f">usb_ctrl_msg_type</a></td></tr>
+<tr class="memdesc:a7fbfdc0236002035df011f568d7f436f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Different types of control messages.  <a href="#a7fbfdc0236002035df011f568d7f436f">More...</a><br /></td></tr>
+<tr class="separator:a7fbfdc0236002035df011f568d7f436f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d0a2f69adecce7cac5fe7605cf3c1d4"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structusb__message.html">usb_message</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a0d0a2f69adecce7cac5fe7605cf3c1d4">usb_message</a></td></tr>
 <tr class="memdesc:a0d0a2f69adecce7cac5fe7605cf3c1d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">A "message" transferred over USB.  <a href="#a0d0a2f69adecce7cac5fe7605cf3c1d4">More...</a><br /></td></tr>
 <tr class="separator:a0d0a2f69adecce7cac5fe7605cf3c1d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ad9f9a740e8c6fe184b8c3c2d78a420fc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fc">usb_packet_type</a> { <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fca6a320328a8c0ed4925926f2e6d328a57">USB_PACKET</a> = 0, 
+<tr class="memitem:ad9f9a740e8c6fe184b8c3c2d78a420fc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fc">usb_packet_type</a> { <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fca89e3d7a438df119a4566130b69a4fe51">USB_SKYNET_PACKET</a> = 0, 
 <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fca584bc61ae9cfb41c2f93a1cb14c40377">USB_CONTROL</a> = 1, 
 <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fca0d648b54fca1acf7d73765ba1aeae1d8">USB_INFO</a> = 2, 
 <a class="el" href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fcaa6546b3c3b452f7084c258af117c901d">USB_DEBUG</a> = 3
  }</td></tr>
 <tr class="memdesc:ad9f9a740e8c6fe184b8c3c2d78a420fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Different types of data transferred over USB.  <a href="message_8h.html#ad9f9a740e8c6fe184b8c3c2d78a420fc">More...</a><br /></td></tr>
 <tr class="separator:ad9f9a740e8c6fe184b8c3c2d78a420fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2cf87e95215ff60eef4ffdbc5965118f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">usb_ctrl_msg_type</a> { <a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118fa5d8c39213d129054a6fa5afa7eb9d715">USB_CTRL_RESET</a> = 0, 
+<a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118fa11b3d965d999ecc42c0ea76af39cd6f9">USB_CTRL_BOOTLOADER</a> = 1, 
+<a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118fa4934685205110bc7ec5dc700c785ff7f">USB_CTRL_CALIB_COMPASS</a> = 2
+ }</td></tr>
+<tr class="memdesc:a2cf87e95215ff60eef4ffdbc5965118f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Different types of control messages.  <a href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">More...</a><br /></td></tr>
+<tr class="separator:a2cf87e95215ff60eef4ffdbc5965118f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>09.11.2015 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="abef8e22072754761d5e28a030eb2941f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define USB_HEADER_SIZE&#160;&#160;&#160;(8)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a3e9e2e9998c0fdbfe17d4c0e5d64b315"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define USB_MAGIC_BYTE1&#160;&#160;&#160;((char)0xAB)</td>
+          <td class="memname">#define USB_MAGIC_BYTE1&#160;&#160;&#160;((unsigned char)0xAB)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -134,7 +158,7 @@ Enumerations</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define USB_MAGIC_BYTE2&#160;&#160;&#160;((char)0xCD)</td>
+          <td class="memname">#define USB_MAGIC_BYTE2&#160;&#160;&#160;((unsigned char)0xCD)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -158,7 +182,7 @@ Enumerations</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define USB_MAX_MESSAGE_LENGTH&#160;&#160;&#160;(<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a> + 7)</td>
+          <td class="memname">#define USB_MAX_MESSAGE_LENGTH&#160;&#160;&#160;(<a class="el" href="message_8h.html#abf8fb7071ddd2ae8e546952f02548cba">USB_MAX_PAYLOAD_LENGTH</a> + <a class="el" href="message_8h.html#abef8e22072754761d5e28a030eb2941f">USB_HEADER_SIZE</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -170,7 +194,7 @@ Enumerations</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define USB_MAX_PAYLOAD_LENGTH&#160;&#160;&#160;(1024)</td>
+          <td class="memname">#define USB_MAX_PAYLOAD_LENGTH&#160;&#160;&#160;(56)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -178,6 +202,20 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="a7fbfdc0236002035df011f568d7f436f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef enum <a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">usb_ctrl_msg_type</a>  <a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">usb_ctrl_msg_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Different types of control messages. </p>
+
+</div>
+</div>
 <a class="anchor" id="a0d0a2f69adecce7cac5fe7605cf3c1d4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -189,7 +227,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 
 <p>A "message" transferred over USB. </p>
-<p>Can be real networking packet, or control commands, debug strings, ... The field magic must be 43981 (0xAB 0xCD) and helps the other end to determine the byte order. </p>
+<p>Can be real networking packet, or control commands, debug strings, ... The field magic must be 43981 (0xAB 0xCD) and helps the other end to determine the byte order.</p>
+<p>(Field seqno is especially important for correct alignment.) </p>
 
 </div>
 </div>
@@ -208,6 +247,31 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="a2cf87e95215ff60eef4ffdbc5965118f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="message_8h.html#a2cf87e95215ff60eef4ffdbc5965118f">usb_ctrl_msg_type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Different types of control messages. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="a2cf87e95215ff60eef4ffdbc5965118fa5d8c39213d129054a6fa5afa7eb9d715"></a>USB_CTRL_RESET&#160;</td><td class="fielddoc">
+<p>Reset the node. </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a2cf87e95215ff60eef4ffdbc5965118fa11b3d965d999ecc42c0ea76af39cd6f9"></a>USB_CTRL_BOOTLOADER&#160;</td><td class="fielddoc">
+<p>Reset the node and switch to bootloader. </p>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="a2cf87e95215ff60eef4ffdbc5965118fa4934685205110bc7ec5dc700c785ff7f"></a>USB_CTRL_CALIB_COMPASS&#160;</td><td class="fielddoc">
+<p>Start calibration sequence of compass. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a class="anchor" id="ad9f9a740e8c6fe184b8c3c2d78a420fc"></a>
 <div class="memitem">
 <div class="memproto">
@@ -220,7 +284,7 @@ Enumerations</h2></td></tr>
 
 <p>Different types of data transferred over USB. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ad9f9a740e8c6fe184b8c3c2d78a420fca6a320328a8c0ed4925926f2e6d328a57"></a>USB_PACKET&#160;</td><td class="fielddoc">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ad9f9a740e8c6fe184b8c3c2d78a420fca89e3d7a438df119a4566130b69a4fe51"></a>USB_SKYNET_PACKET&#160;</td><td class="fielddoc">
 <p>SkyNet data packet. </p>
 </td></tr>
 <tr><td class="fieldname"><a class="anchor" id="ad9f9a740e8c6fe184b8c3c2d78a420fca584bc61ae9cfb41c2f93a1cb14c40377"></a>USB_CONTROL&#160;</td><td class="fielddoc">
@@ -242,7 +306,7 @@ Enumerations</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_74712b2155551d19e5fc375f21fbf06e.html">usb</a></li><li class="navelem"><a class="el" href="message_8h.html">message.h</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

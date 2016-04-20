@@ -77,38 +77,93 @@ $(document).ready(function(){initNavTree('event__queue_8c.html','');});
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab00df45b65006d7a05beeb375dfe147a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#ab00df45b65006d7a05beeb375dfe147a">events_is_queued</a> (<a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a> type)</td></tr>
-<tr class="separator:ab00df45b65006d7a05beeb375dfe147a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:accbf0de9ee77fbeb848fe5fed19f9e5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#accbf0de9ee77fbeb848fe5fed19f9e5a">events_enqueue</a> (<a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a> type)</td></tr>
-<tr class="memdesc:accbf0de9ee77fbeb848fe5fed19f9e5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a new event into the queue.  <a href="#accbf0de9ee77fbeb848fe5fed19f9e5a">More...</a><br /></td></tr>
-<tr class="separator:accbf0de9ee77fbeb848fe5fed19f9e5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9a2fe21a750232bd379b667eff6a492"><td class="memItemLeft" align="right" valign="top"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#ac9a2fe21a750232bd379b667eff6a492">events_dequeue</a> (void)</td></tr>
-<tr class="memdesc:ac9a2fe21a750232bd379b667eff6a492"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take an event from the queue.  <a href="#ac9a2fe21a750232bd379b667eff6a492">More...</a><br /></td></tr>
-<tr class="separator:ac9a2fe21a750232bd379b667eff6a492"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4863d3807354bd60a629665f37bed29"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#ae4863d3807354bd60a629665f37bed29">events_init</a> (void)</td></tr>
+<tr class="memdesc:ae4863d3807354bd60a629665f37bed29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the ringbuffer.  <a href="#ae4863d3807354bd60a629665f37bed29">More...</a><br /></td></tr>
+<tr class="separator:ae4863d3807354bd60a629665f37bed29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69a5027d824d3d69546c69c378dd62cf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#a69a5027d824d3d69546c69c378dd62cf">events_enqueue</a> (<a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a> type, void *data)</td></tr>
+<tr class="memdesc:a69a5027d824d3d69546c69c378dd62cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Push a new event into the queue.  <a href="#a69a5027d824d3d69546c69c378dd62cf">More...</a><br /></td></tr>
+<tr class="separator:a69a5027d824d3d69546c69c378dd62cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a123f88b06466c35c5ab00d798af6991b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#a123f88b06466c35c5ab00d798af6991b">events_dequeue</a> (<a class="el" href="structqueued__event.html">queued_event</a> *e)</td></tr>
+<tr class="memdesc:a123f88b06466c35c5ab00d798af6991b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Take an event from the queue.  <a href="#a123f88b06466c35c5ab00d798af6991b">More...</a><br /></td></tr>
+<tr class="separator:a123f88b06466c35c5ab00d798af6991b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:aefefca3f72a5feffd25a3c73c872d6a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#aefefca3f72a5feffd25a3c73c872d6a6">events_queued</a> [<a class="el" href="event__queue_8h.html#a339c9aa99ee8b974929a9470a8544163">MAX_QUEUED_EVENTS</a>]</td></tr>
-<tr class="memdesc:aefefca3f72a5feffd25a3c73c872d6a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of enqueued events.  <a href="#aefefca3f72a5feffd25a3c73c872d6a6">More...</a><br /></td></tr>
-<tr class="separator:aefefca3f72a5feffd25a3c73c872d6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01d3cb9f78b5ada5894934508fa24f21"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#a01d3cb9f78b5ada5894934508fa24f21">events_queue_write_i</a> = 0</td></tr>
-<tr class="memdesc:a01d3cb9f78b5ada5894934508fa24f21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write pointer.  <a href="#a01d3cb9f78b5ada5894934508fa24f21">More...</a><br /></td></tr>
-<tr class="separator:a01d3cb9f78b5ada5894934508fa24f21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab73fcd148201e3e32bd9fb1cc5765550"><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#ab73fcd148201e3e32bd9fb1cc5765550">events_queue_read_i</a> = 0</td></tr>
-<tr class="memdesc:ab73fcd148201e3e32bd9fb1cc5765550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read pointer.  <a href="#ab73fcd148201e3e32bd9fb1cc5765550">More...</a><br /></td></tr>
-<tr class="separator:ab73fcd148201e3e32bd9fb1cc5765550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c237bafe467d388ce2e0cdf54100448"><td class="memItemLeft" align="right" valign="top">RINGBUFF_T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#a8c237bafe467d388ce2e0cdf54100448">events_ringbuf</a></td></tr>
+<tr class="separator:a8c237bafe467d388ce2e0cdf54100448"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f9b8f7823cf7250b149b6f63257388"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="event__queue_8c.html#a24f9b8f7823cf7250b149b6f63257388">events_buf</a> [<a class="el" href="event__queue_8h.html#a339c9aa99ee8b974929a9470a8544163">MAX_QUEUED_EVENTS</a> *sizeof(<a class="el" href="structqueued__event.html">queued_event</a>)]</td></tr>
+<tr class="separator:a24f9b8f7823cf7250b149b6f63257388"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains functionality for event queue / cyclic buffer. </p>
 <dl class="section date"><dt>Date</dt><dd>14.07.2014 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ac9a2fe21a750232bd379b667eff6a492"></a>
+<a class="anchor" id="a123f88b06466c35c5ab00d798af6991b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a> events_dequeue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structqueued__event.html">queued_event</a> *&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Take an event from the queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">e</td><td>Pointer the event is written to. (can be NULL if not needed) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a69a5027d824d3d69546c69c378dd62cf"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int events_enqueue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Push a new event into the queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">type</td><td>one of event_types </td></tr>
+    <tr><td class="paramname">data</td><td>pointer to optional event data (may be NULL) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ae4863d3807354bd60a629665f37bed29"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void events_init </td>
           <td>(</td>
           <td class="paramtype">void&#160;</td>
           <td class="paramname"></td><td>)</td>
@@ -117,84 +172,32 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Take an event from the queue. </p>
-
-</div>
-</div>
-<a class="anchor" id="accbf0de9ee77fbeb848fe5fed19f9e5a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void events_enqueue </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td>
-          <td class="paramname"><em>type</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Push a new event into the queue. </p>
-
-</div>
-</div>
-<a class="anchor" id="ab00df45b65006d7a05beeb375dfe147a"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool events_is_queued </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a>&#160;</td>
-          <td class="paramname"><em>type</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
+<p>Initializes the ringbuffer. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Variable Documentation</h2>
-<a class="anchor" id="ab73fcd148201e3e32bd9fb1cc5765550"></a>
+<a class="anchor" id="a24f9b8f7823cf7250b149b6f63257388"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t events_queue_read_i = 0</td>
+          <td class="memname">char events_buf[<a class="el" href="event__queue_8h.html#a339c9aa99ee8b974929a9470a8544163">MAX_QUEUED_EVENTS</a> *sizeof(<a class="el" href="structqueued__event.html">queued_event</a>)]</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Read pointer. </p>
-
 </div>
 </div>
-<a class="anchor" id="a01d3cb9f78b5ada5894934508fa24f21"></a>
+<a class="anchor" id="a8c237bafe467d388ce2e0cdf54100448"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint8_t events_queue_write_i = 0</td>
+          <td class="memname">RINGBUFF_T events_ringbuf</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Write pointer. </p>
-
-</div>
-</div>
-<a class="anchor" id="aefefca3f72a5feffd25a3c73c872d6a6"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="event__queue_8h.html#a46647e26ac2740f7c5e75378391d6afb">event_types</a> events_queued[<a class="el" href="event__queue_8h.html#a339c9aa99ee8b974929a9470a8544163">MAX_QUEUED_EVENTS</a>]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Array of enqueued events. </p>
 
 </div>
 </div>
@@ -204,7 +207,7 @@ Variables</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_88826aa2a10e1882b573f502bc7f4b55.html">misc</a></li><li class="navelem"><a class="el" href="event__queue_8c.html">event_queue.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

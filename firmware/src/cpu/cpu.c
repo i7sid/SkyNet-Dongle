@@ -14,10 +14,7 @@
 #include "../sysinit.h"
 #include "../radio/skynet_radio.h"
 #include "../periph/adc.h"
-#include "../periph/input.h"
 #include "../periph/led.h"
-#include "../periph/dcdc.h"
-#include "../periph/charger.h"
 
 
 volatile bool cpu_powered_down = false;
@@ -67,8 +64,8 @@ void cpu_powerdown() {
 
 	while (cpu_powered_down) {
 		disable_systick();
-		NVIC_EnableIRQ(INPUT_SWITCH_IRQn); 		// enable switch IRQ for wakeup
-		NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
+		//NVIC_EnableIRQ(INPUT_SWITCH_IRQn); 		// enable switch IRQ for wakeup
+		//NVIC_ClearPendingIRQ(INPUT_SWITCH_IRQn);
 
 		rtc_prepare_powerdown();
 

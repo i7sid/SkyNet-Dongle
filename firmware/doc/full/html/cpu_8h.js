@@ -8,7 +8,9 @@ var cpu_8h =
       [ "SPEED_30MHz", "cpu_8h.html#ab5b4a166d83d3c12fd8fab764128ea7aafe401e0419dda87fbe2912163f0cd67f", null ],
       [ "SPEED_7M5Hz", "cpu_8h.html#ab5b4a166d83d3c12fd8fab764128ea7aadab976140be688fa7945dd507f81a284", null ]
     ] ],
+    [ "cpu_enter_iap_mode", "cpu_8h.html#a8f364d7e72038c1a4d5a9ef4da293c8d", null ],
     [ "cpu_powerdown", "cpu_8h.html#a250189df9132ba7962ba4463b0149acd", null ],
+    [ "cpu_reset", "cpu_8h.html#a3ff71210adaa9e12abeb3530d3662d3c", null ],
     [ "cpu_set_speed", "cpu_8h.html#a1dbf797f0acfb2dc136309009c58fdaa", null ],
     [ "cpu_sleep", "cpu_8h.html#af2adeea10dde5f5d0d60979b93126419", null ],
     [ "cpu_powered_down", "cpu_8h.html#abb9f2fc0864a7c8c693474f270571d1f", null ]

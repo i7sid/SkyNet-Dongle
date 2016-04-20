@@ -1,4 +1,25 @@
 var compass_8h =
 [
-    [ "skynetbase_compass_init", "compass_8h.html#ac557367104b8f12099606becdcd04496", null ]
+    [ "COMPASS_UNCAL_MAX", "compass_8h.html#acefc4bf04c22674d110448e3723873fb", null ],
+    [ "COMPASS_UNCAL_MIN", "compass_8h.html#a6f608bcfea500b73f147deed56a35fc6", null ],
+    [ "HMC5883L_Addr", "compass_8h.html#ad1b01066fd7c15624d33895bdc00b60a", null ],
+    [ "HMC5883L_CRA", "compass_8h.html#aa8660d5a409115a359070a187188a644", null ],
+    [ "HMC5883L_CRB", "compass_8h.html#ac638eb06b6060175d4be2e5db9f64406", null ],
+    [ "HMC5883L_DATA_X_H", "compass_8h.html#a812f2e1358c1391b810dae51b024426d", null ],
+    [ "HMC5883L_DATA_X_L", "compass_8h.html#a117d3b5b414e614c59b5de8cf4c5be72", null ],
+    [ "HMC5883L_DATA_Y_H", "compass_8h.html#a6ee50f89ab36c020661689840d20481d", null ],
+    [ "HMC5883L_DATA_Y_L", "compass_8h.html#a42bac7a700f048c76edac3a3283fe56e", null ],
+    [ "HMC5883L_DATA_Z_H", "compass_8h.html#accfbafcfede0c39c91ffb3a2ff2b4cfc", null ],
+    [ "HMC5883L_DATA_Z_L", "compass_8h.html#a4825aad0eb7dac7202a6dfa6b9821302", null ],
+    [ "HMC5883L_ID_A", "compass_8h.html#aaebd5b247a487262e88c1ddd736001ac", null ],
+    [ "HMC5883L_ID_B", "compass_8h.html#ad494c9b9088d4a8883ebba4cc1912ed9", null ],
+    [ "HMC5883L_ID_C", "compass_8h.html#a828eb4741ec1a4457fc952388fd153a5", null ],
+    [ "HMC5883L_MODE", "compass_8h.html#a0e32eeb11f0b893996d2ab33b8a1267d", null ],
+    [ "HMC5883L_STATUS", "compass_8h.html#a2b28b4e5cce4f827cc64081db1400dec", null ],
+    [ "PI", "compass_8h.html#a598a3330b3c21701223ee0ca14316eca", null ],
+    [ "read_Addr", "compass_8h.html#a38d1030166e3fff060e4bbd35363d3c1", null ],
+    [ "write_Addr", "compass_8h.html#a35dd65a75025a057c4da458d2c028984", null ],
+    [ "skynetbase_compass_calibrate", "compass_8h.html#a2000ad28c6446a41bd85dcee5d6dd5c7", null ],
+    [ "skynetbase_compass_init", "compass_8h.html#ac557367104b8f12099606becdcd04496", null ],
+    [ "skynetbase_compass_read", "compass_8h.html#a47d74c65f2dc4fd9524e4f120e5adc74", null ]
 ];

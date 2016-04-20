@@ -131,7 +131,7 @@ ALIGNED(4) uint8_t USB_FsConfigDescriptor[] = {
 	USB_CDC_INT_EP,						/* bEndpointAddress */
 	USB_ENDPOINT_TYPE_INTERRUPT,		/* bmAttributes */
 	WBVAL(0x0010),						/* wMaxPacketSize */
-	0x02,			/* 2ms */           /* bInterval */
+	0x01,			/* 1ms */           /* bInterval */
 
 	/* Interface 1, Alternate Setting 0, Data class interface descriptor*/
 	USB_INTERFACE_DESC_SIZE,			/* bLength */

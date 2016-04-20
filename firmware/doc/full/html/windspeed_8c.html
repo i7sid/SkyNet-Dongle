@@ -64,14 +64,24 @@ $(document).ready(function(){initNavTree('windspeed_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">windspeed.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
+<div class="textblock"><code>#include &quot;<a class="el" href="windspeed_8h_source.html">windspeed.h</a>&quot;</code><br />
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a1426d60f865ba58ce869b62dadbbe9b7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windspeed_8c.html#a1426d60f865ba58ce869b62dadbbe9b7">WAY_PER_ROTATION</a>&#160;&#160;&#160;(0.37699112f)</td></tr>
+<tr class="separator:a1426d60f865ba58ce869b62dadbbe9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a963d52ed9a2b22f62e8ba21c16097d02"><td class="memItemLeft" align="right" valign="top">__INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windspeed_8c.html#a963d52ed9a2b22f62e8ba21c16097d02">skynetbase_windspeed_tickhandler</a> ()</td></tr>
+<tr class="memdesc:a963d52ed9a2b22f62e8ba21c16097d02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called in GPIO ISR to count rotations.  <a href="#a963d52ed9a2b22f62e8ba21c16097d02">More...</a><br /></td></tr>
+<tr class="separator:a963d52ed9a2b22f62e8ba21c16097d02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d5aa97b3455afc6702b66fef171bc21"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windspeed_8c.html#a7d5aa97b3455afc6702b66fef171bc21">skynetbase_windspeed_init</a> (void)</td></tr>
 <tr class="memdesc:a7d5aa97b3455afc6702b66fef171bc21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the windspeed measurement unit.  <a href="#a7d5aa97b3455afc6702b66fef171bc21">More...</a><br /></td></tr>
 <tr class="separator:a7d5aa97b3455afc6702b66fef171bc21"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -79,7 +89,20 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>09.11.2015 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="a1426d60f865ba58ce869b62dadbbe9b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define WAY_PER_ROTATION&#160;&#160;&#160;(0.37699112f)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a7d5aa97b3455afc6702b66fef171bc21"></a>
 <div class="memitem">
 <div class="memproto">
@@ -98,13 +121,31 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a963d52ed9a2b22f62e8ba21c16097d02"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__INLINE void skynetbase_windspeed_tickhandler </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Called in GPIO ISR to count rotations. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_a46908330a9351c3de579107ef4a6f0c.html">wind</a></li><li class="navelem"><a class="el" href="dir_00077a7ae5a0d519e656debaea191357.html">windspeed</a></li><li class="navelem"><a class="el" href="windspeed_8c.html">windspeed.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

@@ -17,7 +17,7 @@
 #define RTC_ENABLED
 
 /// @brief Memory buffer used when reading or writing the current time.
-RTC_TIME_T FullTime;
+extern RTC_TIME_T FullTime;
 
 /**
  * @brief	Initializes the Real Time Clock.

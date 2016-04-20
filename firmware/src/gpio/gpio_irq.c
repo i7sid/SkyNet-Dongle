@@ -9,7 +9,7 @@
 
 #include "gpio_irq.h"
 
-//#include "../basestation_old/windspeed/windspeed.h"
+#include "../basestation/wind/windspeed/windspeed.h"
 #include "../radio/skynet_radio.h"
 
 void GPIO_IRQ_HANDLER(void) {
@@ -24,7 +24,7 @@ void GPIO_IRQ_HANDLER(void) {
 	}
 	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT2) & (1 << 13)) {
 		//handels the interrups from the windcups of the basestation
-		//tickhandler();
+		skynetbase_windspeed_tickhandler();
 		Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT2, (1 << 13));
 	}
 	//LPC_SYSCTL->EXTINT |= (1<<EINT3);	// reset IRQ state

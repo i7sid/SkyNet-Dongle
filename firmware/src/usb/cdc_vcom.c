@@ -33,6 +33,8 @@
 #include "chip.h"
 #include "cdc_vcom.h"
 
+#include "skynet_cdc.h"
+
 /*****************************************************************************
  * Private types/enumerations/variables
  ****************************************************************************/
@@ -68,7 +70,11 @@ static ErrorCode_t VCOM_bulk_out_hdlr(USBD_HANDLE_T hUsb, void *data, uint32_t e
 
 	switch (event) {
 	case USB_EVT_OUT:
+		// TODO: avoid overflow?
 		pVcom->rx_count = USBD_API->hw->ReadEP(hUsb, USB_CDC_OUT_EP, pVcom->rx_buff);
+		skynet_cdc_receive_data();
+
+		/*
 		if (pVcom->rx_flags & VCOM_RX_BUF_QUEUED) {
 			pVcom->rx_flags &= ~VCOM_RX_BUF_QUEUED;
 			if (pVcom->rx_count != 0) {
@@ -80,6 +86,7 @@ static ErrorCode_t VCOM_bulk_out_hdlr(USBD_HANDLE_T hUsb, void *data, uint32_t e
 			pVcom->rx_flags &= ~VCOM_RX_DB_QUEUED;
 			pVcom->rx_flags |= VCOM_RX_DONE;
 		}
+		*/
 		break;
 
 	case USB_EVT_OUT_NAK:
@@ -104,6 +111,9 @@ static ErrorCode_t VCOM_SetLineCode(USBD_HANDLE_T hCDC, CDC_LINE_CODING *line_co
 
 	/* Called when baud rate is changed/set. Using it to know host connection state */
 	pVcom->tx_flags = VCOM_TX_CONNECTED;	/* reset other flags */
+
+	// empty TX buffer
+	skynet_cdc_flush_buffers();
 
 	return LPC_OK;
 }
@@ -159,12 +169,13 @@ uint32_t vcom_bread(uint8_t *pBuf, uint32_t buf_len)
 	uint16_t cnt = 0;
 	/* read from the default buffer if any data present */
 	if (pVcom->rx_count) {
+		/* enter critical section */
+		NVIC_DisableIRQ(USB_IRQn);
+
 		cnt = (pVcom->rx_count < buf_len) ? pVcom->rx_count : buf_len;
 		memcpy(pBuf, pVcom->rx_buff, cnt);
 		pVcom->rx_rd_count += cnt;
 
-		/* enter critical section */
-		NVIC_DisableIRQ(USB_IRQn);
 		if (pVcom->rx_rd_count >= pVcom->rx_count) {
 			pVcom->rx_flags &= ~VCOM_RX_BUF_FULL;
 			pVcom->rx_rd_count = pVcom->rx_count = 0;
@@ -217,6 +228,8 @@ uint32_t vcom_write(uint8_t *pBuf, uint32_t len)
 	uint32_t ret = 0;
 
 	if ( (pVcom->tx_flags & VCOM_TX_CONNECTED) && ((pVcom->tx_flags & VCOM_TX_BUSY) == 0) ) {
+	//if (pVcom->tx_flags & VCOM_TX_CONNECTED) {
+		//while ((pVcom->tx_flags & VCOM_TX_BUSY) != 0) { }
 		pVcom->tx_flags |= VCOM_TX_BUSY;
 
 		/* enter critical section */

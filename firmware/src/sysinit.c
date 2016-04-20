@@ -1,8 +1,8 @@
 /*
- * @brief Common LPCOpen SystemInit function
+ * @brief Common SystemInit function for LPC17xx/40xx chips
  *
  * @note
- * Copyright(C) NXP Semiconductors, 2013
+ * Copyright(C) NXP Semiconductors, 2013-14
  * All rights reserved.
  *
  * @par
@@ -28,30 +28,44 @@
  * copyright, permission, and disclaimer notice must appear in all copies of
  * this code.
  */
+
+#include "misc/misc.h"
+
  #if defined(NO_BOARD_LIB)
  #include "chip.h"
  #else
  #include "board.h"
  #endif
 
-#include "sysinit.h"
+/*****************************************************************************
+ * Private types/enumerations/variables
+ ****************************************************************************/
 
-#include "periph/led.h"
-#include "periph/input.h"
-#include "cpu/systick.h"
-#include "cpu/cpu.h"
+#define SECTOR_5_START      0x00005000
+#define SECTOR_8_START      0x00008000
+#define SECTOR_10_START     0x0000a000
+#define SECTOR_16_START     0x00010000
+
+#define USER_FLASH_START (SECTOR_16_START)
+
+#define NVIC_NUM_VECTORS          (16 + 33)     // CORE + MCU Peripherals
+#define NVIC_RAM_VECTOR_ADDRESS   (0x10000000)  // Location of vectors in RAM
+static volatile uint32_t* vectors = (uint32_t*)NVIC_RAM_VECTOR_ADDRESS;
+
+
+
+/*****************************************************************************
+ * Public types/enumerations/variables
+ ****************************************************************************/
+
+#if defined(NO_BOARD_LIB)
+const uint32_t OscRateIn = 12000000;
+const uint32_t RTCOscRateIn = 32768;
+#endif
 
 
 /* Pin muxing configuration */
 STATIC const PINMUX_GRP_T pinmuxing[] = {
-	// Bluetooth
-	{0,  0,   IOCON_MODE_INACT | IOCON_FUNC2},		// TXD3
-	{0,  1,   IOCON_MODE_INACT | IOCON_FUNC2},		// RXD3
-	{BLUETOOTH_AT_PORT, BLUETOOTH_AT_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
-	{BLUETOOTH_RESET_PORT, BLUETOOTH_RESET_PIN, IOCON_MODE_INACT | IOCON_FUNC0},
-	{BLUETOOTH_CONNECTED_PORT, BLUETOOTH_CONNECTED_PIN, IOCON_MODE_INACT | IOCON_FUNC0},
-	{BLUETOOTH_ON_PORT, BLUETOOTH_ON_PIN, 		IOCON_MODE_INACT | IOCON_FUNC0},
-
 	// radio
 	{SI_LIB_SDN_PORT,  SI_LIB_SDN_PIN,   		IOCON_MODE_INACT | IOCON_FUNC0},
 	{SI_LIB_nIRQ_PORT,  SI_LIB_nIRQ_PIN,   		IOCON_MODE_INACT | IOCON_FUNC0},
@@ -67,33 +81,33 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{ADC_IN_PORT,	ADC_IN_PIN,					IOCON_MODE_INACT | IOCON_FUNC1},
 	{ADC_EXT_IN_PORT,	ADC_EXT_IN_PIN,			IOCON_MODE_INACT | IOCON_FUNC1},
 
-	// charger (outputs OPEN DRAIN !)
-	{CHARGER_STAT1_PORT, CHARGER_STAT1_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
-	{CHARGER_STAT2_PORT, CHARGER_STAT2_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC0},
-	{CHARGER_EXTPWR_PORT, CHARGER_EXTPWR_PIN, 	IOCON_MODE_PULLDOWN | IOCON_FUNC1},
-	{CHARGER_SEL_H_PORT, CHARGER_SEL_H_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
-	{CHARGER_SEL_L_PORT, CHARGER_SEL_L_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
-	{CHARGER_USBDP_PORT, CHARGER_USBDP_PIN,		IOCON_MODE_INACT | IOCON_FUNC0},
-	{CHARGER_USBDM_PORT, CHARGER_USBDM_PIN,		IOCON_MODE_PULLDOWN | IOCON_FUNC0},
-
-	// input button
-	{INPUT_SWITCH_PORT,  INPUT_SWITCH_PIN,		IOCON_MODE_PULLUP | IOCON_FUNC1},
-
 	// LED
 	{LED_PORT,  LED_PIN,						IOCON_MODE_INACT | IOCON_FUNC0},
 
-	// DCDC
-	{DCDC_PS_PORT,	DCDC_PS_PIN,				IOCON_MODE_INACT | IOCON_FUNC0},
+	// USB
+	{USB_CONNECT_PORT,  USB_CONNECT_PIN,		IOCON_MODE_INACT | IOCON_FUNC1},
+	{USB_D_PLUS_PORT,  USB_D_PLUS_PIN,			IOCON_MODE_INACT | IOCON_FUNC1},
+	{USB_D_MINUS_PORT,  USB_D_MINUS_PIN,		IOCON_MODE_INACT | IOCON_FUNC1},
 
 	// reset unused pins
 	// (By default they are set as inputs with pull up. See: AN10915
 	//  To reduce current consumption, we disable the pull up.)
+	{0, 0,   									IOCON_MODE_INACT | IOCON_FUNC0},
+	{0, 1,   									IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	4,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	5,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	6,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	7,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	10,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{0,	11,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	21,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	22,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	23,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	24,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	25,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	26,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	27,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{0,	28,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	0,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	1,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	4,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -103,6 +117,7 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{1,	14,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	15,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	16,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{1,	17,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1, 18,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	19,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1, 20,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -116,12 +131,16 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{1,	29,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	30,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	31,										IOCON_MODE_INACT | IOCON_FUNC0},
-	{2,	0,										IOCON_MODE_INACT | IOCON_FUNC0},
-	{2,	1,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	0,		/* TODO */						IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	1,		/* TODO */						IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	2,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	3,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	4,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	5,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	6,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	7,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	11,										IOCON_MODE_INACT | IOCON_FUNC0},
+	{2,	12,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	13,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{4,	28,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{4,	29,										IOCON_MODE_INACT | IOCON_FUNC0},
@@ -145,8 +164,6 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 5);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 6);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 7);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 10);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 0, 11);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 0);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 1);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 4);
@@ -167,13 +184,10 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 29);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 30);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 31);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 0);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 1);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 2);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 5);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 6);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 7);
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 2, 13);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 4, 28);
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, 4, 29);
 
@@ -181,8 +195,6 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 5, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 6, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 0, 7, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 0, 10, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 0, 11, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 0, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 1, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 4, false);
@@ -203,122 +215,82 @@ void Board_SetupMuxing(void)
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 29, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 30, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 1, 31, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 2, 0, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 2, 1, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 2, 2, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 2, 5, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 2, 6, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 2, 7, false);
-	Chip_GPIO_SetPinState(LPC_GPIO, 2, 13, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 4, 28, false);
 	Chip_GPIO_SetPinState(LPC_GPIO, 4, 29, false);
-
-
 }
+
+
 /* Setup system clocking */
 void SystemSetupClocking(void)
 {
-  /* CPU clock source starts with IRC */
-  Chip_Clock_SetMainPLLSource(SYSCTL_PLLCLKSRC_IRC);
-  Chip_Clock_SetCPUClockSource(SYSCTL_CCLKSRC_SYSCLK);
+	Chip_SetupXtalClocking();
 
-  /* Enable main oscillator used for PLLs */
-  LPC_SYSCTL->SCS = SYSCTL_OSCEC;
-  while ((LPC_SYSCTL->SCS & SYSCTL_OSCSTAT) == 0) {}
+	/* Change the USB Clock Divider setting for the operation with PLL0.
+		Divide value = (480/48) = 10 */
+	Chip_Clock_SetUSBClockDiv(9); /* pre-minus 1 */
 
-  /* PLL0 clock source is 12MHz oscillator, PLL1 can only be the
-  main oscillator */
-  Chip_Clock_SetMainPLLSource(SYSCTL_PLLCLKSRC_MAINOSC);
+	/* Wait for PLL0 to lock */
+	while (!Chip_Clock_IsMainPLLLocked()) {}
 
-  /* Setup PLL0 for a 480MHz clock. It is divided by CPU Clock Divider to create CPU Clock.
-  Input clock rate (FIN) is main oscillator = 12MHz
-  FCCO is selected for PLL Output and it must be between 275 MHz to 550 MHz.
-  FCCO = (2 * M * FIN) / N = integer multiplier of CPU Clock (120MHz) = 480MHz
-  N = 1, M = 480 * 1/(2*12) = 20 */
-  Chip_Clock_SetupPLL(SYSCTL_MAIN_PLL, 19, 0);/* Multiply by 20, Divide by 1 */
+	/* Connect PLL0 */
+	Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE | SYSCTL_PLL_CONNECT);
 
-  /* Enable PLL0 */
-  Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE);
+	/* Wait for PLL0 to be connected */
+	while (!Chip_Clock_IsMainPLLConnected()) {}
 
-  /* Change the CPU Clock Divider setting for the operation with PLL0.
-  Divide value = (480/120) = 4 */
-  Chip_Clock_SetCPUClockDiv(3); /* pre-minus 1 */
+	/* Setup USB PLL1 for a 48MHz clock
+		Input clock rate (FIN) is main oscillator = 12MHz
+		PLL1 Output = USBCLK = 48MHz = FIN * MSEL, so MSEL = 4.
+		FCCO = USBCLK = USBCLK * 2 * P. It must be between 156 MHz to 320 MHz.
+		so P = 2 and FCCO = 48MHz * 2 * 2 = 192MHz */
+	Chip_Clock_SetupPLL(SYSCTL_USB_PLL, 3, 1); /* Multiply by 4, Divide by 2 */
 
-  /* Change the USB Clock Divider setting for the operation with PLL0.
-  Divide value = (480/48) = 10 */
-  Chip_Clock_SetUSBClockDiv(9); /* pre-minus 1 */
-
-  /* Wait for PLL0 to lock */
-  while (!Chip_Clock_IsMainPLLLocked()) {}
-
-  /* Connect PLL0 */
-  Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE | SYSCTL_PLL_CONNECT);
-
-  /* Wait for PLL0 to be connected */
-  while (!Chip_Clock_IsMainPLLConnected()) {}
-
-  /* Setup USB PLL1 for a 48MHz clock
-  Input clock rate (FIN) is main oscillator = 12MHz
-  PLL1 Output = USBCLK = 48MHz = FIN * MSEL, so MSEL = 4.
-  FCCO = USBCLK = USBCLK * 2 * P. It must be between 156 MHz to 320 MHz.
-  so P = 2 and FCCO = 48MHz * 2 * 2 = 192MHz */
-  Chip_Clock_SetupPLL(SYSCTL_USB_PLL, 3, 1); /* Multiply by 4, Divide by 2 */
-
-#if 0 /* Use PLL1 output as USB Clock Source */
-	/* Enable PLL1 */
-	Chip_Clock_EnablePLL(SYSCTL_USB_PLL, SYSCTL_PLL_ENABLE);
-
-	/* Wait for PLL1 to lock */
-	while (!Chip_Clock_IsUSBPLLLocked()) {}
-
-	/* Connect PLL1 */
-	Chip_Clock_EnablePLL(SYSCTL_USB_PLL, SYSCTL_PLL_ENABLE | SYSCTL_PLL_CONNECT);
-
-	/* Wait for PLL1 to be connected */
-	while (!Chip_Clock_IsUSBPLLConnected()) {}
-#endif
-
-  /* Setup FLASH access to 5 clocks (120MHz clock) */
+	/* Setup FLASH access to 5 clocks (120MHz clock) */
 	Chip_SYSCTL_SetFLASHAccess(FLASHTIM_120MHZ_CPU);
 }
-
-
-//#define USER_START_SECTOR 16
-#define SECTOR_5_START      0x00005000
-#define SECTOR_8_START      0x00008000
-#define SECTOR_10_START     0x0000a000
-#define SECTOR_16_START     0x00010000
-//#define USER_FLASH_START (SECTOR_16_START)
-#define USER_FLASH_START (SECTOR_16_START)
-
-#define NVIC_NUM_VECTORS          (16 + 33)     // CORE + MCU Peripherals
-#define NVIC_RAM_VECTOR_ADDRESS   (0x10000000)  // Location of vectors in RAM
-static volatile uint32_t* vectors = (uint32_t*)NVIC_RAM_VECTOR_ADDRESS;
-
-
-// TODO: Dokumentieren, wie man vorgehen muss, um Bootloader-Größe zu ändern
-//       (also größe des reservierten Flash-Speichers)
 
 /* Set up and initialize hardware prior to call to main */
 void SystemInit(void)
 {
+	unsigned int *pSCB_VTOR = (unsigned int *) 0xE000ED08;
+
+#if defined(__IAR_SYSTEMS_ICC__)
+	extern void *__vector_table;
+
+	*pSCB_VTOR = (unsigned int) &__vector_table;
+#elif defined(__CODE_RED)
+	extern void *g_pfnVectors;
+
+	*pSCB_VTOR = (unsigned int) &g_pfnVectors;
+#elif defined(__ARMCC_VERSION)
+	extern void *__Vectors;
+
+	*pSCB_VTOR = (unsigned int) &__Vectors;
+#endif
+
+#if defined(__FPU_PRESENT) && __FPU_PRESENT == 1
+	fpuInit();
+#endif
+
+
+	/* Chip specific SystemInit */
+	Chip_SystemInit();
+
 	Board_SetupMuxing();
 
 	SystemSetupClocking();
 
+/*
 	// We do not need BOD, so think green and disable this power consumer
 	Chip_SYSCTL_DisableBODReset();
 	Chip_SYSCTL_DisableBOD();
+*/
 
-
-#ifndef NO_BOARD_LIB
-	/* Board specific SystemInit */
-	Board_SystemInit();
-#endif
-
-	////SCB->VTOR = (uint32_t) interrupt_vectors;
-	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); // TODO: woher?
-
+	SCB->VTOR = (USER_FLASH_START & 0x1FFFFF80); 			// TODO: woher?
 
 	// copy the vector table to SRAM to enable debugging
 	uint32_t *old_vectors = (uint32_t*)SCB->VTOR;
@@ -327,5 +299,7 @@ void SystemInit(void)
 	}
 
 	SCB->VTOR = (uint32_t)vectors;
+
+
 }
 

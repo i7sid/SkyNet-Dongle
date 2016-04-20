@@ -64,24 +64,363 @@ $(document).ready(function(){initNavTree('compass_8h.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">compass.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
+<div class="textblock"><code>#include &lt;math.h&gt;</code><br />
+<code>#include &quot;chip.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="misc_8h_source.html">../../misc/misc.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="debug_8h_source.html">../../misc/debug.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="systick_8h_source.html">../../cpu/systick.h</a>&quot;</code><br />
+</div>
 <p><a href="compass_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a38d1030166e3fff060e4bbd35363d3c1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a38d1030166e3fff060e4bbd35363d3c1">read_Addr</a>&#160;&#160;&#160;0x3D</td></tr>
+<tr class="separator:a38d1030166e3fff060e4bbd35363d3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35dd65a75025a057c4da458d2c028984"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a35dd65a75025a057c4da458d2c028984">write_Addr</a>&#160;&#160;&#160;0x3C</td></tr>
+<tr class="separator:a35dd65a75025a057c4da458d2c028984"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1b01066fd7c15624d33895bdc00b60a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#ad1b01066fd7c15624d33895bdc00b60a">HMC5883L_Addr</a>&#160;&#160;&#160;0x1E</td></tr>
+<tr class="separator:ad1b01066fd7c15624d33895bdc00b60a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a598a3330b3c21701223ee0ca14316eca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a598a3330b3c21701223ee0ca14316eca">PI</a>&#160;&#160;&#160;(float)3.141592653589793</td></tr>
+<tr class="separator:a598a3330b3c21701223ee0ca14316eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acefc4bf04c22674d110448e3723873fb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#acefc4bf04c22674d110448e3723873fb">COMPASS_UNCAL_MAX</a>&#160;&#160;&#160;-32766</td></tr>
+<tr class="separator:acefc4bf04c22674d110448e3723873fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f608bcfea500b73f147deed56a35fc6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a6f608bcfea500b73f147deed56a35fc6">COMPASS_UNCAL_MIN</a>&#160;&#160;&#160;32766</td></tr>
+<tr class="separator:a6f608bcfea500b73f147deed56a35fc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8660d5a409115a359070a187188a644"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#aa8660d5a409115a359070a187188a644">HMC5883L_CRA</a>&#160;&#160;&#160;(0x0)</td></tr>
+<tr class="memdesc:aa8660d5a409115a359070a187188a644"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration Register A.  <a href="#aa8660d5a409115a359070a187188a644">More...</a><br /></td></tr>
+<tr class="separator:aa8660d5a409115a359070a187188a644"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac638eb06b6060175d4be2e5db9f64406"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#ac638eb06b6060175d4be2e5db9f64406">HMC5883L_CRB</a>&#160;&#160;&#160;(0x1)</td></tr>
+<tr class="memdesc:ac638eb06b6060175d4be2e5db9f64406"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration Register B.  <a href="#ac638eb06b6060175d4be2e5db9f64406">More...</a><br /></td></tr>
+<tr class="separator:ac638eb06b6060175d4be2e5db9f64406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e32eeb11f0b893996d2ab33b8a1267d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a0e32eeb11f0b893996d2ab33b8a1267d">HMC5883L_MODE</a>&#160;&#160;&#160;(0x2)</td></tr>
+<tr class="memdesc:a0e32eeb11f0b893996d2ab33b8a1267d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mode Register.  <a href="#a0e32eeb11f0b893996d2ab33b8a1267d">More...</a><br /></td></tr>
+<tr class="separator:a0e32eeb11f0b893996d2ab33b8a1267d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a812f2e1358c1391b810dae51b024426d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a812f2e1358c1391b810dae51b024426d">HMC5883L_DATA_X_H</a>&#160;&#160;&#160;(0x3)</td></tr>
+<tr class="memdesc:a812f2e1358c1391b810dae51b024426d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output X MSB Register.  <a href="#a812f2e1358c1391b810dae51b024426d">More...</a><br /></td></tr>
+<tr class="separator:a812f2e1358c1391b810dae51b024426d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a117d3b5b414e614c59b5de8cf4c5be72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a117d3b5b414e614c59b5de8cf4c5be72">HMC5883L_DATA_X_L</a>&#160;&#160;&#160;(0x4)</td></tr>
+<tr class="memdesc:a117d3b5b414e614c59b5de8cf4c5be72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output X LSB Register.  <a href="#a117d3b5b414e614c59b5de8cf4c5be72">More...</a><br /></td></tr>
+<tr class="separator:a117d3b5b414e614c59b5de8cf4c5be72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ee50f89ab36c020661689840d20481d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a6ee50f89ab36c020661689840d20481d">HMC5883L_DATA_Y_H</a>&#160;&#160;&#160;(0x5)</td></tr>
+<tr class="memdesc:a6ee50f89ab36c020661689840d20481d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output Y MSB Register.  <a href="#a6ee50f89ab36c020661689840d20481d">More...</a><br /></td></tr>
+<tr class="separator:a6ee50f89ab36c020661689840d20481d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42bac7a700f048c76edac3a3283fe56e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a42bac7a700f048c76edac3a3283fe56e">HMC5883L_DATA_Y_L</a>&#160;&#160;&#160;(0x6)</td></tr>
+<tr class="memdesc:a42bac7a700f048c76edac3a3283fe56e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output Y LSB Register.  <a href="#a42bac7a700f048c76edac3a3283fe56e">More...</a><br /></td></tr>
+<tr class="separator:a42bac7a700f048c76edac3a3283fe56e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:accfbafcfede0c39c91ffb3a2ff2b4cfc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#accfbafcfede0c39c91ffb3a2ff2b4cfc">HMC5883L_DATA_Z_H</a>&#160;&#160;&#160;(0x7)</td></tr>
+<tr class="memdesc:accfbafcfede0c39c91ffb3a2ff2b4cfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output Z MSB Register.  <a href="#accfbafcfede0c39c91ffb3a2ff2b4cfc">More...</a><br /></td></tr>
+<tr class="separator:accfbafcfede0c39c91ffb3a2ff2b4cfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4825aad0eb7dac7202a6dfa6b9821302"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a4825aad0eb7dac7202a6dfa6b9821302">HMC5883L_DATA_Z_L</a>&#160;&#160;&#160;(0x8)</td></tr>
+<tr class="memdesc:a4825aad0eb7dac7202a6dfa6b9821302"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data Output Z LSB Register.  <a href="#a4825aad0eb7dac7202a6dfa6b9821302">More...</a><br /></td></tr>
+<tr class="separator:a4825aad0eb7dac7202a6dfa6b9821302"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b28b4e5cce4f827cc64081db1400dec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a2b28b4e5cce4f827cc64081db1400dec">HMC5883L_STATUS</a>&#160;&#160;&#160;(0x9)</td></tr>
+<tr class="memdesc:a2b28b4e5cce4f827cc64081db1400dec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status Register.  <a href="#a2b28b4e5cce4f827cc64081db1400dec">More...</a><br /></td></tr>
+<tr class="separator:a2b28b4e5cce4f827cc64081db1400dec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaebd5b247a487262e88c1ddd736001ac"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#aaebd5b247a487262e88c1ddd736001ac">HMC5883L_ID_A</a>&#160;&#160;&#160;(0xA)</td></tr>
+<tr class="memdesc:aaebd5b247a487262e88c1ddd736001ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identification Register A.  <a href="#aaebd5b247a487262e88c1ddd736001ac">More...</a><br /></td></tr>
+<tr class="separator:aaebd5b247a487262e88c1ddd736001ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad494c9b9088d4a8883ebba4cc1912ed9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#ad494c9b9088d4a8883ebba4cc1912ed9">HMC5883L_ID_B</a>&#160;&#160;&#160;(0xB)</td></tr>
+<tr class="memdesc:ad494c9b9088d4a8883ebba4cc1912ed9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identification Register B.  <a href="#ad494c9b9088d4a8883ebba4cc1912ed9">More...</a><br /></td></tr>
+<tr class="separator:ad494c9b9088d4a8883ebba4cc1912ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a828eb4741ec1a4457fc952388fd153a5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a828eb4741ec1a4457fc952388fd153a5">HMC5883L_ID_C</a>&#160;&#160;&#160;(0xC)</td></tr>
+<tr class="memdesc:a828eb4741ec1a4457fc952388fd153a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Identification Register C.  <a href="#a828eb4741ec1a4457fc952388fd153a5">More...</a><br /></td></tr>
+<tr class="separator:a828eb4741ec1a4457fc952388fd153a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ac557367104b8f12099606becdcd04496"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#ac557367104b8f12099606becdcd04496">skynetbase_compass_init</a> (void)</td></tr>
 <tr class="memdesc:ac557367104b8f12099606becdcd04496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the compass.  <a href="#ac557367104b8f12099606becdcd04496">More...</a><br /></td></tr>
 <tr class="separator:ac557367104b8f12099606becdcd04496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a47d74c65f2dc4fd9524e4f120e5adc74">skynetbase_compass_read</a> (void)</td></tr>
+<tr class="memdesc:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read compass module.  <a href="#a47d74c65f2dc4fd9524e4f120e5adc74">More...</a><br /></td></tr>
+<tr class="separator:a47d74c65f2dc4fd9524e4f120e5adc74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="compass_8h.html#a2000ad28c6446a41bd85dcee5d6dd5c7">skynetbase_compass_calibrate</a> (void)</td></tr>
+<tr class="memdesc:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start calibration routine.  <a href="#a2000ad28c6446a41bd85dcee5d6dd5c7">More...</a><br /></td></tr>
+<tr class="separator:a2000ad28c6446a41bd85dcee5d6dd5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>09.11.2015 </dd></dl>
 <dl class="section author"><dt>Author</dt><dd>Michael Zapf <a href="#" onclick="location.href='mai'+'lto:'+'mic'+'ha'+'el.'+'za'+'pf@'+'fa'+'u.d'+'e'; return false;">micha<span style="display: none;">.nosp@m.</span>el.z<span style="display: none;">.nosp@m.</span>apf@f<span style="display: none;">.nosp@m.</span>au.d<span style="display: none;">.nosp@m.</span>e</a> </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="acefc4bf04c22674d110448e3723873fb"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define COMPASS_UNCAL_MAX&#160;&#160;&#160;-32766</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a6f608bcfea500b73f147deed56a35fc6"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define COMPASS_UNCAL_MIN&#160;&#160;&#160;32766</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ad1b01066fd7c15624d33895bdc00b60a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_Addr&#160;&#160;&#160;0x1E</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aa8660d5a409115a359070a187188a644"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_CRA&#160;&#160;&#160;(0x0)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configuration Register A. </p>
+
+</div>
+</div>
+<a class="anchor" id="ac638eb06b6060175d4be2e5db9f64406"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_CRB&#160;&#160;&#160;(0x1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configuration Register B. </p>
+
+</div>
+</div>
+<a class="anchor" id="a812f2e1358c1391b810dae51b024426d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_X_H&#160;&#160;&#160;(0x3)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output X MSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a117d3b5b414e614c59b5de8cf4c5be72"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_X_L&#160;&#160;&#160;(0x4)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output X LSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a6ee50f89ab36c020661689840d20481d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_Y_H&#160;&#160;&#160;(0x5)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output Y MSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a42bac7a700f048c76edac3a3283fe56e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_Y_L&#160;&#160;&#160;(0x6)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output Y LSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="accfbafcfede0c39c91ffb3a2ff2b4cfc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_Z_H&#160;&#160;&#160;(0x7)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output Z MSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a4825aad0eb7dac7202a6dfa6b9821302"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_DATA_Z_L&#160;&#160;&#160;(0x8)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Data Output Z LSB Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="aaebd5b247a487262e88c1ddd736001ac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_ID_A&#160;&#160;&#160;(0xA)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identification Register A. </p>
+
+</div>
+</div>
+<a class="anchor" id="ad494c9b9088d4a8883ebba4cc1912ed9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_ID_B&#160;&#160;&#160;(0xB)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identification Register B. </p>
+
+</div>
+</div>
+<a class="anchor" id="a828eb4741ec1a4457fc952388fd153a5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_ID_C&#160;&#160;&#160;(0xC)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Identification Register C. </p>
+
+</div>
+</div>
+<a class="anchor" id="a0e32eeb11f0b893996d2ab33b8a1267d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_MODE&#160;&#160;&#160;(0x2)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mode Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a2b28b4e5cce4f827cc64081db1400dec"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define HMC5883L_STATUS&#160;&#160;&#160;(0x9)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Status Register. </p>
+
+</div>
+</div>
+<a class="anchor" id="a598a3330b3c21701223ee0ca14316eca"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define PI&#160;&#160;&#160;(float)3.141592653589793</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a38d1030166e3fff060e4bbd35363d3c1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define read_Addr&#160;&#160;&#160;0x3D</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a35dd65a75025a057c4da458d2c028984"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define write_Addr&#160;&#160;&#160;0x3C</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a2000ad28c6446a41bd85dcee5d6dd5c7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void skynetbase_compass_calibrate </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Start calibration routine. </p>
+
+</div>
+</div>
 <a class="anchor" id="ac557367104b8f12099606becdcd04496"></a>
 <div class="memitem">
 <div class="memproto">
@@ -100,13 +439,32 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a47d74c65f2dc4fd9524e4f120e5adc74"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float skynetbase_compass_read </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read compass module. </p>
+<dl class="section return"><dt>Returns</dt><dd>Compass direction in degrees. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_79a358baf18e5a64f29b44b47849d0b7.html">compass</a></li><li class="navelem"><a class="el" href="compass_8h.html">compass.h</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:41 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

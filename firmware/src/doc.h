@@ -21,10 +21,8 @@
  *
  * \section Quickstart
  *
- * The most important methods are:
+ * Perhaps the most important method is:
  *  - \ref radio_send_variable_packet (uint8_t *packet, uint16_t length)
- *  - \ref bt_uart_puts (char *str)
- *  - \ref bt_uart_nputs (char *str, int count)
  *
  *  For reception of packets see main-function.
  */

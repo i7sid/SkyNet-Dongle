@@ -123,5 +123,15 @@ uint32_t skynet_cdc_write_debug(const char* format, ... );
  */
 void skynet_cdc_receive_data(void);
 
+/**
+ * @brief	Task that should be called with 1kHz
+ */
+void skynet_cdc_task(void);
+
+/**
+ * @brief	 Deletes the contents of the TX buffer.
+ */
+void skynet_cdc_flush_buffers(void);
+
 
 #endif /* USB_SKYNET_CDC_H_ */

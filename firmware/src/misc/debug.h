@@ -18,7 +18,8 @@
 #include <stdio.h>
 #define DBG skynet_cdc_write_debug
 #else
-#define DBG
+static inline void do_nothing_debug(char* fmt, ...) { return; };
+#define DBG do_nothing_debug
 #endif
 
 

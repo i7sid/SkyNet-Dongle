@@ -64,17 +64,34 @@ $(document).ready(function(){initNavTree('windvane_8c.html','');});
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">windvane.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<table class="memberdecls">
+<div class="textblock"><code>#include &quot;<a class="el" href="windvane_8h_source.html">windvane.h</a>&quot;</code><br />
+</div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ab5557d2992e86e49c109378703ce530b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#ab5557d2992e86e49c109378703ce530b">skynetbase_windvane_init</a> (void)</td></tr>
 <tr class="memdesc:ab5557d2992e86e49c109378703ce530b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the wind direction measurement unit.  <a href="#ab5557d2992e86e49c109378703ce530b">More...</a><br /></td></tr>
 <tr class="separator:ab5557d2992e86e49c109378703ce530b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0113d4b027d8a18557fddcfd1f06e287"><td class="memItemLeft" align="right" valign="top">__INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#a0113d4b027d8a18557fddcfd1f06e287">skynetbase_windvane_start</a> (void)</td></tr>
+<tr class="separator:a0113d4b027d8a18557fddcfd1f06e287"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac6f39d3e05a92ffe31ca2caaf2739d7"><td class="memItemLeft" align="right" valign="top">__INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#aac6f39d3e05a92ffe31ca2caaf2739d7">skynetbase_windvane_stop</a> (void)</td></tr>
+<tr class="separator:aac6f39d3e05a92ffe31ca2caaf2739d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae748493e73d9866a1c236a5f6f03d39"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#aae748493e73d9866a1c236a5f6f03d39">skynetbase_windvane_measure</a> (void)</td></tr>
+<tr class="separator:aae748493e73d9866a1c236a5f6f03d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a71752f114f3663159a4a9173f89af973"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#a71752f114f3663159a4a9173f89af973">windvane_buffer</a></td></tr>
+<tr class="separator:a71752f114f3663159a4a9173f89af973"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ec48498da53cd0a13c1e48a93976fc1"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#a4ec48498da53cd0a13c1e48a93976fc1">windvane_max</a> = 0x1000</td></tr>
+<tr class="separator:a4ec48498da53cd0a13c1e48a93976fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9160838afeb94a85dff88a54514f7b50"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="windvane_8c.html#a9160838afeb94a85dff88a54514f7b50">windvane_max_target</a> = 360</td></tr>
+<tr class="separator:a9160838afeb94a85dff88a54514f7b50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section date"><dt>Date</dt><dd>09.11.2015 </dd></dl>
@@ -98,13 +115,98 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="aae748493e73d9866a1c236a5f6f03d39"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t skynetbase_windvane_measure </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a0113d4b027d8a18557fddcfd1f06e287"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__INLINE void skynetbase_windvane_start </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="aac6f39d3e05a92ffe31ca2caaf2739d7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__INLINE void skynetbase_windvane_stop </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a class="anchor" id="a71752f114f3663159a4a9173f89af973"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t windvane_buffer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a4ec48498da53cd0a13c1e48a93976fc1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t windvane_max = 0x1000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a9160838afeb94a85dff88a54514f7b50"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t windvane_max_target = 360</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_71feab5088a5bff276377ce1ff19bbb5.html">basestation</a></li><li class="navelem"><a class="el" href="dir_a46908330a9351c3de579107ef4a6f0c.html">wind</a></li><li class="navelem"><a class="el" href="dir_6acfa3a4f44514345e7e9254c7571605.html">windvane</a></li><li class="navelem"><a class="el" href="windvane_8c.html">windvane.c</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:53 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

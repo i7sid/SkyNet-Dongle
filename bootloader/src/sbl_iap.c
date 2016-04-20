@@ -23,6 +23,8 @@
 #include "LPC17xx.h"
 #include "log.h"
 
+#define COMPUTE_BINARY_CHECKSUM
+
 const unsigned sector_start_map[MAX_FLASH_SECTOR] = {SECTOR_0_START,             \
 SECTOR_1_START,SECTOR_2_START,SECTOR_3_START,SECTOR_4_START,SECTOR_5_START,      \
 SECTOR_6_START,SECTOR_7_START,SECTOR_8_START,SECTOR_9_START,SECTOR_10_START,     \
@@ -194,13 +196,43 @@ int user_code_present(void) {
     param_table[1] = USER_START_SECTOR;
     param_table[2] = USER_START_SECTOR;
     iap_entry(param_table,result_table);
+
     if( result_table[0] == CMD_SUCCESS )
     {
-
+    	// flash blank
         return (false);
     }
 
+    // Following code is adapted from Code Red version of bootloader.
+    // (project RDB1768cmsis2_usb_bootloader)
+
+
+#ifdef COMPUTE_BINARY_CHECKSUM
+/*
+ * The reserved Cortex-M3 exception vector location 7 (offset 0x001C
+ * in the vector table) should contain the 2’s complement of the
+ * checksum of table entries 0 through 6. This causes the checksum
+ * of the first 8 table entries to be 0. This code checksums the
+ * first 8 locations of the start of user flash. If the result is 0,
+ * then the contents is deemed a 'valid' image.
+ */
+	unsigned *pmem, checksum, i;
+
+	checksum = 0;
+	pmem = (unsigned *)USER_FLASH_START;
+	for (i = 0; i <= 7; i++) {
+		checksum += *pmem;
+		pmem++;
+	}
+	if (checksum != 0) {
+		// checksum check failed
+		return (false);
+	}
+	else
+#endif
+	{
     return (true);
+	}
 }
 
 /*

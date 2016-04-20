@@ -10,7 +10,10 @@
 #include "stdint.h"
 
 #define USB_HEADER_SIZE			(8)
-#define USB_MAX_PAYLOAD_LENGTH	(56)
+//#define USB_MAX_PAYLOAD_LENGTH	(56)
+//#define USB_MAX_PAYLOAD_LENGTH	(503)
+#define USB_MAX_PAYLOAD_LENGTH	(1600)
+#define USB_MAX_PACKET_SIZE		(64)
 #define USB_MAGIC_NUMBER		(43981)
 #define USB_MAGIC_BYTE1			((unsigned char)0xAB)
 #define USB_MAGIC_BYTE2			((unsigned char)0xCD)
@@ -33,7 +36,8 @@ typedef enum usb_packet_type {
  */
 typedef enum usb_ctrl_msg_type {
 	USB_CTRL_RESET  = 0,		///< Reset the node
-	USB_CTRL_BOOTLOADER  = 1	///< Reset the node and switch to bootloader
+	USB_CTRL_BOOTLOADER  = 1,	///< Reset the node and switch to bootloader
+	USB_CTRL_CALIB_COMPASS  = 2	///< Start calibration sequence of compass
 } usb_ctrl_msg_type;
 
 /**

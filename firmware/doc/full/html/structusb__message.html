@@ -84,6 +84,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:aed65bc06a36d7a33f6c2f41370747abe"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structusb__message.html#aed65bc06a36d7a33f6c2f41370747abe">type</a></td></tr>
 <tr class="memdesc:aed65bc06a36d7a33f6c2f41370747abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Should ne <a class="el" href="message_8h.html#a015fd5eae80303cd87e55121385ebe5b">usb_packet_type</a>.  <a href="#aed65bc06a36d7a33f6c2f41370747abe">More...</a><br /></td></tr>
 <tr class="separator:aed65bc06a36d7a33f6c2f41370747abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d8060ac96d575fff75837bbc496c741"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structusb__message.html#a8d8060ac96d575fff75837bbc496c741">seqno</a></td></tr>
+<tr class="memdesc:a8d8060ac96d575fff75837bbc496c741"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increasing sequence number.  <a href="#a8d8060ac96d575fff75837bbc496c741">More...</a><br /></td></tr>
+<tr class="separator:a8d8060ac96d575fff75837bbc496c741"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ccf8b3470de6e14fdbb3641cbf3bb2b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structusb__message.html#a8ccf8b3470de6e14fdbb3641cbf3bb2b">payload_length</a></td></tr>
 <tr class="memdesc:a8ccf8b3470de6e14fdbb3641cbf3bb2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of payload bytes.  <a href="#a8ccf8b3470de6e14fdbb3641cbf3bb2b">More...</a><br /></td></tr>
 <tr class="separator:a8ccf8b3470de6e14fdbb3641cbf3bb2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -93,7 +96,8 @@ Data Fields</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A "message" transferred over USB. </p>
-<p>Can be real networking packet, or control commands, debug strings, ... The field <a class="el" href="structusb__message.html#ac82e2435b1e2e742927ffdc0e6477d76">magic</a> must be 43981 (0xAB 0xCD) and helps the other end to determine the byte order. </p>
+<p>Can be real networking packet, or control commands, debug strings, ... The field <a class="el" href="structusb__message.html#ac82e2435b1e2e742927ffdc0e6477d76">magic</a> must be 43981 (0xAB 0xCD) and helps the other end to determine the byte order.</p>
+<p>(Field seqno is especially important for correct alignment.) </p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a class="anchor" id="ac82e2435b1e2e742927ffdc0e6477d76"></a>
 <div class="memitem">
@@ -137,6 +141,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a8d8060ac96d575fff75837bbc496c741"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char usb_message::seqno</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Increasing sequence number. </p>
+
+</div>
+</div>
 <a class="anchor" id="aed65bc06a36d7a33f6c2f41370747abe"></a>
 <div class="memitem">
 <div class="memproto">
@@ -160,7 +178,7 @@ Data Fields</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structusb__message.html">usb_message</a></li>
-    <li class="footer">Generated on Tue Nov 10 2015 16:13:54 for SkyNet by
+    <li class="footer">Generated on Sun Dec 6 2015 17:08:42 for SkyNet by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>
