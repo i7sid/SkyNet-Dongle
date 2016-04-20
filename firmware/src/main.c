@@ -46,14 +46,13 @@
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
 
-
 void skynet_cdc_received_message(usb_message *msg);
 void skynet_received_packet(skynet_packet *pkt);
 
 
 void debug_send_usb(void) {
 	events_enqueue(EVENT_DEBUG_1, NULL);
-	register_delayed_event(1000, debug_send_usb);
+	register_delayed_event(5000, debug_send_usb);
 }
 
 void debug_send_rf(void) {
@@ -124,7 +123,7 @@ int main(void) {
     // usb init
     skynet_cdc_init();
     msDelay(700); // wait a moment to ensure that all systems are up and ready
-    register_delayed_event(1, skynet_cdc_task);
+    register_delayed_event(500, skynet_cdc_task);
 
 
 
@@ -157,6 +156,7 @@ int main(void) {
     msDelay(50);
     skynet_led_blink_active(100);
 
+#ifndef DEBUG
     // initalize Watchdog
     Chip_WWDT_Init(LPC_WWDT);
     Chip_WWDT_SelClockSource(LPC_WWDT, WWDT_CLKSRC_WATCHDOG_PCLK);
@@ -165,13 +165,16 @@ int main(void) {
     Chip_WWDT_SetOption(LPC_WWDT, WWDT_WDMOD_WDRESET);
     Chip_WWDT_ClearStatusFlag(LPC_WWDT, WWDT_WDMOD_WDTOF | WWDT_WDMOD_WDINT);
     Chip_WWDT_Start(LPC_WWDT);
+#endif
 
 
 	while (1) {
+#ifndef DEBUG
 		Chip_WWDT_Feed(LPC_WWDT);
+#endif
 
 		// receive from usb
-		skynet_cdc_receive_data();
+		//skynet_cdc_receive_data();
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -185,7 +188,12 @@ int main(void) {
 				break;
 
 			case EVENT_RADIO_RESTART:
-				// TODO restart radio chip
+				// restart radio chip
+				radio_shutdown();
+				msDelayActive(50);
+				msDelay(100);
+				radio_init(); // also reenables interrupts
+				radio_reset_packet_size(); // reset size of Field 2
 				break;
 
 			case EVENT_DEBUG_1:
@@ -263,17 +271,19 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// Must be done! Memory was allocated dynamically.
 	free(pkt->data);
 	free(pkt);
-	skynet_led_blink_passive(15);
+	skynet_led_blink_passive(5);
 }
 
 
 void skynet_cdc_received_message(usb_message *msg) {
+#if DEBUG
 	DBG("Received usb message of type %d.\n", msg->type);
-
 	for (int i = msg->payload_length - 8; i < msg->payload_length; ++i) {
 		DBG("0x%x ", (msg->payload[i] & 0xFF));
 	}
 	DBG("\n");
+#endif
+
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
@@ -307,5 +317,5 @@ void skynet_cdc_received_message(usb_message *msg) {
 	// Must be done! Memory was allocated dynamically.
 	free(msg->payload);
 	free(msg);
-	skynet_led_blink_passive(15);
+	skynet_led_blink_passive(5);
 }
