@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
 
 		if (cmd_flash) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
 		}
 		else if (cmd_reset) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
@@ -136,30 +136,6 @@ int main(int argc, char** argv) {
 			tty.usbSendMessage(m);
             sleep(1);
 			exit(0);
-		}
-
-		/*
-		while (true) {
-			usb_message m;
-			m.type = USB_DEBUG;
-			m.payload = (char*)string("test").c_str();
-			m.payload_length = 4;
-			m.seqno = 0;
-			tty.usbSendMessage(m);
-			sleep(1);
-		}
-		*/
-
-		if (usb_debug) {
-			string dbg("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456");
-			usb_message m;
-			m.type = USB_DEBUG;
-			m.payload = (char*)dbg.c_str();
-			m.payload_length = dbg.length() + 1;
-			m.seqno = 0;
-			tty.usbSendMessage(m);
-            sleep(1);
-			return 0;
 		}
 
 		// create tap object and start rx thread
