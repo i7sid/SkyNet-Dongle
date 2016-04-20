@@ -52,13 +52,6 @@ void usb_tty::usbSendMessage(usb_message msg) {
 void usb_tty::usbTransmitMessage(usb_message msg) {
 	usb_message* msg_ptr = &msg;
 	msg.magic = USB_MAGIC_NUMBER;
-
-    /*
-    for (size_t i = 0; i < msg.payload_length; ++i) {
-        cerr << (uint16_t)msg.payload[i] << " ";
-    }
-    cerr << endl;
-    */
 	write(tty_fd, ((char*)(msg_ptr)), 8);
 	write(tty_fd, msg.payload, msg.payload_length);
 }
@@ -75,7 +68,7 @@ void usb_tty::usb_tty_tx_worker(void) {
             txq.pop();
         }
         tx_mtx.unlock();
-        std::this_thread::sleep_for(std::chrono::milliseconds(last_len/2));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
