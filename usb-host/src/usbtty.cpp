@@ -33,8 +33,11 @@ uint8_t rx_buf[USB_MAX_PAYLOAD_LENGTH];
 static queue<usb_message> txq;
 static mutex tx_mtx;
 
+static string tty_path;
+
 usb_tty::usb_tty(string path, void(*rxh)(usb_message)) : rxHandler(rxh) {
 	tty_fd = open(path.c_str(), O_RDWR | O_NOCTTY );
+    tty_path = path;
 	//ioctl(tty_fd, );
 }
 
@@ -82,7 +85,13 @@ void usb_tty::usb_tty_rx_worker(void) {
 
 		if (first == 0) {
 			cerr << "usb_tty stream not good: EOF." << endl;
-			throw(202);
+            close(tty_fd);
+            while ((tty_fd = open(tty_path.c_str(), O_RDWR | O_NOCTTY)) <= -1) {
+                cerr << "Could not reconnect. Waiting..." << endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            }
+            continue;
+			//throw(202);
 		}
 
 
