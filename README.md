@@ -11,15 +11,14 @@ Hardware
 The main components are
 * CPU: LPC1769
 * Radio: RF4463PRO (Chipset: Si4463)
-* Bluetooth: HC-05 (Chipset: CSR BC417)
 
 
 Firmware
 --------
 The firmware for the LPC1769 is written entirely in C99 and can **basically**
-be compiled by a standard GNU GCC toolchain.
+be compiled by a standard GNU GCC cross compiling toolchain.
 Currently an Eclipse project is shipped that works with
-[LPCXpresso](http://www.embeddedartists.com/products/lpcxpresso).
+[LPCXpresso](https://www.lpcware.com/lpcxpresso/download).
 Additionally you need the [LPCOpen chip library](http://www.lpcware.com/lpcopen).
 
 If both projects - lpc_chip_175x_6x and SkyNet-Dongle-Firmware - are present in
@@ -43,11 +42,20 @@ Afterwards you should be able to flash new firmware files
 
 That works as following:
 Send via USB CDC serial terminal a "goto bootloader" command.
+You can use:
+
+    ./usb-host/skynet-usb-host -f
+
+(You have to compile the host application before that.)
+
 The dongle restarts and goes into bootloader mode.
 Now the dongle is detected by host as a mass storage device.
 Copy firmware binary to the mass storage device and *eject the device* afterwards:
+
     sudo eject /dev/{devices name, usually sdb, sdc, sdd, or any...}
+
 or:
+
     sudo umount {MOUNTPOINT}
     sudo udisk --detach /dev/{devices name, usually sdb, sdc, sdd, or any...}
 
