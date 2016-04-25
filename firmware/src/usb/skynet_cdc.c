@@ -61,9 +61,10 @@ const  USBD_API_T *g_pUsbApi = &g_usbApi;
 
 static uint8_t current_seqno = 0;
 
-#define USB_FIFO_QUEUE_SIZE 	(2048)
+#define USB_TX_FIFO_QUEUE_SIZE 	(4096)
+
 static RINGBUFF_T usb_tx_ringbuf;
-static char usb_tx_buf[USB_FIFO_QUEUE_SIZE * sizeof(uint8_t)];
+static char usb_tx_buf[USB_TX_FIFO_QUEUE_SIZE * sizeof(uint8_t)];
 
 
 int skynet_cdc_init(void) {
@@ -71,7 +72,7 @@ int skynet_cdc_init(void) {
 	USB_CORE_DESCS_T desc;
 	ErrorCode_t ret = LPC_OK;
 
-	RingBuffer_Init(&usb_tx_ringbuf, usb_tx_buf, sizeof(uint8_t), USB_FIFO_QUEUE_SIZE);
+	RingBuffer_Init(&usb_tx_ringbuf, usb_tx_buf, sizeof(uint8_t), USB_TX_FIFO_QUEUE_SIZE);
 	RingBuffer_Flush(&usb_tx_ringbuf);
 
 	Chip_USB_Init();
@@ -229,6 +230,17 @@ void skynet_cdc_receive_data(void) {
 
 	unsigned char b[64];
 	int c = skynet_cdc_read(b, sizeof(b));
+	//int c = RingBuffer_PopMult(&usb_rx_ringbuf, b, sizeof(b));
+
+#ifdef DEBUG
+	if (c > 0) {
+		DBG("%d\n", c);
+		for (int i = 0; i < c; ++i) {
+			DBG("%x ", b[i]);
+		}
+		DBG("\n");
+	}
+#endif
 
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];
@@ -321,18 +333,21 @@ void skynet_cdc_receive_data(void) {
 	}
 }
 
+extern VCOM_DATA_T g_vCOM;
+
 void skynet_cdc_task(void) {
 	// send
-	if (!RingBuffer_IsEmpty(&usb_tx_ringbuf)) {
+	VCOM_DATA_T *pVcom = &g_vCOM;
+	if ((pVcom->tx_flags & VCOM_TX_CONNECTED) && ((pVcom->tx_flags & VCOM_TX_BUSY) == 0) && (!RingBuffer_IsEmpty(&usb_tx_ringbuf))) {
 		uint8_t buf[USB_MAX_PACKET0];
 		uint16_t cnt = RingBuffer_PopMult(&usb_tx_ringbuf, buf, USB_MAX_PACKET0);
 		vcom_write(buf, cnt);
 	}
 
-	// receive
-//	skynet_cdc_receive_data();
-
 	// reschedule
 	register_delayed_event(1, skynet_cdc_task);
 }
 
+void skynet_cdc_flush_buffers(void) {
+	RingBuffer_Flush(&usb_tx_ringbuf);
+}

@@ -30,7 +30,7 @@
 
 #include <linux/ip.h>
 
-#define PKT_DBG_OVERHEAD    (4)
+#define PKT_DBG_OVERHEAD    (8)
 
 using namespace std;
 
@@ -113,34 +113,39 @@ int main(int argc, char** argv) {
 			COLOR_RESET();
 			return 1;
 		}
-		cerr << "Serial port  " << cmd_tty << " opened." << endl;
 
 		// create usb_tty object and start rx thread
 		usb_tty tty(cmd_tty, usbReceiveHandler);
 		ptr_tty = &tty;
 
+		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
+		
+        cerr << "Serial port  " << cmd_tty << " opened." << endl;
+
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
 
 		if (cmd_flash) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
 			m.payload[0] = (char)USB_CTRL_BOOTLOADER;
 
 			tty.usbSendMessage(m);
+            sleep(1);
 			exit(0);
 		}
 		else if (cmd_reset) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
 			m.payload[0] = (char)USB_CTRL_RESET;
 
 			tty.usbSendMessage(m);
+            sleep(1);
 			exit(0);
 		}
 		else if (cmd_set_mac.length() > 0) {
@@ -554,8 +559,9 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_frame.mhr.src_address[6] = ((frame->ether_type & 0xFF00) >> 8);
 	mac_frame.mhr.src_address[7] = ((frame->ether_type & 0x00FF)     );
 
-	uint8_t payload[4096];
-    memset(payload, 0, sizeof(payload));
+	//uint8_t payload[4096];
+	uint8_t *payload = new uint8_t[4096];
+    memset(payload, 0, 4096);
 	int mac_cnt = mac_frame_data_pack(&mac_frame, payload);
 	mac_frame_calc_crc(payload, mac_cnt);
 

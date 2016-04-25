@@ -8,7 +8,7 @@
 //#define DEBUG_SEND_USB_TEST
 
 ///@brief Send a rf debug packet each second.
-#define DEBUG_SEND_RF_TEST
+//#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
 //#define IS_BASESTATION
@@ -132,7 +132,7 @@ int main(void) {
     // usb init
     skynet_cdc_init();
     msDelay(700); // wait a moment to ensure that all systems are up and ready
-    register_delayed_event(1, skynet_cdc_task);
+    register_delayed_event(500, skynet_cdc_task);
 
 
 
@@ -204,8 +204,12 @@ int main(void) {
 				break;
 
 			case EVENT_RADIO_RESTART:
-				// force restart
-				NVIC_SystemReset();
+				// restart radio chip
+				radio_shutdown();
+				msDelayActive(50);
+				msDelay(100);
+				radio_init(); // also reenables interrupts
+				radio_reset_packet_size(); // reset size of Field 2
 				break;
 
 			case EVENT_SEND_BASE_DATA:
@@ -329,19 +333,21 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// Must be done! Memory was allocated dynamically.
 	free(pkt->data);
 	free(pkt);
-	skynet_led_blink_passive(15);
+	skynet_led_blink_passive(5);
 }
 
 
 void skynet_cdc_received_message(usb_message *msg) {
+#if DEBUG
+/*
 	DBG("Received usb message of type %d.\n", msg->type);
-
-	/*
 	for (int i = msg->payload_length - 8; i < msg->payload_length; ++i) {
 		DBG("0x%x ", (msg->payload[i] & 0xFF));
 	}
 	DBG("\n");
-	*/
+*/
+#endif
+
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
@@ -425,5 +431,5 @@ void skynet_cdc_received_message(usb_message *msg) {
 	// Must be done! Memory was allocated dynamically.
 	free(msg->payload);
 	free(msg);
-	skynet_led_blink_passive(15);
+	skynet_led_blink_passive(5);
 }

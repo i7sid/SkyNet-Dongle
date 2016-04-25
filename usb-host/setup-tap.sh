@@ -16,5 +16,6 @@ tunctl -u $USER -g $GROUP -t $NAME
 ip link set $NAME up
 ip addr add $IP/24 dev $NAME
 #ip link set dev $NAME arp off
+ifconfig tapsn0 mtu 900
 
 sysctl -w net.ipv4.conf.${NAME}.rp_filter=2
