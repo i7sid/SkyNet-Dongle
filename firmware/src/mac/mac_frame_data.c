@@ -219,7 +219,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	next_ext_type.raw = buffer[pos++];
 	mac_extheader** last_ptr = &(frame->extheader);
 	while (next_ext_type.type_length.type != EXTHDR_NO) {
-		mac_extheader* hdr = (mac_extheader*)malloc(next_ext_type.type_length.length + 1);
+		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader));
 		mac_extheader_init(hdr);
 		hdr->typelength_union.raw = next_ext_type.raw;
 		memcpy(hdr->data, &(buffer[pos]), next_ext_type.type_length.length);

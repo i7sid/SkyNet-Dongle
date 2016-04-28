@@ -591,15 +591,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 
 	mac_frame.extheader = &hdr;
 
-	/*
-    cerr << endl << endl << "extheader:" << endl;
-    cout << setfill(' ') << setw(3) << std::hex;
-    for (unsigned int i = 0; i < sizeof(mac_extheader); ++i) {
-        cout << "0x" << (((unsigned int)(((uint8_t*)&hdr)[i] & 0xFF))) << " ";
-    }
-    cerr << endl << endl;
-    */
-
 
 	//uint8_t payload[4096];
 	uint8_t *payload = new uint8_t[4096];
@@ -612,7 +603,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.payload_length = mac_cnt + PKT_DBG_OVERHEAD;
 	m.payload = (char*)payload;
 
-
+	/*
     COLOR_DBG();
     cerr << "Packet sending over USB (" << (m.payload_length) << ")" << endl;
 
@@ -622,6 +613,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
     }
 
     COLOR_RESET();
+    */
 
 
 
