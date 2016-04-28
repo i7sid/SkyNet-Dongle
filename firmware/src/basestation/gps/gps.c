@@ -11,6 +11,8 @@ gps_pubx_data current_data;
 /* Transmit and receive ring buffers */
 STATIC RINGBUFF_T txring, rxring;
 
+extern RTC_TIME_T FullTime;
+
 /* Transmit and receive ring buffer sizes */
 #define UART_SRB_SIZE 64	/* Send */
 #define UART_RRB_SIZE 128	/* Receive */
@@ -208,8 +210,14 @@ void skynetbase_gps_received_data(char gpsout[], uint8_t gpsoutpos) {
 
 	events_enqueue(EVENT_GPS_DATA_AVAILABLE, NULL);
 
-	DBG("Lat: %f (%c)\n", current_data.lat, current_data.lat_dir);
-	DBG("Lon: %f (%c)\n", current_data.lon, current_data.lon_dir);
+	// update RTC
+	Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+	sscanf(current_data.time, "%02d%02d%02d", &(FullTime.time[RTC_TIMETYPE_HOUR]),
+			&(FullTime.time[RTC_TIMETYPE_MINUTE]), &(FullTime.time[RTC_TIMETYPE_SECOND]));
+	Chip_RTC_SetFullTime(LPC_RTC, &FullTime);
+
+	//DBG("Lat: %f (%c)\n", current_data.lat, current_data.lat_dir);
+	//DBG("Lon: %f (%c)\n", current_data.lon, current_data.lon_dir);
 }
 
 void GPS_IRQ_Handler() {

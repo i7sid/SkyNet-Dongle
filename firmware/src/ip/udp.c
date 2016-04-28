@@ -12,7 +12,7 @@
 void udp_send(uint8_t dest_ip[4], uint16_t src_port, uint16_t dest_port, uint8_t *data, uint8_t size) {
 	uint16_t cnt = 20 + 8 + size; // TODO
 	uint8_t buf[cnt];
-	uint16_t id = (uint16_t)random(0x10000);
+	uint16_t id = (uint16_t)mac_random(0x10000);
 	NV_DATA_T *conf = skynet_nv_get();
 
 	mac_frame_data frame;

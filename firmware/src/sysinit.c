@@ -89,6 +89,16 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{USB_D_PLUS_PORT,  USB_D_PLUS_PIN,			IOCON_MODE_INACT | IOCON_FUNC1},
 	{USB_D_MINUS_PORT,  USB_D_MINUS_PIN,		IOCON_MODE_INACT | IOCON_FUNC1},
 
+	// GPS
+//#ifdef IS_BASESTATION
+	{GPS_UART_TX_PORT, GPS_UART_TX_PIN,			IOCON_MODE_INACT | IOCON_FUNC2},
+	{GPS_UART_RX_PORT, GPS_UART_RX_PIN,			IOCON_MODE_INACT | IOCON_FUNC2},
+//#else
+//	{GPS_UART_TX_PORT, GPS_UART_TX_PIN,			IOCON_MODE_INACT | IOCON_FUNC0},
+//	{GPS_UART_RX_PORT, GPS_UART_RX_PIN,			IOCON_MODE_INACT | IOCON_FUNC0},
+//#endif
+
+
 	// reset unused pins
 	// (By default they are set as inputs with pull up. See: AN10915
 	//  To reduce current consumption, we disable the pull up.)
@@ -131,8 +141,6 @@ STATIC const PINMUX_GRP_T pinmuxing[] = {
 	{1,	29,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	30,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{1,	31,										IOCON_MODE_INACT | IOCON_FUNC0},
-	{2,	0,		/* TODO */						IOCON_MODE_INACT | IOCON_FUNC0},
-	{2,	1,		/* TODO */						IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	2,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	3,										IOCON_MODE_INACT | IOCON_FUNC0},
 	{2,	4,										IOCON_MODE_INACT | IOCON_FUNC0},

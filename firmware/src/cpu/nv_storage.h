@@ -28,7 +28,7 @@ typedef struct NV_DATA_T {
 	int32_t	compass_y_offset;
 	int32_t	compass_z_offset;
 	char	reserved_padding[231];
-} __attribute__((packed)) NV_DATA_T;
+} __attribute__((aligned(1),packed)) NV_DATA_T;
 
 
 void skynet_nv_init(void);

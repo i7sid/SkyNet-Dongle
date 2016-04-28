@@ -17,11 +17,11 @@
 #include <string.h>
 
 typedef enum mac_extheader_types {
-	EXTHDR_NO			= 0, 	///<@brief No header following.
-	EXTHDR_PAYLOAD_TYPE	= 1 	///<@brief Payload type (see \ref mac_payload_type ) following.
+	EXTHDR_NO				= 0, 	///<@brief No header following.
+	EXTHDR_ETHER_TYPE		= 1,	///<@brief Payload is ethernet frame, ether_type given in mac_extheader::data.
+	EXTHDR_SENSOR_VALUES	= 2 	///<@brief Payload is sensor data, type given in mac_extheader::data.
 } mac_extheader_types;
 
-//typedef struct mac_extheader;
 
 union typelength_union {
 	uint8_t raw;

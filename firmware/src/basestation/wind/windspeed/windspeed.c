@@ -6,12 +6,10 @@
 
 #include "windspeed.h"
 
-static uint32_t ticksPerSecond;
-static uint32_t tick_counter = 0;
+static volatile uint32_t ticksPerSecond;
+static volatile uint32_t tick_counter = 0;
 
 static float current_speed = 0;
-
-#define WAY_PER_ROTATION	(0.37699112f)	// 2 * 6cm * PI
 
 float skynetbase_windspeed_get(void) {
 	return current_speed;
@@ -29,11 +27,8 @@ static void measurement(void) {
 	Chip_TIMER_Reset(LPC_TIMER2);
 
 
-	// convert mph to km/h  (derived from original work)
+	// convert to mph and to km/h  ( mph: http://www.emesystems.com/OL2wind.htm )
 	current_speed = (float)curtick * (2.25 / (div)) * 1.609344;
-
-	// alternative approach?
-	//current_speed = (WAY_PER_ROTATION * (float)curtick) / div;
 
 	//DBG("div:%4.4f; count:%d; speed:%4.4f\n", div, curtick, current_speed);
 

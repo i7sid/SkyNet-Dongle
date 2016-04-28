@@ -442,61 +442,71 @@ void usbReceiveHandler(usb_message pkt) {
 		}
 
 
+		mac_payload_type frame_type = mac_payload_type::ETHERFRAME;
+
 		// process extheaders
         ether_hdr->ether_type = 0;
         mac_extheader* next_hdr = frame.extheader;
         while (next_hdr != NULL) {
         	switch (next_hdr->typelength_union.type_length.type) {
-				case mac_payload_type::ETHERFRAME:
+				case mac_extheader_types::EXTHDR_ETHER_TYPE:
 					ether_hdr->ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
 							                           + next_hdr->data[1];
 					break;
 
-				case mac_payload_type::BASESENSORDATA:
+				case mac_extheader_types::EXTHDR_SENSOR_VALUES:
 					// TODO Sensordaten verarbeiten (in DB einfügen)
+					//char sensorbuf[128];
+					frame_type = mac_payload_type::BASESENSORDATA;
+					cerr << frame.payload << endl;
+
 					break;
         	}
         	next_hdr = next_hdr->next;
         }
 
-		memcpy(data, frame.payload, frame.payload_size);
+
+        // send ethernet frame
+        if (frame_type == mac_payload_type::ETHERFRAME) {
+			memcpy(data, frame.payload, frame.payload_size);
 
 
-//		int frame_length = htons(sizeof(ether_frame) - 4);
-//		memcpy(ether_frame, &frame_length, sizeof(int));
+	//		int frame_length = htons(sizeof(ether_frame) - 4);
+	//		memcpy(ether_frame, &frame_length, sizeof(int));
 
 
-        /*
-		cerr << "Sending ethernet frame of size " << sizeof(ether_frame) << "." << endl;
-		cout << setfill(' ') << setw(3) << std::hex;
-        for (unsigned int i = 0; i < sizeof(ether_frame); ++i) {
-            cout << "0x" << (((unsigned int)ether_frame[i]) & 0xFF) << " ";
+			/*
+			cerr << "Sending ethernet frame of size " << sizeof(ether_frame) << "." << endl;
+			cout << setfill(' ') << setw(3) << std::hex;
+			for (unsigned int i = 0; i < sizeof(ether_frame); ++i) {
+				cout << "0x" << (((unsigned int)ether_frame[i]) & 0xFF) << " ";
+			}
+			cout << std::dec << endl;
+			*/
+
+			ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
+
+	/*
+			if (verbosity >= 3) {
+				cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
+				cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
+				cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
+				cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
+				cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
+				cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
+				cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
+				cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
+				cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
+				cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
+				cout << "FCS0:     " << (int)frame.fcs[0] << endl;
+				cout << "FCS1:     " << (int)frame.fcs[1] << endl;
+				cout << "Payload:  " << (int)frame.payload_size << endl;
+				cout << "Payload:  " << frame.payload << endl;
+				cout << endl << endl << endl;
+			}
+	*/
+
         }
-        cout << std::dec << endl;
-        */
-
-		ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
-
-/*
-		if (verbosity >= 3) {
-			cout << "FC0:      " << (int)frame.mhr.frame_control[0] << endl;
-			cout << "FC1:      " << (int)frame.mhr.frame_control[1] << endl;
-			cout << "dest pan0:" << (int)frame.mhr.dest_pan_id[0] << endl;
-			cout << "dest pan1:" << (int)frame.mhr.dest_pan_id[1] << endl;
-			cout << "dest add0:" << (int)frame.mhr.dest_address[0] << endl;
-			cout << "dest add1:" << (int)frame.mhr.dest_address[1] << endl;
-			cout << "src pan 0:" << (int)frame.mhr.src_pan_id[0] << endl;
-			cout << "src pan 1:" << (int)frame.mhr.src_pan_id[1] << endl;
-			cout << "src  add0:" << (int)frame.mhr.src_address[0] << endl;
-			cout << "src  add1:" << (int)frame.mhr.src_address[1] << endl;
-			cout << "FCS0:     " << (int)frame.fcs[0] << endl;
-			cout << "FCS1:     " << (int)frame.fcs[1] << endl;
-			cout << "Payload:  " << (int)frame.payload_size << endl;
-			cout << "Payload:  " << frame.payload << endl;
-			cout << endl << endl << endl;
-		}
-*/
-
 		// cleanup mac packet
 		free(frame.payload);
 		mac_frame_extheaders_free(frame.extheader);
@@ -585,7 +595,7 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_extheader hdr;
 	mac_extheader_init(&hdr);
 	hdr.typelength_union.type_length.length = 2;
-	hdr.typelength_union.type_length.type = EXTHDR_PAYLOAD_TYPE;
+	hdr.typelength_union.type_length.type = EXTHDR_ETHER_TYPE;
 	hdr.data[0] = ((frame->ether_type & 0xFF00) >> 8);
 	hdr.data[1] = ((frame->ether_type & 0x00FF)     );
 
