@@ -20,6 +20,7 @@ extern "C" {
 
 #include <string.h>
 #include "mac_config.h"
+#include "mac_extheader.h"
 #include "util.h"
 
 
@@ -36,11 +37,12 @@ typedef struct mac_frame_data {
         uint8_t src_pan_id[2];
         uint8_t src_address[8];
         // uint8_t aux_security_header[0];			// for future usage?
-    } __attribute__((packed)) mhr;
+    } __attribute__((aligned(1),packed)) mhr;
+    mac_extheader* extheader;
     uint8_t* payload;
     uint8_t fcs[2];
     uint16_t payload_size;
-} __attribute__((packed)) mac_frame_data;
+} __attribute__((aligned(1),packed)) mac_frame_data;
 
 
 /**
@@ -63,6 +65,13 @@ void mac_frame_data_free(mac_frame_data *frame);
  */
 size_t mac_frame_data_estimate_size(mac_frame_data *frame);
 
+
+/**
+ * @brief	Initializes the given frame by setting all field to zero.
+ *
+ * Some fields are initialized with default values.
+ * See source for more information.
+ */
 void mac_frame_data_init(mac_frame_data *frame);
 
 
@@ -84,6 +93,11 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer);
  * @return	Exact number of bytes read.
  */
 uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t length);
+
+/**
+ * @brief	Frees the allocated memory for extheaders.
+ */
+void mac_frame_extheaders_free(mac_extheader* hdr);
 
 
 #ifdef __cplusplus

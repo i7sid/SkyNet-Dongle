@@ -437,13 +437,30 @@ void usbReceiveHandler(usb_message pkt) {
 			ether_hdr->ether_shost[4] = frame.mhr.src_address[4];
 			ether_hdr->ether_shost[5] = frame.mhr.src_address[5];
 
-            ether_hdr->ether_type = ((uint16_t)(frame.mhr.src_address[6]) << 8)
-                                        + frame.mhr.src_address[7];
+            //ether_hdr->ether_type = ((uint16_t)(frame.mhr.src_address[6]) << 8)
+            //                            + frame.mhr.src_address[7];
 		}
 
-		//ether_hdr->ether_type = htons(ETHERTYPE_IP);
+
+		// process extheaders
+        ether_hdr->ether_type = 0;
+        mac_extheader* next_hdr = frame.extheader;
+        while (next_hdr != NULL) {
+        	switch (next_hdr->typelength_union.type_length.type) {
+				case mac_payload_type::ETHERFRAME:
+					ether_hdr->ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
+							                           + next_hdr->data[1];
+					break;
+
+				case mac_payload_type::BASESENSORDATA:
+					// TODO Sensordaten verarbeiten (in DB einfügen)
+					break;
+        	}
+        	next_hdr = next_hdr->next;
+        }
 
 		memcpy(data, frame.payload, frame.payload_size);
+
 
 //		int frame_length = htons(sizeof(ether_frame) - 4);
 //		memcpy(ether_frame, &frame_length, sizeof(int));
@@ -482,6 +499,7 @@ void usbReceiveHandler(usb_message pkt) {
 
 		// cleanup mac packet
 		free(frame.payload);
+		mac_frame_extheaders_free(frame.extheader);
 	}
 
 	// cleanup usb packet
@@ -545,7 +563,8 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_frame.mhr.dest_address[3] = frame->ether_dhost[3];
 	mac_frame.mhr.dest_address[4] = frame->ether_dhost[4];
 	mac_frame.mhr.dest_address[5] = frame->ether_dhost[5];
-
+	mac_frame.mhr.dest_address[6] = 0;
+	mac_frame.mhr.dest_address[7] = 0;
 
 	MHR_FC_SET_SRC_ADDR_MODE(mac_frame.mhr.frame_control, MAC_ADDR_MODE_LONG);
 	mac_frame.mhr.src_pan_id[0] = 0;
@@ -556,8 +575,31 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	mac_frame.mhr.src_address[3] = frame->ether_shost[3];
 	mac_frame.mhr.src_address[4] = frame->ether_shost[4];
 	mac_frame.mhr.src_address[5] = frame->ether_shost[5];
-	mac_frame.mhr.src_address[6] = ((frame->ether_type & 0xFF00) >> 8);
-	mac_frame.mhr.src_address[7] = ((frame->ether_type & 0x00FF)     );
+	//mac_frame.mhr.src_address[6] = ((frame->ether_type & 0xFF00) >> 8);
+	//mac_frame.mhr.src_address[7] = ((frame->ether_type & 0x00FF)     );
+	mac_frame.mhr.src_address[6] = 0;
+	mac_frame.mhr.src_address[7] = 0;
+
+
+	// generate extended headers
+	mac_extheader hdr;
+	mac_extheader_init(&hdr);
+	hdr.typelength_union.type_length.length = 2;
+	hdr.typelength_union.type_length.type = EXTHDR_PAYLOAD_TYPE;
+	hdr.data[0] = ((frame->ether_type & 0xFF00) >> 8);
+	hdr.data[1] = ((frame->ether_type & 0x00FF)     );
+
+	mac_frame.extheader = &hdr;
+
+	/*
+    cerr << endl << endl << "extheader:" << endl;
+    cout << setfill(' ') << setw(3) << std::hex;
+    for (unsigned int i = 0; i < sizeof(mac_extheader); ++i) {
+        cout << "0x" << (((unsigned int)(((uint8_t*)&hdr)[i] & 0xFF))) << " ";
+    }
+    cerr << endl << endl;
+    */
+
 
 	//uint8_t payload[4096];
 	uint8_t *payload = new uint8_t[4096];
@@ -570,16 +612,17 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	m.payload_length = mac_cnt + PKT_DBG_OVERHEAD;
 	m.payload = (char*)payload;
 
-    /*
+
     COLOR_DBG();
     cerr << "Packet sending over USB (" << (m.payload_length) << ")" << endl;
-    COLOR_RESET();
 
     cout << setfill(' ') << setw(3) << std::hex;
     for (unsigned int i = 0; i < m.payload_length; ++i) {
         cout << "0x" << (((unsigned int)m.payload[i]) & 0xFF) << " ";
     }
-    */
+
+    COLOR_RESET();
+
 
 
 	ptr_tty->usbSendMessage(m);

@@ -16,6 +16,8 @@
 #include "../cpu/systick.h"
 #include <stdlib.h>
 #include "mac_config.h"
+#include "mac_payload_types.h"
+#include "mac_extheader.h"
 
 
 /**
@@ -72,7 +74,7 @@ typedef struct mac_frame_control {
     uint8_t     frame_version       : 2;
     uint8_t     source_addr_mode    : 2;
 
-} __attribute__((packed))  mac_frame_control;
+} __attribute__((aligned(1),packed))  mac_frame_control;
 
 
 
@@ -88,8 +90,8 @@ typedef struct mac_frame_control {
 bool mac_transmit_packet(mac_frame_data* frame);
 
 /**
- * @brief	Rrturns a random integer strict smaller than max.
+ * @brief	Returns a random integer strict smaller than max.
  */
-int random(int max);
+int mac_random(int max);
 
 #endif /* !MAC_H */

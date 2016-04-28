@@ -22,7 +22,7 @@ typedef struct mac_frame_ack {
     uint8_t frame_control[2];
     uint8_t seq_no;
     uint8_t fcs[2];
-} __attribute__((packed)) mac_frame_ack;
+} __attribute__((aligned(1),packed)) mac_frame_ack;
 
 
 #endif /* !MAC_FRAME_ACK_H */

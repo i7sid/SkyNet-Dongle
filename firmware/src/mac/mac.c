@@ -22,7 +22,7 @@ uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waite
 uint8_t seq_no = 0; ///<@brief Current sequence number
 
 /// @brief  Returns a pseudo random number (strictly) smaller than max.
-inline int random(int max) {
+inline int mac_random(int max) {
     return (rand() % max);
 }
 
@@ -59,7 +59,7 @@ bool mac_transmit_data(uint8_t* data, uint16_t length) {
 
     do {
         // initial delay
-        int delay = random((1 << be) - 1);  // is: 2^be - 1
+        int delay = mac_random((1 << be) - 1);  // is: 2^be - 1
         //DBG("mac sleep: %d\n", delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
         //msDelay(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
         msDelayActiveUs(delay * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);

@@ -50,6 +50,7 @@ void mac_frame_data_init(mac_frame_data *frame) {
 	// TODO set new seq_no
 }
 
+//#include <stdio.h>		// DEBUG!
 uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 	uint16_t pos = 0;
     // copy MHR
@@ -132,6 +133,17 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 			break;
 	}
 
+	// copy extheaders
+	mac_extheader* hdr = frame->extheader;
+
+	while (hdr != NULL) {
+		buffer[pos++] = hdr->typelength_union.raw;
+		for (uint8_t i = 0; i < hdr->typelength_union.type_length.length; ++i) {
+			buffer[pos++] = hdr->data[i];
+		}
+		hdr = hdr->next;
+	}
+	buffer[pos++] = 0x0; // last extheader
 
     // copy payload
     memcpy(buffer + pos, frame->payload, frame->payload_size);
@@ -202,6 +214,23 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		frame->mhr.src_address[7] = buffer[pos++];
 	}
 
+	// extheaders
+	union typelength_union next_ext_type;
+	next_ext_type.raw = buffer[pos++];
+	mac_extheader** last_ptr = &(frame->extheader);
+	while (next_ext_type.type_length.type != EXTHDR_NO) {
+		mac_extheader* hdr = (mac_extheader*)malloc(next_ext_type.type_length.length + 1);
+		mac_extheader_init(hdr);
+		hdr->typelength_union.raw = next_ext_type.raw;
+		memcpy(hdr->data, &(buffer[pos]), next_ext_type.type_length.length);
+		pos += next_ext_type.type_length.length;
+		next_ext_type.raw = buffer[pos++];
+
+		// now set pointer in previous header (or in packet if this is first header)
+		*last_ptr = hdr;
+		last_ptr = &(hdr->next);
+	}
+
 	// payload
 	frame->payload_size = length - 2 - pos;
 	frame->payload = (uint8_t*)malloc(frame->payload_size);
@@ -218,6 +247,11 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	frame->fcs[1] = buffer[pos++];
 
 	return pos;
+}
+
+void mac_frame_extheaders_free(mac_extheader* hdr) {
+	if (hdr == NULL) return;
+	mac_frame_extheaders_free(hdr->next);
 }
 
 #ifdef __cplusplus
