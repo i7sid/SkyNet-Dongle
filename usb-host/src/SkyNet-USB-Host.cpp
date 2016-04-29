@@ -30,7 +30,7 @@
 
 #include <linux/ip.h>
 
-#define PKT_DBG_OVERHEAD    (8)
+#define PKT_DBG_OVERHEAD    (4)
 
 using namespace std;
 
@@ -54,6 +54,7 @@ using namespace std;
 #define MAGIC_SET_IP 		509
 #define MAGIC_GET_MAC		508
 #define MAGIC_GET_IP 		507
+#define MAGIC_CALIB_COMPASS 506
 
 string cmd_tap = "tapsn0";
 string cmd_tty = "/dev/ttyACM0";
@@ -66,6 +67,7 @@ string cmd_set_mac = "";
 string cmd_set_ip = "";
 bool cmd_get_mac = false;
 bool cmd_get_ip = false;
+string cmd_calib_compass = "";
 int verbosity = 0;
 
 error_handler err;
@@ -119,10 +121,8 @@ int main(int argc, char** argv) {
 		ptr_tty = &tty;
 
 		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
-		
-        cerr << "Serial port  " << cmd_tty << " opened." << endl;
-
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+        cerr << "Serial port  " << cmd_tty << " opened." << endl;
 
 		if (cmd_flash) {
 			usb_message m;
@@ -156,7 +156,7 @@ int main(int argc, char** argv) {
                             &values[3], &values[4], &values[5])) {
 
                     usb_message m;
-                    char payload[USB_MAX_PAYLOAD_LENGTH];
+                    char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
                     m.type = USB_CONTROL;
                     m.payload_length = 7;
                     m.payload = payload;
@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
                             &values[0], &values[1], &values[2], &values[3])) {
 
                     usb_message m;
-                    char payload[USB_MAX_PAYLOAD_LENGTH];
+                    char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
                     m.type = USB_CONTROL;
                     m.payload_length = 5;
                     m.payload = payload;
@@ -206,7 +206,7 @@ int main(int argc, char** argv) {
         }
 		else if (cmd_get_mac) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
         }
 		else if (cmd_get_ip) {
 			usb_message m;
-			char payload[USB_MAX_PAYLOAD_LENGTH];
+			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
 			m.type = USB_CONTROL;
 			m.payload_length = 1;
 			m.payload = payload;
@@ -227,6 +227,58 @@ int main(int argc, char** argv) {
 			tty.usbSendMessage(m);
 			sleep(1);
 			exit(0);
+        }
+		else if (cmd_calib_compass.length() > 0) {
+            int values[2];
+            if (cmd_calib_compass.length() == 5 &&
+                2 == sscanf(cmd_calib_compass.c_str(), "%x:%x",
+                            &values[0], &values[1])) {
+
+                    char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
+                    mac_frame_data frame;
+                    mac_frame_data_init(&frame);
+
+                    frame.payload = NULL;
+                    frame.payload_size = 0;
+
+                    MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+                    frame.mhr.dest_pan_id[0] = 0;
+                    frame.mhr.dest_pan_id[1] = 0;
+                    frame.mhr.dest_address[0] = values[0];
+                    frame.mhr.dest_address[1] = values[1];
+
+                    MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+                    frame.mhr.src_pan_id[0] = 0;
+                    frame.mhr.src_pan_id[1] = 0;
+                    frame.mhr.src_address[0] = 0; // TODO get local
+                    frame.mhr.src_address[1] = 0; // TODO get local
+
+
+                    // generate extended headers
+                    mac_extheader hdr;
+                    mac_extheader_init(&hdr);
+                    hdr.typelength_union.type_length.length = 1;
+                    hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD;
+                    hdr.data[0] = dongle_command::TEST;
+
+                    frame.extheader = &hdr;
+
+                    uint16_t usb_length = mac_frame_data_pack(&frame, (uint8_t*)usb_payload);
+
+
+                    usb_message m;
+                    m.type = USB_SKYNET_PACKET;
+                    m.payload_length = usb_length;
+                    m.payload = usb_payload;
+                    tty.usbSendMessage(m);
+
+                    sleep(6);
+                    exit(0);
+            }
+            else {
+                cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
+                throw 901;
+            }
         }
 
 		/*
@@ -285,15 +337,21 @@ int main(int argc, char** argv) {
 void printUsage(int argc, char** argv) {
 	cerr << "Usage: " << argv[0] << " [-r] [-n] [-f] [-t /dev/tty*] [-h] [-?]" << endl;
 	cerr << endl;
-	cerr << "-t, --tty      Specifies which terminal to use for serial connection." << endl;
-	cerr << "               (default: /dev/ttyACM0)" << endl;
-	cerr << "-f, --flash    Tell connected dongle to enter bootloader to flash new firmware." << endl;
-	cerr << "-r, --reset    Tell connected dongle to reset." << endl;
-	cerr << "-t, --tap      Specifies which tap interface to use." << endl;
-	cerr << "               (default: tapsn0)" << endl;
-	cerr << "-c, --color    Color console output. (default)" << endl;
-	cerr << "--no-color     Do not color console output." << endl;
-	cerr << "-h, -?, --help Print this usage message." << endl;
+	cerr << "-t, --tty          Specifies which terminal to use for serial connection." << endl;
+	cerr << "                   (default: /dev/ttyACM0)" << endl;
+	cerr << "-f, --flash        Tell connected dongle to enter bootloader to flash new firmware." << endl;
+	cerr << "-r, --reset        Tell connected dongle to reset." << endl;
+	cerr << "-t, --tap          Specifies which tap interface to use." << endl;
+	cerr << "                   (default: tapsn0)" << endl;
+	cerr << "-c, --color        Color console output. (default)" << endl;
+	cerr << "--set-mac <addr>   Set MAC address of connected device." << endl;
+	cerr << "--set-ip <addr>    Set IP address of connected device." << endl;
+	cerr << "--get-mac          Get MAC address of connected device." << endl;
+	cerr << "--get-ip           Get IP address of connected device." << endl;
+	cerr << "--calib-compass    Send a request to calibrate the compass of device" << endl;
+	cerr << "                   with the given address" << endl;
+	cerr << "--no-color         Do not color console output." << endl;
+	cerr << "-h, -?, --help     Print this usage message." << endl;
 	cerr << endl;
 }
 
@@ -314,6 +372,7 @@ void parseCmd(int argc, char** argv) {
         {"set-ip",   required_argument, 0, MAGIC_SET_IP},
         {"get-mac",  no_argument,       0, MAGIC_GET_MAC},
         {"get-ip",   no_argument,       0, MAGIC_GET_IP},
+        {"calib-compass", required_argument, 0, MAGIC_CALIB_COMPASS},
         {"no-color", no_argument,       0, MAGIC_NO_COLOR},
         {0, 0, 0, 0}
     };
@@ -359,6 +418,9 @@ void parseCmd(int argc, char** argv) {
 				break;
 			case MAGIC_GET_IP:
 				cmd_get_ip = true;
+				break;
+			case MAGIC_CALIB_COMPASS:
+				cmd_calib_compass = string(optarg);
 				break;
 			case 'h':
 			case '?':
@@ -442,7 +504,7 @@ void usbReceiveHandler(usb_message pkt) {
 		}
 
 
-		mac_payload_type frame_type = mac_payload_type::ETHERFRAME;
+		mac_payload_type frame_type = mac_payload_type::NONE;
 
 		// process extheaders
         ether_hdr->ether_type = 0;
@@ -450,6 +512,7 @@ void usbReceiveHandler(usb_message pkt) {
         while (next_hdr != NULL) {
         	switch (next_hdr->typelength_union.type_length.type) {
 				case mac_extheader_types::EXTHDR_ETHER_TYPE:
+                    frame_type = mac_payload_type::ETHERFRAME;
 					ether_hdr->ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
 							                           + next_hdr->data[1];
 					break;
@@ -457,10 +520,33 @@ void usbReceiveHandler(usb_message pkt) {
 				case mac_extheader_types::EXTHDR_SENSOR_VALUES:
 					// TODO Sensordaten verarbeiten (in DB einfügen)
 					//char sensorbuf[128];
-					frame_type = mac_payload_type::BASESENSORDATA;
+					frame_type = mac_payload_type::BASE_SENSOR_DATA;
 					cerr << frame.payload << endl;
-
 					break;
+
+				case mac_extheader_types::EXTHDR_DONGLE_CMD_ANSWER:
+                    {
+                        uint8_t seqno = next_hdr->data[0];
+                        uint8_t ack = next_hdr->data[1];
+
+                        if (ack == 0) {
+                            COLOR_OK();
+                            cout << "Dongle command " << (((unsigned int)seqno) & 0xFF)
+                                << ": ACK." << endl;
+                            COLOR_RESET();
+                        }
+                        else {
+                            COLOR_ERR();
+                            cout << "Dongle command " << (((unsigned int)seqno) & 0xFF)
+                                << ": Error (" << (((unsigned int)ack) & 0xFF)
+                                << ")." << endl;
+                            COLOR_RESET();
+                        }
+                        break;
+                    }
+
+                default:
+                    break;
         	}
         	next_hdr = next_hdr->next;
         }

@@ -23,6 +23,7 @@
 #define COMPASS_GAIN_FACT		(2.27f)		// for Gain: 4.0Ga
 //#define COMPASS_GAIN_FACT		(2.56f)		// for Gain: 4.7Ga
 
+static bool calibrating = false;
 
 int skynetbase_compass_init(void) {
 	DBG("Initialize Compass Modul...\n");
@@ -129,6 +130,19 @@ float skynetbase_compass_read(void) {
 
 
 }
+
+
+void skynetbase_compass_start_calibration(void) {
+	calibrating = true;
+}
+
+void skynetbase_compass_stop_calibration(void) {
+	calibrating = false;
+
+
+	// TODO calibration calculation
+}
+
 
 
 /**

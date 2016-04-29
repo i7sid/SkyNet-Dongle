@@ -9,9 +9,16 @@
 #define MAC_MAC_PAYLOAD_TYPES_H_
 
 
+/**
+ * This is not transmitted in frames!
+ * (Given implicitly by which headers are sent.)
+ */
 typedef enum mac_payload_type {
-	ETHERFRAME 		= 1,	///<@brief Tunneled ethernet frame
-	BASESENSORDATA 	= 2		///<@brief Sensor data from base station
+	NONE	 			= 0,	///<@brief No type specified. Normally ignore.
+	ETHERFRAME 			= 1,	///<@brief Tunneled ethernet frame
+	BASE_SENSOR_DATA 	= 2,	///<@brief Sensor data from base station
+	DONGLE_CMD	 		= 3,	///<@brief Command to dongle
+	DONGLE_CMD_ANSWER	= 4		///<@brief Answer from dongle (to command)
 } mac_payload_type;
 
 
@@ -21,6 +28,16 @@ typedef enum base_sensor_data_type {
 	SENSOR_COMPASS	= 0x4,	///<@brief compass orientation
 	SENSOR_WIND    	= 0x8	///<@brief wind speed and direction
 } base_sensor_data_type;
+
+
+typedef enum dongle_command {
+	IGNORE				= 0,	///<@brief Nothing. Just ignore.
+	TEST				= 1,	///<@brief Nothing. Just ACK.
+	CALIB_COMPASS		= 2,	///<@brief Start the compass calibration.
+	CALIB_COMPASS_STOP	= 3,	///<@brief Stop the compass calibration.
+	BASE_START_SENDING	= 4,	///<@brief Start sending regular updates.
+	BASE_STOP_SENDING	= 5		///<@brief Stop sending regular updates.
+} dongle_command;
 
 
 

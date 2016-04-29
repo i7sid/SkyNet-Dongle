@@ -26,7 +26,9 @@ int events_enqueue(event_types type, void* data) {
 	e.type = type;
 	e.data = data;
 
+	__disable_irq();
 	int r = RingBuffer_Insert(&events_ringbuf, &e);
+	__enable_irq();
 #ifdef DEBUG
 	if (!r) {
 		// TODO do something? (but then remove #ifdef DEBUG !)
@@ -46,7 +48,10 @@ event_types events_dequeue(queued_event *e) {
 		ev = &instead;
 	}
 
+	__disable_irq();
 	uint8_t r = RingBuffer_Pop(&events_ringbuf, ev);
+	__enable_irq();
+
 	if (r) {
 		return ev->type;
 	}

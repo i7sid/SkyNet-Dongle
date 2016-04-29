@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-#define IS_BASESTATION
+//#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -281,7 +281,7 @@ int main(void) {
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
-				frame.payload_size = pos+8; // TODO Debug (+8)
+				frame.payload_size = pos+4; // TODO Debug (+4)
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
@@ -330,7 +330,7 @@ int main(void) {
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
-				frame.payload_size = pos+8; // TODO Debug (+8)
+				frame.payload_size = pos+4; // TODO Debug (+4)
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
@@ -375,14 +375,59 @@ int main(void) {
 			case EVENT_DEBUG_2:
 			{
 				// DEBUG: send RF packet
+				/*
 				uint8_t p[] = "Test-Payload1234567890";
 				uint8_t d[4] = {10,254,0,1};
 
+
 				udp_send(d, 24681, 24680, p, strlen((char*)p));
+
+				*/
+
+
+
+				uint8_t pos = 0;
+				uint8_t buf[64];
+
+				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|........\n",
+						FullTime.time[RTC_TIMETYPE_HOUR],
+						FullTime.time[RTC_TIMETYPE_MINUTE],
+						FullTime.time[RTC_TIMETYPE_SECOND]);
+				pos++; // trailing null byte of string
+
+				mac_frame_data frame;
+				mac_frame_data_init(&frame);
+				frame.payload = buf;
+				frame.payload_size = pos;
+
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+				// MAC addresses
+				NV_DATA_T *config = skynet_nv_get();
+				frame.mhr.dest_address[0] = 0xFF;
+				frame.mhr.dest_address[1] = 0xFF;
+				frame.mhr.src_address[0] = config->mac_addr[4];
+				frame.mhr.src_address[1] = config->mac_addr[5];
+
+				// ext headers
+				mac_extheader hdr;
+				mac_extheader_init(&hdr);
+				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
+				hdr.typelength_union.type_length.length = 1;
+				hdr.data[0] = SENSOR_WIND;
+
+				frame.extheader = &hdr;
+
+				// send frame
+				mac_transmit_packet(&frame);
+
+
 				skynet_led_blink_active(10);
 
 				break;
-
+/*
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = p;
@@ -396,6 +441,7 @@ int main(void) {
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 
 				mac_transmit_packet(&frame);
+				*/
 
 				/*
 				char* dbg_string = "Hello world! 0123456789 <=>?@";
@@ -428,20 +474,114 @@ void skynet_received_packet(skynet_packet *pkt) {
 	DBG("\n");
 	*/
 
-	// send to host
-	usb_message msg;
-	msg.seqno = 0; 							// chose automatically next one
-	msg.type = USB_SKYNET_PACKET;
-	msg.payload_length = pkt->length;
-	char buf[pkt->length];
-	msg.payload = buf;
-	memcpy(buf, pkt->data, pkt->length);
+	NV_DATA_T *config = skynet_nv_get();
 
-	skynet_cdc_write_message(&msg);
+	bool to_usb = true;
 
-	// Must be done! Memory was allocated dynamically.
-	free(pkt->data);
-	free(pkt);
+	mac_frame_data inframe;
+	mac_frame_data_init(&inframe);
+	mac_frame_data_unpack(&inframe, (uint8_t*)pkt->data, pkt->length);
+
+	if (MHR_FC_GET_DEST_ADDR_MODE(inframe.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+		if (inframe.mhr.dest_address[0] == config->mac_addr[4] &&
+				inframe.mhr.dest_address[1] == config->mac_addr[5]) {
+
+			to_usb = false;
+		}
+	}
+	else if (MHR_FC_GET_DEST_ADDR_MODE(inframe.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+		if (inframe.mhr.dest_address[0] == config->mac_addr[0] &&
+				inframe.mhr.dest_address[1] == config->mac_addr[1] &&
+				inframe.mhr.dest_address[2] == config->mac_addr[2] &&
+				inframe.mhr.dest_address[3] == config->mac_addr[3] &&
+				inframe.mhr.dest_address[4] == config->mac_addr[4] &&
+				inframe.mhr.dest_address[5] == config->mac_addr[5]) {
+
+			to_usb = false;
+		}
+	}
+
+	// seems to be for me
+	if (!to_usb) {
+		to_usb = true; // first reset
+
+		mac_extheader* next_hdr = inframe.extheader;
+		while (next_hdr != NULL) {
+			switch (next_hdr->typelength_union.type_length.type) {
+				case EXTHDR_DONGLE_CMD:
+				{
+					// really for me, so don't send to usb later
+					to_usb = false;
+
+					if (next_hdr->data[0] == TEST) {
+						// send answer TODO
+
+						mac_frame_data frame;
+						mac_frame_data_init(&frame);
+						frame.payload = NULL;
+						frame.payload_size = 0;
+
+						MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+						MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+						// MAC addresses
+						NV_DATA_T *config = skynet_nv_get();
+						frame.mhr.dest_address[0] = inframe.mhr.src_address[0];
+						frame.mhr.dest_address[1] = inframe.mhr.src_address[1];
+						frame.mhr.src_address[0] = config->mac_addr[4];
+						frame.mhr.src_address[1] = config->mac_addr[5];
+
+						// ext headers
+						mac_extheader hdr;
+						mac_extheader_init(&hdr);
+						hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD_ANSWER;
+						hdr.typelength_union.type_length.length = 2;
+						hdr.data[0] = inframe.mhr.seq_no;
+						hdr.data[1] = 0;
+
+						frame.extheader = &hdr;
+
+						// send frame
+						mac_transmit_packet(&frame);
+
+					}
+					else if (next_hdr->data[0] == CALIB_COMPASS) {
+						// TODO
+					}
+					else if (next_hdr->data[0] == CALIB_COMPASS_STOP) {
+						// TODO
+					}
+					break;
+				}
+				default:
+					break;
+			}
+			next_hdr = next_hdr->next;
+		}
+		mac_frame_extheaders_free(inframe.extheader);
+	}
+
+	// Damn, that wasn't for me...
+	if (to_usb) {
+		// send to host
+		usb_message msg;
+		msg.seqno = 0; 							// chose automatically next one
+		msg.type = USB_SKYNET_PACKET;
+		msg.payload_length = pkt->length;
+		char buf[pkt->length];
+		msg.payload = buf;
+		memcpy(buf, pkt->data, pkt->length);
+
+		skynet_cdc_write_message(&msg);
+
+		// Must be done! Memory was allocated dynamically.
+		free(pkt->data);
+		free(pkt);
+	}
+
+	// cleanup
+	mac_frame_data_free_contents(&inframe);
+
 	skynet_led_blink_passive(5);
 }
 
@@ -456,7 +596,6 @@ void skynet_cdc_received_message(usb_message *msg) {
 	DBG("\n");
 */
 #endif
-
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {

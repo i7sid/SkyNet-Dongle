@@ -56,9 +56,19 @@ float skynetbase_compass_read(void);
 
 
 /**
+ * @brief 	Old calibration routine.
+ */
+//void skynetbase_compass_calibrate(void);
+
+/**
  * @brief 	Start calibration routine.
  */
-void skynetbase_compass_calibrate(void);
+void skynetbase_compass_start_calibration(void);
+
+/**
+ * @brief 	Stop calibration routine and calculate calibration.
+ */
+void skynetbase_compass_stop_calibration(void);
 
 
 #endif /* BASESTATION_COMPASS_COMPASS_H_ */

@@ -16,10 +16,20 @@
 
 #include <string.h>
 
+/*
 typedef enum mac_extheader_types {
 	EXTHDR_NO				= 0, 	///<@brief No header following.
 	EXTHDR_ETHER_TYPE		= 1,	///<@brief Payload is ethernet frame, ether_type given in mac_extheader::data.
 	EXTHDR_SENSOR_VALUES	= 2 	///<@brief Payload is sensor data, type given in mac_extheader::data.
+} mac_extheader_types;
+*/
+
+typedef enum mac_extheader_types {
+	EXTHDR_NO				= 0, 	///<@brief No header following. (prev was last)
+	EXTHDR_ETHER_TYPE		= 1,	///<@brief Specifies ether_type of payload.
+	EXTHDR_SENSOR_VALUES	= 2, 	///<@brief Specifies which sensor data is contained in payload.
+	EXTHDR_DONGLE_CMD		= 3, 	///<@brief Contains a command to the dongle.
+	EXTHDR_DONGLE_CMD_ANSWER= 4 	///<@brief Contains an answer to a command to the dongle.
 } mac_extheader_types;
 
 

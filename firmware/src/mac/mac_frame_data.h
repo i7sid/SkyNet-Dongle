@@ -51,9 +51,12 @@ typedef struct mac_frame_data {
 void* mac_frame_data_calloc(void);
 
 /**
- * @brief	Frees the memory used by a frame (including payload).
+ * @brief	Frees the memory internally used by a frame (payload and headers).
+ *
+ * This does not free the frame itself!
+ * (Important! May ba allocated statically.)
  */
-void mac_frame_data_free(mac_frame_data *frame);
+void mac_frame_data_free_contents(mac_frame_data *frame);
 
 
 //size_t mac_frame_data_get_size(mac_frame_data *frame);
