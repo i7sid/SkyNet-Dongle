@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-//#define IS_BASESTATION
+#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -52,6 +52,7 @@ extern RTC_TIME_T FullTime;
 
 extern uint8_t gpsout[128];
 
+
 void skynet_cdc_received_message(usb_message *msg);
 void skynet_received_packet(skynet_packet *pkt);
 
@@ -66,14 +67,14 @@ void debug_send_rf(void) {
 	register_delayed_event(1000, debug_send_rf);
 }
 
-void generate_event_send_base(void) {
+void generate_event_wind_base(void) {
 	events_enqueue(EVENT_BASE_SEND_WIND, NULL);
-	register_delayed_event(1000, generate_event_send_base);
+	register_delayed_event(1000, generate_event_wind_base);
 }
 
 void generate_event_pos_base(void) {
 	events_enqueue(EVENT_BASE_QUERY_POS, NULL);
-	register_delayed_event(30000, generate_event_pos_base);
+	register_delayed_event(10243, generate_event_pos_base);
 }
 
 
@@ -103,9 +104,7 @@ int main(void) {
 
 
     DBG("Clock: %d, %d\n", SystemCoreClock, Chip_Clock_GetCPUClockDiv());
-    //Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_CONNECT);
-    //Chip_Clock_EnablePLL(SYSCTL_MAIN_PLL, SYSCTL_PLL_ENABLE);
-    DBG("MainPLL: %d\n", Chip_Clock_IsMainPLLEnabled());
+    DBG("MainPLL online: %d\n", Chip_Clock_IsMainPLLEnabled());
 
 	// Initializes GPIO
 	Chip_GPIO_Init(LPC_GPIO);
@@ -144,54 +143,37 @@ int main(void) {
 
 
 #ifdef IS_BASESTATION
+    NV_DATA_T *config = skynet_nv_get();
+
     // base station init
     skynetbase_init();
 
+    // load some default data
+    if ((*((char*)&(config->compass_calibration.declination))) == 0xFF) {
+    	config->compass_calibration.declination = 2.366667f; // Erlangen: 2° 22'
+    }
+    if ((*((char*)&(config->compass_calibration.offset_x))) == 0xFF) {
+    	config->compass_calibration.offset_x = 0;
+    }
+    if ((*((char*)&(config->compass_calibration.offset_y))) == 0xFF) {
+    	config->compass_calibration.offset_y = 0;
+    }
+    if ((*((char*)&(config->compass_calibration.offset_z))) == 0xFF) {
+    	config->compass_calibration.offset_z = 0;
+    }
+    if ((*((char*)&(config->compass_calibration.factor_z))) == 0xFF) {
+    	config->compass_calibration.factor_z = 1;
+    }
+
+    // load calibration data
+    skynetbase_compass_calibration_set(&(config->compass_calibration));
+
     // send regularily data events
-    register_delayed_event(1000, generate_event_send_base);
-
-
-	register_delayed_event(10000, generate_event_send_base);
+    register_delayed_event(1000, generate_event_wind_base);
 	register_delayed_event(5000, generate_event_pos_base);
 
-	// start first query
+	// start first GPS position query
 	skynetbase_gps_query();
-
-	/*
-	uint8_t pos = 0;
-	uint8_t buf[64];
-
-	pos += snprintf((char*)buf, sizeof(buf) - pos, "Hallo!");
-	pos++; // trailing null byte of string
-
-	mac_frame_data frame;
-	mac_frame_data_init(&frame);
-	frame.payload = buf;
-	frame.payload_size = pos;
-
-	MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-	MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-
-	// MAC addresses
-	NV_DATA_T *config = skynet_nv_get();
-	frame.mhr.dest_address[0] = 0xFF;
-	frame.mhr.dest_address[1] = 0xFF;
-	frame.mhr.src_address[0] = config->mac_addr[4];
-	frame.mhr.src_address[1] = config->mac_addr[5];
-
-	// ext headers
-	mac_extheader hdr;
-	mac_extheader_init(&hdr);
-	hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-	hdr.typelength_union.type_length.length = 1;
-	hdr.data[0] = SENSOR_POSITION | SENSOR_COMPASS;
-
-	frame.extheader = &hdr;
-
-	// send frame
-	mac_transmit_packet(&frame);
-	*/
-
 #endif
 
 
@@ -266,6 +248,8 @@ int main(void) {
 				gps_pubx_data* gps = skynetbase_gps_get_data();
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+
+				/*DBG("comp: %f\n", compass);*/ break; // TODO DEBUG remove!
 
 				uint8_t pos = 0;
 				uint8_t buf[64];
@@ -514,7 +498,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 					to_usb = false;
 
 					if (next_hdr->data[0] == TEST) {
-						// send answer TODO
+						// send answer
 
 						mac_frame_data frame;
 						mac_frame_data_init(&frame);
@@ -546,10 +530,75 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 					}
 					else if (next_hdr->data[0] == CALIB_COMPASS) {
-						// TODO
+						// send answer
+
+						mac_frame_data frame;
+						mac_frame_data_init(&frame);
+						frame.payload = NULL;
+						frame.payload_size = 0;
+
+						MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+						MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+						// MAC addresses
+						NV_DATA_T *config = skynet_nv_get();
+						frame.mhr.dest_address[0] = inframe.mhr.src_address[0];
+						frame.mhr.dest_address[1] = inframe.mhr.src_address[1];
+						frame.mhr.src_address[0] = config->mac_addr[4];
+						frame.mhr.src_address[1] = config->mac_addr[5];
+
+						// ext headers
+						mac_extheader hdr;
+						mac_extheader_init(&hdr);
+						hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD_ANSWER;
+						hdr.typelength_union.type_length.length = 2;
+						hdr.data[0] = inframe.mhr.seq_no;
+						hdr.data[1] = 0;
+
+						frame.extheader = &hdr;
+
+						// send frame
+						mac_transmit_packet(&frame);
+
+						// now start calibration
+						skynetbase_compass_start_calibration();
 					}
 					else if (next_hdr->data[0] == CALIB_COMPASS_STOP) {
-						// TODO
+						// send answer
+
+						mac_frame_data frame;
+						mac_frame_data_init(&frame);
+						frame.payload = NULL;
+						frame.payload_size = 0;
+
+						MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+						MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+
+						// MAC addresses
+						NV_DATA_T *config = skynet_nv_get();
+						frame.mhr.dest_address[0] = inframe.mhr.src_address[0];
+						frame.mhr.dest_address[1] = inframe.mhr.src_address[1];
+						frame.mhr.src_address[0] = config->mac_addr[4];
+						frame.mhr.src_address[1] = config->mac_addr[5];
+
+						// ext headers
+						mac_extheader hdr;
+						mac_extheader_init(&hdr);
+						hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD_ANSWER;
+						hdr.typelength_union.type_length.length = 2;
+						hdr.data[0] = inframe.mhr.seq_no;
+						hdr.data[1] = 0;
+
+						frame.extheader = &hdr;
+
+						// send frame
+						mac_transmit_packet(&frame);
+
+						// now stop calibration and save data
+						skynetbase_compass_stop_calibration();
+						//NV_DATA_T* config = skynet_nv_get(); // was read above
+						memcpy(&(config->compass_calibration), skynetbase_compass_calibration_get(), sizeof(compass_calibration_data));
+						skynet_nv_write(config); // now save to flash
 					}
 					break;
 				}

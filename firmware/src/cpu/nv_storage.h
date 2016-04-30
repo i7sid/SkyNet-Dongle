@@ -11,6 +11,7 @@
 #define CPU_NV_STORAGE_H_
 
 #include "chip.h"
+#include "../basestation/compass/compass.h"
 
 #define SECTOR_STARTADDR 	(0x0000F000)
 #define SECTOR_NUM       	(15)
@@ -21,13 +22,11 @@
 
 
 typedef struct NV_DATA_T {
-	char	sector_state;
-	char	mac_addr[8];
-	char	ipv4_addr[4];
-	int32_t	compass_x_offset;
-	int32_t	compass_y_offset;
-	int32_t	compass_z_offset;
-	char	reserved_padding[231];
+	char						sector_state;
+	char						mac_addr[8];
+	char						ipv4_addr[4];
+	compass_calibration_data	compass_calibration;
+	char						reserved_padding[256-1-8-4-sizeof(compass_calibration_data)];
 } __attribute__((aligned(1),packed)) NV_DATA_T;
 
 

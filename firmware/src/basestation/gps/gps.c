@@ -52,19 +52,19 @@ int skynetbase_gps_init(void) {
 	DBG("GPS up.\n");
 
 	skynetbase_gps_config("$PUBX,40,GLL,0,0,0,0*5C\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,ZDA,0,0,0,0*44\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,VTG,0,0,0,0*5E\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GSV,0,0,0,0*59\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,RMC,0,0,0,0*47\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GSA,0,0,0,0*4E\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GGA,0,0,0,0*5A\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 
 	DBG("GPS configured.\n");
 
@@ -113,7 +113,7 @@ void skynetbase_gps_receive_data(void) {
 
 void skynetbase_gps_received_data(char gpsout[], uint8_t gpsoutpos) {
 	gpsout[gpsoutpos] = 0;
-	DBG("%s\n", gpsout);
+	//DBG("%s\n", gpsout);
 
 	char delim[] = ",";
 

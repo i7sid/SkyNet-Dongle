@@ -43,6 +43,7 @@ void SysTick_Handler(void) {
 
 
 void register_delayed_event(uint32_t ms, void* f) {
+	__disable_irq();
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
 		if (tick_events_t[i] == 0) {
 			tick_events_t[i] = ms;
@@ -51,11 +52,14 @@ void register_delayed_event(uint32_t ms, void* f) {
 			return;
 		}
 	}
+	__enable_irq();
+
 
 	DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
 }
 
 void remove_delayed_event(void* f) {
+	__disable_irq();
 	bool stop_systick = true;
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
 		if (tick_events_f[i] == f) {
@@ -70,6 +74,7 @@ void remove_delayed_event(void* f) {
 	if (stop_systick) {
 		disable_systick();
 	}
+	__enable_irq();
 
 	//DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
 }
