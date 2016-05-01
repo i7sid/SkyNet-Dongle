@@ -25,9 +25,9 @@
 #include "tap.h"
 #include "usbtty.h"
 #include "cmdline.h"
-#include "gui.h"
 #include "tap_handler.h"
 #include "usb_handler.h"
+#include "gui/gui.h"
 
 
 using namespace std;
@@ -41,18 +41,6 @@ usb_tty* ptr_tty;
 cmdline arg_parser;
 gui gui;
 
-
-void parseCmd(int argc, char** argv);
-
-/**
- * @brief	Will be called when a usb message was received.
- */
-void usbReceiveHandler(usb_message msg);
-
-/**
- * @brief	Will be called when a ethernet frame was received on tap interface.
- */
-void tapReceiveHandler(void* msg, size_t length);
 
 void do_tap_debug(string);
 

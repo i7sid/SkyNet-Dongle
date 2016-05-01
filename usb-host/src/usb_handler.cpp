@@ -15,11 +15,12 @@
 
 #include <usb/message.h>
 #include <mac/mac.h>
-#include "gui.h"
 #include "error_handler.h"
 #include "tap.h"
 #include "usbtty.h"
 #include "cmdline.h"
+#include "gui/gui.h"
+
 
 using namespace std;
 
