@@ -10,9 +10,9 @@ CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -fmessage-length=0 -Wno-packed-bitfield-compat \
 		   -Werror -Wno-unused-result \
 		   -DPKT_DBG_OVERHEAD=\(1\) \
-		   -lmenu -lform -lncurses
+		   -Wno-write-strings
 
-LDFLAGS = -pthread
+LDFLAGS = -pthread -lmenu -lform -lncurses 
 SRC = $(wildcard src/*.cpp) $(wildcard src/gui/*.cpp) ../firmware/src/mac/mac_frame_data.c
 
 .PHONY: all clean

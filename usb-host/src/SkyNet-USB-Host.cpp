@@ -308,8 +308,12 @@ int main(int argc, char** argv) {
 			ptr_tap_rx_thread = &tap_rx_thread;
 		}
 
+		gui.init();
 
 		// you can do fancy stuff in here
+		while (true) {
+			gui.worker();
+		}
 
 
 		// wait for thread to exit

@@ -11,6 +11,9 @@
 #include <iostream>
 #include <string>
 
+#include <ncurses.h>
+#include <menu.h>
+
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -29,11 +32,39 @@
 class gui {
 public:
 	gui();
+	~gui();
+
+	void init();
+	void worker();
 
 	void log(std::string);
 	void debug(std::string);
 	void error(std::string);
+
+private:
+    WINDOW* log_border_win;
+	WINDOW* cmd_win;
+    MENU *menu;
+    ITEM *cur_item;
+
 };
 
+
+class ncursesbuf: public std::streambuf {
+    public:
+        ncursesbuf();
+        virtual int overflow(int c);
+};
+
+
+class ncurses_stream : public std::ostream {
+    public:
+        std::ostream &src_;
+        std::streambuf * const srcbuf_;
+        ncursesbuf tbuf_;
+
+        ncurses_stream(std::ostream &o);
+        ~ncurses_stream();
+};
 
 #endif /* GUI_H_ */
