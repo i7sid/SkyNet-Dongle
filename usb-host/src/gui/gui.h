@@ -29,6 +29,11 @@
 #define COLOR_RESET()		std::cerr << ANSI_COLOR_RESET;
 
 
+typedef struct menuitem {
+	std::string name;
+	void (*func)(void);
+} menuitem;
+
 class gui {
 public:
 	gui();
@@ -46,9 +51,9 @@ private:
 	WINDOW* cmd_win;
     MENU *menu;
     ITEM *cur_item;
+    menuitem items[7];
 
 };
-
 
 class ncursesbuf: public std::streambuf {
     public:

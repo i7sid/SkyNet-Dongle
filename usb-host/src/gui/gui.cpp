@@ -28,8 +28,28 @@ char *choices[] = {
 
 WINDOW* log_win;
 
+void restart_dongle(void);
+void goto_bootloader(void);
+void set_mac_address(void);
+void get_mac_address(void);
+void exit_programm(void);
 
-gui::gui() {}
+gui::gui() {
+	items[0].name = "Dongle neustarten";
+	items[0].func = restart_dongle;
+	items[1].name = "Firmwareupdate starten";
+	items[1].func = goto_bootloader;
+	items[2].name = "-";
+	items[2].func = nullptr;
+	items[3].name = "MAC-Adresse anzeigen";
+	items[3].func = get_mac_address;
+	items[4].name = "MAC-Adresse setzen";
+	items[4].func = set_mac_address;
+	items[5].name = "-";
+	items[5].func = nullptr;
+	items[6].name = "Beenden";
+	items[6].func = exit_programm;
+}
 gui::~gui() {
     endwin();
 //    fprintf(stderr, "Program terminated by SIGINT.\n");
@@ -65,11 +85,12 @@ void gui::init() {
     ITEM **my_items;
     int n_choices, i;
 
-    n_choices = ARRAY_SIZE(choices);
+    n_choices = ARRAY_SIZE(items);
     my_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
 
     for(i = 0; i < n_choices; ++i) {
-        my_items[i] = new_item(choices[i], NULL); //, choices[i]);
+        my_items[i] = new_item(items[i].name.c_str(), NULL); //, choices[i]);
+        set_item_userptr(my_items[i], (void*)(items[i].func));
     }
     my_items[n_choices] = (ITEM *)NULL;
 
@@ -110,11 +131,11 @@ void gui::worker() {
                 exit(0);
 
                 ITEM *cur;
-                //void (*p)(char *);
+                void (*p)(void);
 
                 cur = current_item(menu);
-                //p = item_userptr(cur);
-                //p((char *)item_name(cur));
+                p = (void (*)())item_userptr(cur);
+                p();
 
                 printw("Hello world! %s %d\n", cur->name, cur->index);
 
@@ -158,4 +179,21 @@ ncurses_stream::ncurses_stream(std::ostream &o) : std::ostream(&tbuf_), src_(o),
 
 ncurses_stream::~ncurses_stream() {
 	src_.rdbuf(srcbuf_);
+}
+
+
+void restart_dongle(void) {
+
+}
+void goto_bootloader(void) {
+
+}
+void set_mac_address(void) {
+
+}
+void get_mac_address(void) {
+
+}
+void exit_programm(void) {
+	exit(0);
 }
