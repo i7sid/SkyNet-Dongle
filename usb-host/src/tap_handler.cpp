@@ -12,7 +12,7 @@
 #include <netinet/ether.h>
 #include <arpa/inet.h>
 
-#include <linux/ip.h>
+#include <netinet/ip.h>
 
 #include <usb/message.h>
 #include <mac/mac.h>
