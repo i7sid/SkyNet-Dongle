@@ -6,25 +6,21 @@
  */
 
 #include "gui.h"
+#include "tap.h"
+#include "usbtty.h"
+#include <usb/message.h>
+#include <mac/mac.h>
 
 #include <ncurses.h>
 #include <menu.h>
 
 using namespace std;
 
+extern tap* ptr_tap;
+extern usb_tty* ptr_tty;
 
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-
-char *choices[] = {
-                        "Dongle neustarten",
-                        "Firmwareupdate starten",
-                        "-",
-                        "MAC-Adresse anzeigen",
-                        "MAC-Adresse setzen",
-                        "-",
-                        "Beenden",
-                  };
 
 WINDOW* log_win;
 
@@ -39,13 +35,13 @@ gui::gui() {
 	items[0].func = restart_dongle;
 	items[1].name = "Firmwareupdate starten";
 	items[1].func = goto_bootloader;
-	items[2].name = "-";
+	items[2].name = "   ";
 	items[2].func = nullptr;
 	items[3].name = "MAC-Adresse anzeigen";
 	items[3].func = get_mac_address;
 	items[4].name = "MAC-Adresse setzen";
 	items[4].func = set_mac_address;
-	items[5].name = "-";
+	items[5].name = "   ";
 	items[5].func = nullptr;
 	items[6].name = "Beenden";
 	items[6].func = exit_programm;
@@ -59,12 +55,19 @@ void gui::init() {
     initscr();
     cbreak();
     noecho();
+    start_color();
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
     keypad(stdscr, TRUE);
+    curs_set(FALSE);
     refresh();
 
     int menu_width = 36;
 
     ncurses_stream foo(std::cout);
+    //ncurses_stream foo2(std::cerr);
+
 
     log_border_win = newwin(LINES, COLS - menu_width, 0, 0);
     box(log_border_win, 0 , 0);
@@ -73,7 +76,6 @@ void gui::init() {
     log_win = newwin(LINES - 2, COLS - menu_width - 2, 1, 1);
     scrollok(log_win, TRUE);
     wrefresh(log_win);
-
     refresh();
 
     cmd_win = newwin(LINES, menu_width, 0, COLS - menu_width);
@@ -127,17 +129,12 @@ void gui::worker() {
 
             case 10: /* Enter */
             {
-                endwin();
-                exit(0);
-
                 ITEM *cur;
                 void (*p)(void);
 
                 cur = current_item(menu);
                 p = (void (*)())item_userptr(cur);
-                p();
-
-                printw("Hello world! %s %d\n", cur->name, cur->index);
+                if (p != nullptr) p();
 
                 pos_menu_cursor(menu);
                 break;
@@ -163,30 +160,34 @@ void gui::error(std::string s) {
 }
 
 
-ncursesbuf::ncursesbuf() {}
-int ncursesbuf::overflow(int c) {
-	waddch(log_win, c);
-	wrefresh(log_win);
-	// TODO also write to log file
-	return c;
-}
-
-
-ncurses_stream::ncurses_stream(std::ostream &o) : std::ostream(&tbuf_), src_(o), srcbuf_(o.rdbuf()) {
-
-	o.rdbuf(rdbuf());
-}
-
-ncurses_stream::~ncurses_stream() {
-	src_.rdbuf(srcbuf_);
-}
-
 
 void restart_dongle(void) {
+	COLOR_DBG();
+	cout << "Sending command to restart dongle..." << endl;
+	COLOR_RESET();
 
+	usb_message m;
+	char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
+	m.type = USB_CONTROL;
+	m.payload_length = 1;
+	m.payload = payload;
+	m.payload[0] = (char)USB_CTRL_RESET;
+
+	ptr_tty->usbSendMessage(m);
 }
 void goto_bootloader(void) {
+	COLOR_DBG();
+	cout << "Sending command to go to bootloader..." << endl;
+	COLOR_RESET();
 
+	usb_message m;
+	char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
+	m.type = USB_CONTROL;
+	m.payload_length = 1;
+	m.payload = payload;
+	m.payload[0] = (char)USB_CTRL_BOOTLOADER;
+
+	ptr_tty->usbSendMessage(m);
 }
 void set_mac_address(void) {
 

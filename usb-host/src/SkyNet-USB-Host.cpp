@@ -76,31 +76,7 @@ int main(int argc, char** argv) {
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
         cerr << "Serial port  " << args.tty << " opened." << endl;
 
-		if (args.flash) {
-			usb_message m;
-			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
-			m.type = USB_CONTROL;
-			m.payload_length = 1;
-			m.payload = payload;
-			m.payload[0] = (char)USB_CTRL_BOOTLOADER;
-
-			tty.usbSendMessage(m);
-            sleep(1);
-			exit(0);
-		}
-		else if (args.reset) {
-			usb_message m;
-			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
-			m.type = USB_CONTROL;
-			m.payload_length = 1;
-			m.payload = payload;
-			m.payload[0] = (char)USB_CTRL_RESET;
-
-			tty.usbSendMessage(m);
-            sleep(1);
-			exit(0);
-		}
-		else if (args.set_mac.length() > 0) {
+        if (args.set_mac.length() > 0) {
             int values[6];
             if (args.set_mac.length() == 17 &&
                 6 == sscanf(args.set_mac.c_str(), "%x:%x:%x:%x:%x:%x",
@@ -283,7 +259,6 @@ int main(int argc, char** argv) {
                 cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
                 throw 901;
             }
-
         }
 
 		if (args.usb_debug) {
@@ -309,6 +284,10 @@ int main(int argc, char** argv) {
 		}
 
 		gui.init();
+	    ncurses_stream foo(std::cout);
+	    ncurses_stream foo2(std::cerr);
+
+		cerr << "Ready." << endl;
 
 		// you can do fancy stuff in here
 		while (true) {

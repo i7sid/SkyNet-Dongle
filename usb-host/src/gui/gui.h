@@ -23,10 +23,10 @@
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#define COLOR_DBG()			std::cerr << ANSI_COLOR_YELLOW;
-#define COLOR_ERR()			std::cerr << ANSI_COLOR_RED;
-#define COLOR_OK()			std::cerr << ANSI_COLOR_GREEN;
-#define COLOR_RESET()		std::cerr << ANSI_COLOR_RESET;
+#define COLOR_DBG()			{ wattr_on(log_win, COLOR_PAIR(2) | A_BOLD, nullptr); }
+#define COLOR_ERR()			{ wattr_on(log_win, COLOR_PAIR(1) | A_BOLD, nullptr); }
+#define COLOR_OK()			{ wattr_on(log_win, COLOR_PAIR(3) | A_BOLD, nullptr); }
+#define COLOR_RESET()		{ wattr_off(log_win, COLOR_PAIR(1) | COLOR_PAIR(2) | COLOR_PAIR(3) | A_BOLD, nullptr); }
 
 
 typedef struct menuitem {
@@ -55,10 +55,17 @@ private:
 
 };
 
+extern WINDOW* log_win;
 class ncursesbuf: public std::streambuf {
     public:
-        ncursesbuf();
-        virtual int overflow(int c);
+        ncursesbuf() {}
+        virtual int overflow(int c) {
+        	waddch(log_win, c);
+        	wrefresh(log_win);
+        	// TODO also write to log file
+        	return c;
+        }
+
 };
 
 
@@ -68,8 +75,13 @@ class ncurses_stream : public std::ostream {
         std::streambuf * const srcbuf_;
         ncursesbuf tbuf_;
 
-        ncurses_stream(std::ostream &o);
-        ~ncurses_stream();
+
+        ncurses_stream(std::ostream &o) : std::ostream(&tbuf_), src_(o), srcbuf_(o.rdbuf()) {
+            o.rdbuf(rdbuf());
+        }
+        ~ncurses_stream() {
+        	src_.rdbuf(srcbuf_);
+        }
 };
 
 #endif /* GUI_H_ */

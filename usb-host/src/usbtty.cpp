@@ -88,7 +88,7 @@ void usb_tty::usb_tty_rx_worker(void) {
             close(tty_fd);
             while ((tty_fd = open(tty_path.c_str(), O_RDWR | O_NOCTTY)) <= -1) {
                 cerr << "Could not reconnect. Waiting..." << endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+                std::this_thread::sleep_for(std::chrono::milliseconds(2500));
             }
             continue;
 			//throw(202);
