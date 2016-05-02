@@ -36,10 +36,14 @@ using namespace std;
 int verbosity = 0;
 bool prompt_colored = true;
 error_handler err;
-tap* ptr_tap;
 usb_tty* ptr_tty;
 cmdline arg_parser;
 gui gui;
+
+#ifndef NO_TAP
+tap* ptr_tap;
+#endif // NO_TAP
+
 
 
 void do_tap_debug(string);
@@ -272,6 +276,7 @@ int main(int argc, char** argv) {
 			return 0;
 		}
 
+#ifndef NO_TAP
 		// create tap object and start rx thread
 		std::thread* ptr_tap_rx_thread = nullptr;
 		if (args.use_tap) {
@@ -282,6 +287,8 @@ int main(int argc, char** argv) {
 			std::thread tap_rx_thread(&tap::tap_rx_worker, &tap);
 			ptr_tap_rx_thread = &tap_rx_thread;
 		}
+#endif // NO_TAP
+
 
 		gui.init();
 	    ncurses_stream foo(std::cout);
@@ -297,7 +304,9 @@ int main(int argc, char** argv) {
 
 		// wait for thread to exit
 		usb_rx_thread.join();
+#ifndef NO_TAP
 		if (args.use_tap) ptr_tap_rx_thread->join();
+#endif
 
 	} catch (int i) {
 		COLOR_ERR();

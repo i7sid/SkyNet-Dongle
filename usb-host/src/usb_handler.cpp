@@ -24,9 +24,12 @@
 
 using namespace std;
 
-extern tap* ptr_tap;
 extern usb_tty* ptr_tty;
 extern cmdline arg_parser;
+
+#ifndef NO_TAP
+extern tap* ptr_tap;
+#endif // NO_TAP
 
 
 
@@ -58,6 +61,7 @@ void usbReceiveHandler(usb_message pkt) {
 	}
 
 	if (pkt.type == USB_SKYNET_PACKET) {
+#ifndef NO_TAP
 		mac_frame_data frame;
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
@@ -158,6 +162,8 @@ void usbReceiveHandler(usb_message pkt) {
 		// cleanup mac packet
 		free(frame.payload);
 		mac_frame_extheaders_free(frame.extheader);
+#endif // NO_TAP
+
 	}
 
 	// cleanup usb packet

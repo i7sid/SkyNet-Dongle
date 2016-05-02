@@ -16,7 +16,10 @@
 
 using namespace std;
 
+#ifndef NO_TAP
 extern tap* ptr_tap;
+#endif // NO_TAP
+
 extern usb_tty* ptr_tty;
 
 

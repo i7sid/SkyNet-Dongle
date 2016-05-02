@@ -11,6 +11,8 @@ CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -Werror -Wno-unused-result \
 		   -DPKT_DBG_OVERHEAD=\(4\)
 
+#CXXFLAGS += -DNO_TAP
+
 LDFLAGS = -pthread -lmenu -lform -lncurses 
 SRC = $(wildcard src/*.cpp) $(wildcard src/gui/*.cpp) ../firmware/src/mac/mac_frame_data.c
 

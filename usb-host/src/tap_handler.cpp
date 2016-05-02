@@ -5,6 +5,7 @@
  *  @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#ifndef NO_TAP
 
 #include <fstream>
 #include <iomanip>
@@ -94,4 +95,6 @@ void tapReceiveHandler(void *pkt, size_t nread) {
 	ptr_tty->usbSendMessage(m);
 }
 
+
+#endif // NO_TAP
 

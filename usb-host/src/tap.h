@@ -5,6 +5,8 @@
  *      Author: michi
  */
 
+#ifndef NO_TAP
+
 #ifndef TAP_H_
 #define TAP_H_
 
@@ -33,3 +35,4 @@ private:
 };
 
 #endif /* TAP_H_ */
+#endif /* NO_TAP */
