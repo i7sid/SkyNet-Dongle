@@ -7,11 +7,6 @@
 
 #include <fstream>
 #include <iomanip>
-#include <net/ethernet.h>
-#include <netinet/ether.h>
-#include <arpa/inet.h>
-
-#include <netinet/ip.h>
 
 #include <usb/message.h>
 #include <mac/mac.h>
@@ -28,6 +23,11 @@ extern usb_tty* ptr_tty;
 extern cmdline arg_parser;
 
 #ifndef NO_TAP
+#include <net/ethernet.h>
+#include <netinet/ether.h>
+#include <arpa/inet.h>
+#include <netinet/ip.h>
+
 extern tap* ptr_tap;
 #endif // NO_TAP
 
