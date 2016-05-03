@@ -145,6 +145,18 @@ int main(void) {
 #ifdef IS_BASESTATION
     NV_DATA_T *config = skynet_nv_get();
 
+    // TODO generate random mac address?
+    /*
+    config->mac_addr[0] = 0x03;
+    config->mac_addr[1] = 0x6B;
+    config->mac_addr[2] = 0x84;
+    config->mac_addr[3] = 0xA0;
+    config->mac_addr[4] = 0x70;
+    config->mac_addr[5] = 0x86;
+
+    skynet_nv_write(config);
+    */
+
     // base station init
     skynetbase_init();
 
@@ -249,8 +261,6 @@ int main(void) {
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
-				/*DBG("comp: %f\n", compass);*/ break; // TODO DEBUG remove!
-
 				uint8_t pos = 0;
 				uint8_t buf[64];
 
@@ -298,17 +308,18 @@ int main(void) {
 			{
 				float windspeed = skynetbase_windspeed_get();
 				uint16_t wind_dir = skynetbase_windvane_measure();
+				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
 				uint8_t pos = 0;
 				uint8_t buf[64];
 
 				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f\n",
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f|%f\n",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
-						wind_dir, windspeed);
+						wind_dir, windspeed, compass);
 				pos++; // trailing null byte of string
 
 				mac_frame_data frame;
