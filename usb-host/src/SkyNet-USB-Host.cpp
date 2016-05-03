@@ -28,6 +28,7 @@
 #include "tap_handler.h"
 #include "usb_handler.h"
 #include "gui/gui.h"
+#include "db/db.h"
 
 
 using namespace std;
@@ -44,6 +45,9 @@ gui gui;
 tap* ptr_tap;
 #endif // NO_TAP
 
+#ifndef NO_DB
+db* ptr_db;
+#endif // NO_DB
 
 
 void do_tap_debug(string);
@@ -59,11 +63,15 @@ int main(int argc, char** argv) {
 			arg_parser.printArgs();
 		}
 
+		db db("localhost", "skynetbaseweb", "skynetbaseweb", "skynetbaseweb");
+		db.record_entity(0, "2014-01-02 10:11:12", "23.51234");
+
 		// init serial port on linux systems
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";
 		//string init = "stty -F " + args.tty + " raw pass8 -hupcl clocal 115200";
 		string init = "stty -F " + args.tty + " raw pass8 -echo -hupcl clocal 115200";
 
+		// TODO Überspringen bzw. nicht abstürzen
 		int s = system(init.c_str());
 		if (s != 0) {
 			COLOR_ERR();

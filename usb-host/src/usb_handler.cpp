@@ -31,6 +31,11 @@ extern cmdline arg_parser;
 extern tap* ptr_tap;
 #endif // NO_TAP
 
+#ifndef NO_DB
+#include "db/db.h"
+extern db* ptr_db;
+#endif // NO_DB
+
 
 
 void usbReceiveHandler(usb_message pkt) {
@@ -61,59 +66,23 @@ void usbReceiveHandler(usb_message pkt) {
 	}
 
 	if (pkt.type == USB_SKYNET_PACKET) {
-#ifndef NO_TAP
 		mac_frame_data frame;
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
-		// construct ethernet frame and write to tap device
-		char ether_frame[sizeof(struct ether_header) + frame.payload_size];
-		memset(ether_frame, 0, sizeof(ether_frame));
-
-		struct ether_header* ether_hdr = (struct ether_header*)(ether_frame);
-		char* data = (char*)(ether_frame + sizeof(struct ether_header));
-
-		memset(ether_hdr->ether_dhost, 0, sizeof(ether_hdr->ether_dhost));
-		memset(ether_hdr->ether_shost, 0, sizeof(ether_hdr->ether_shost));
-
-		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
-			ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
-			ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
-		}
-		else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
-			ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
-			ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
-			ether_hdr->ether_dhost[2] = frame.mhr.dest_address[2];
-			ether_hdr->ether_dhost[3] = frame.mhr.dest_address[3];
-			ether_hdr->ether_dhost[4] = frame.mhr.dest_address[4];
-			ether_hdr->ether_dhost[5] = frame.mhr.dest_address[5];
-		}
-
-		if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
-			ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
-			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
-		}
-		else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
-
-			ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
-			ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
-			ether_hdr->ether_shost[2] = frame.mhr.src_address[2];
-			ether_hdr->ether_shost[3] = frame.mhr.src_address[3];
-			ether_hdr->ether_shost[4] = frame.mhr.src_address[4];
-			ether_hdr->ether_shost[5] = frame.mhr.src_address[5];
-		}
+		cerr << "Packet." << endl;
 
 
 		mac_payload_type frame_type = mac_payload_type::NONE;
 
 		// process extheaders
-        ether_hdr->ether_type = 0;
+        uint16_t ether_type = 0;
         mac_extheader* next_hdr = frame.extheader;
         while (next_hdr != NULL) {
         	switch (next_hdr->typelength_union.type_length.type) {
 				case mac_extheader_types::EXTHDR_ETHER_TYPE:
                     frame_type = mac_payload_type::ETHERFRAME;
-					ether_hdr->ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
+					ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
 							                           + next_hdr->data[1];
 					break;
 
@@ -151,18 +120,58 @@ void usbReceiveHandler(usb_message pkt) {
         	next_hdr = next_hdr->next;
         }
 
-
+#ifndef NO_TAP
         if (arg_parser.get().use_tap) {
+			// construct ethernet frame and write to tap device
+			char ether_frame[sizeof(struct ether_header) + frame.payload_size];
+			memset(ether_frame, 0, sizeof(ether_frame));
+
+			struct ether_header* ether_hdr = (struct ether_header*)(ether_frame);
+			char* data = (char*)(ether_frame + sizeof(struct ether_header));
+
+			memset(ether_hdr->ether_dhost, 0, sizeof(ether_hdr->ether_dhost));
+			memset(ether_hdr->ether_shost, 0, sizeof(ether_hdr->ether_shost));
+
+			ether_hdr->ether_type = ether_type;
+
+			if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+				ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
+				ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
+			}
+			else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+				ether_hdr->ether_dhost[0] = frame.mhr.dest_address[0];
+				ether_hdr->ether_dhost[1] = frame.mhr.dest_address[1];
+				ether_hdr->ether_dhost[2] = frame.mhr.dest_address[2];
+				ether_hdr->ether_dhost[3] = frame.mhr.dest_address[3];
+				ether_hdr->ether_dhost[4] = frame.mhr.dest_address[4];
+				ether_hdr->ether_dhost[5] = frame.mhr.dest_address[5];
+			}
+
+			if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
+				ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
+				ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
+			}
+			else if (MHR_FC_GET_DEST_ADDR_MODE(frame.mhr.frame_control) == MAC_ADDR_MODE_LONG) {
+
+				ether_hdr->ether_shost[0] = frame.mhr.src_address[0];
+				ether_hdr->ether_shost[1] = frame.mhr.src_address[1];
+				ether_hdr->ether_shost[2] = frame.mhr.src_address[2];
+				ether_hdr->ether_shost[3] = frame.mhr.src_address[3];
+				ether_hdr->ether_shost[4] = frame.mhr.src_address[4];
+				ether_hdr->ether_shost[5] = frame.mhr.src_address[5];
+			}
+
 			// send ethernet frame
 			if (frame_type == mac_payload_type::ETHERFRAME) {
 				memcpy(data, frame.payload, frame.payload_size);
 				ptr_tap->send_packet(ether_frame, sizeof(ether_frame));
 			}
         }
-		// cleanup mac packet
+#endif // NO_TAP
+
+        // cleanup mac packet
 		free(frame.payload);
 		mac_frame_extheaders_free(frame.extheader);
-#endif // NO_TAP
 
 	}
 
