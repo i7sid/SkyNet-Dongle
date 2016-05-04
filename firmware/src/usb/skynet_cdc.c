@@ -232,6 +232,7 @@ void skynet_cdc_receive_data(void) {
 	int c = skynet_cdc_read(b, sizeof(b));
 	//int c = RingBuffer_PopMult(&usb_rx_ringbuf, b, sizeof(b));
 
+	/*
 #ifdef DEBUG
 	if (c > 0) {
 		DBG("%d\n", c);
@@ -241,6 +242,7 @@ void skynet_cdc_receive_data(void) {
 		DBG("\n");
 	}
 #endif
+	*/
 
 	for (int i = 0; i < c; ++i) {
 		unsigned char buf = b[i];

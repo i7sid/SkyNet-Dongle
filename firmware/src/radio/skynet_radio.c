@@ -26,6 +26,8 @@ char timeStr[] = {0, 0, 0, 0, 0, 0};
 
 volatile bool radio_initialized = false;
 
+#undef DEBUG
+
 void radio_pin_init(void) {
 	// "on/off" pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN);
@@ -117,7 +119,6 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	uint8_t data[length+2];
 
 	radio_disable_irq();
-	//__disable_irq();
 
 	// Leave RX state
 	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
@@ -183,16 +184,12 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 				//skynet_led_blink_red_passive(1000);
 
 				// reset chip to assure correct behaviour next time
-				events_enqueue(EVENT_RADIO_RESTART, NULL);
-
-				/*
 				radio_shutdown();
 				msDelayActive(50);
 				msDelay(100);
 				radio_init(); // also reenables interrupts
 				radio_reset_packet_size(); // reset size of Field 2
 				return;
-				*/
 			}
 			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
 				if (remaining > 0) {
@@ -215,14 +212,10 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 	}
-	DBG("sent: %d, remaining: %d\n", length, remaining);
-
+	//DBG("remaining: %d\n", remaining);
 
 	radio_reset_packet_size(); // reset size of Field 2
 	radio_enable_irq();
-	//__enable_irq();
-	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
-
 }
 
 
@@ -230,10 +223,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 void radio_packet_handler(void) {
 	si446x_get_int_status(0u, 0u, 0u);
 
-
 	radio_disable_irq();
-	//__disable_irq();
-
 
 	// error occurred
 	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
@@ -241,15 +231,6 @@ void radio_packet_handler(void) {
 
 		//DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
 		DBG("[ERROR] %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
-		/*
-		skynet_led_blink_active(40);
-		msDelayActive(50);
-		skynet_led_blink_active(40);
-		msDelayActive(50);
-		skynet_led_blink_active(40);
-		msDelayActive(50);
-		skynet_led_blink_active(40);
-		*/
 
 		// reset chip to assure correct behaviour next time
 		events_enqueue(EVENT_RADIO_RESTART, NULL);
@@ -324,12 +305,10 @@ void radio_packet_handler(void) {
 			// TODO: ERROR, could not malloc memory
 		}
 
-
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 	}
 
 	radio_enable_irq();
-	//__enable_irq();
 }
 
 INLINE bool radio_get_gpio0(void) {

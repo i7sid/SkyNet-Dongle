@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-#define IS_BASESTATION
+//#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -189,6 +189,7 @@ int main(void) {
 	skynetbase_gps_query();
 #endif
 
+	debug_send_rf(); // TODO Debug
 
 
 #ifdef DEBUG_SEND_USB_TEST
@@ -235,6 +236,7 @@ int main(void) {
     	skynetbase_gps_receive_data();
 #endif
 
+    	/*
 		si446x_get_int_status(0u, 0u, 0u);
 
 		if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
@@ -247,6 +249,7 @@ int main(void) {
 		if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
 			DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.RX_FIFO_COUNT, Si446xCmd.FIFO_INFO.TX_FIFO_SPACE);
 		}
+*/
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);

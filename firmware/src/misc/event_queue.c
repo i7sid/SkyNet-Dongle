@@ -37,9 +37,9 @@ int events_enqueue(event_types type, void* data) {
 		DBG("ERROR: events ringbuffer is full. (%d)\n", (int)type);
 		DBG("%d, %d %d %x %x\n", sizeof(queued_event), count, events_ringbuf.count, events_ringbuf.head, events_ringbuf.tail);
 	}
-	else {
+	/*else {
 		DBG("OK %d, %d %d %x %x\n", sizeof(queued_event), count, events_ringbuf.count, events_ringbuf.head, events_ringbuf.tail);
-	}
+	}*/
 #endif
 	return r;
 }
