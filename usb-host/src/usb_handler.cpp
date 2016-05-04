@@ -117,6 +117,7 @@ void usbReceiveHandler(usb_message pkt) {
 						break;
 					}
 
+#ifndef NO_DB
 					time_t t = time(0);   // get time now
 					struct tm * now = localtime(&t);
 					stringstream db_timestamp;
@@ -155,7 +156,7 @@ void usbReceiveHandler(usb_message pkt) {
 							gui.val_winddir = parts[i+1];
 						}
 					}
-
+#endif // NO_DB
 
 
 					frame_type = mac_payload_type::BASE_SENSOR_DATA;
