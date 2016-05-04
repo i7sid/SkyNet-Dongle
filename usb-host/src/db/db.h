@@ -5,6 +5,8 @@
  *  @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#ifndef NO_DB
+
 #ifndef DB_DB_H_
 #define DB_DB_H_
 
@@ -37,3 +39,4 @@ private:
 
 
 #endif /* DB_DB_H_ */
+#endif // NO_DB

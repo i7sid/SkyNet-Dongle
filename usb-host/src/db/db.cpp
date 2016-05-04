@@ -5,6 +5,8 @@
  *  @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#ifndef NO_DB
+
 #include "db.h"
 
 
@@ -39,3 +41,4 @@ void db::record_entity(int station, int type, std::string timestamp, std::string
 
 
 
+#endif // NO_DB

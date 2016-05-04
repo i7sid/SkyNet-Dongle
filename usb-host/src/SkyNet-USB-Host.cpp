@@ -63,8 +63,10 @@ int main(int argc, char** argv) {
 			arg_parser.printArgs();
 		}
 
+#ifndef NO_DB
 		db db("localhost", "skynetbaseweb", "skynetbaseweb", "skynetbaseweb");
 		ptr_db = &db;
+#endif
 
 		// init serial port on linux systems
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";

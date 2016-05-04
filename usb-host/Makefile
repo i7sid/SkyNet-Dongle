@@ -14,6 +14,7 @@ CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -DPKT_DBG_OVERHEAD=\(8\) \
 
 #CXXFLAGS += -DNO_TAP
+#CXXFLAGS += -DNO_DB
 CXXFLAGS += -I"/usr/include/mysql"
 CXXFLAGS += -g -rdynamic
 
