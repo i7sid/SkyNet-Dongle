@@ -23,10 +23,11 @@ typedef enum mac_payload_type {
 
 
 typedef enum base_sensor_data_type {
-	SENSOR_DATE 	= 0x1,	///<@brief date of the sensor node
-	SENSOR_POSITION	= 0x2,	///<@brief gps position data
-	SENSOR_COMPASS	= 0x4,	///<@brief compass orientation
-	SENSOR_WIND    	= 0x8	///<@brief wind speed and direction
+	SENSOR_DATE 		= 0x1,	///<@brief date of the sensor node
+	SENSOR_POSITION		= 0x2,	///<@brief gps position data
+	SENSOR_COMPASS		= 0x4,	///<@brief compass orientation
+	SENSOR_WIND_SPEED   = 0x8,	///<@brief wind speed
+	SENSOR_WIND_DIR		= 0x10	///<@brief wind direction (uncompensated)
 } base_sensor_data_type;
 
 

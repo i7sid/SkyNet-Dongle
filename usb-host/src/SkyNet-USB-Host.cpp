@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
 		}
 
 		db db("localhost", "skynetbaseweb", "skynetbaseweb", "skynetbaseweb");
-		db.record_entity(0, "2014-01-02 10:11:12", "23.51234");
+		ptr_db = &db;
 
 		// init serial port on linux systems
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";
@@ -83,6 +83,12 @@ int main(int argc, char** argv) {
 		// create usb_tty object and start rx thread
 		usb_tty tty(args.tty, usbReceiveHandler);
 		ptr_tty = &tty;
+
+
+		// initialize gui
+		gui.init();
+	    ncurses_stream foo(std::cout);
+	    ncurses_stream foo2(std::cerr);
 
 		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
@@ -143,82 +149,6 @@ int main(int argc, char** argv) {
 
 
             exit(0);
-        }
-		else if (args.get_mac) {
-			usb_message m;
-			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
-			m.type = USB_CONTROL;
-			m.payload_length = 1;
-			m.payload = payload;
-			m.payload[0] = (char)USB_CTRL_GET_MAC_ADDR;
-
-			tty.usbSendMessage(m);
-			sleep(1);
-			exit(0);
-        }
-		else if (args.get_ip) {
-			usb_message m;
-			char *payload = new char[USB_MAX_PAYLOAD_LENGTH];
-			m.type = USB_CONTROL;
-			m.payload_length = 1;
-			m.payload = payload;
-			m.payload[0] = (char)USB_CTRL_GET_IP_ADDR;
-
-			tty.usbSendMessage(m);
-			sleep(1);
-			exit(0);
-        }
-		else if (args.calib_compass.length() > 0) {
-            int values[2];
-            if (args.calib_compass.length() == 5 &&
-                2 == sscanf(args.calib_compass.c_str(), "%x:%x",
-                            &values[0], &values[1])) {
-
-                    char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
-                    mac_frame_data frame;
-                    mac_frame_data_init(&frame);
-
-                    frame.payload = NULL;
-                    frame.payload_size = 0;
-
-                    MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-                    frame.mhr.dest_pan_id[0] = 0;
-                    frame.mhr.dest_pan_id[1] = 0;
-                    frame.mhr.dest_address[0] = values[0];
-                    frame.mhr.dest_address[1] = values[1];
-
-                    MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-                    frame.mhr.src_pan_id[0] = 0;
-                    frame.mhr.src_pan_id[1] = 0;
-                    frame.mhr.src_address[0] = 0; // TODO get local
-                    frame.mhr.src_address[1] = 0; // TODO get local
-
-
-                    // generate extended headers
-                    mac_extheader hdr;
-                    mac_extheader_init(&hdr);
-                    hdr.typelength_union.type_length.length = 1;
-                    hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD;
-                    hdr.data[0] = dongle_command::CALIB_COMPASS;
-
-                    frame.extheader = &hdr;
-
-                    uint16_t usb_length = mac_frame_data_pack(&frame, (uint8_t*)usb_payload);
-
-
-                    usb_message m;
-                    m.type = USB_SKYNET_PACKET;
-                    m.payload_length = usb_length;
-                    m.payload = usb_payload;
-                    tty.usbSendMessage(m);
-
-                    sleep(6);
-                    exit(0);
-            }
-            else {
-                cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
-                throw 901;
-            }
         }
 		else if (args.calib_compass_stop.length() > 0) {
             int values[2];
@@ -298,10 +228,7 @@ int main(int argc, char** argv) {
 #endif // NO_TAP
 
 
-		gui.init();
-	    ncurses_stream foo(std::cout);
-	    ncurses_stream foo2(std::cerr);
-
+		// give visually feedback that we are running
 		cerr << "Ready." << endl;
 
 		// you can do fancy stuff in here

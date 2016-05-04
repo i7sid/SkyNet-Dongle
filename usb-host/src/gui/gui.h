@@ -41,19 +41,32 @@ public:
 
 	void init();
 	void worker();
+	void update_status_win();
+	void redraw();
 
 	void log(std::string);
 	void debug(std::string);
 	void error(std::string);
 
+	std::string val_compass;
+	std::string val_pos;
+	std::string val_windspeed;
+	std::string val_winddir;
+
+protected:
+
 private:
+
     WINDOW* log_border_win;
-	WINDOW* cmd_win;
+    WINDOW* cmd_win;
+    WINDOW* status_win;
     MENU *menu;
     ITEM *cur_item;
-    menuitem items[7];
+    menuitem items[32];
 
 };
+
+void print_in_middle(WINDOW *win, int starty, int startx, int width, std::string s, chtype color);
 
 extern WINDOW* log_win;
 class ncursesbuf: public std::streambuf {

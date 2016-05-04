@@ -18,8 +18,8 @@ db::db(std::string host, std::string user, std::string pass, std::string dbname)
 
 	this->connect(dbname.c_str(), host.c_str(), user.c_str(), pass.c_str(), 0);
 
-	q_insert_entity << "INSERT INTO entities ( `station_id` , `experiment_id` , `timestamp` , `value`  ) " <<
-			" VALUES ( '%0:station_id' , '%1:experiment_id' ,  '%2:timestamp' ,  '%3:value' );";
+	q_insert_entity << "INSERT INTO entities ( `station_id` , `experiment_id` , `timestamp` , `value` , `entity_type_id` ) " <<
+			" VALUES ( '%0:station_id' , '%1:experiment_id' ,  '%2:timestamp' ,  '%3:value', '%4:type' );";
 	q_insert_entity.parse();
 
 
@@ -29,8 +29,11 @@ db::db(std::string host, std::string user, std::string pass, std::string dbname)
 }
 
 
-void db::record_entity(int station, std::string timestamp, std::string value) {
-	StoreQueryResult res = q_insert_entity.store(std::to_string(station).c_str(), std::to_string(experiment).c_str(), timestamp.c_str(), value.c_str());
+void db::record_entity(int station, int type, std::string timestamp, std::string value) {
+	/*StoreQueryResult res =*/ q_insert_entity.store(std::to_string(station).c_str(),
+									std::to_string(experiment).c_str(), timestamp.c_str(),
+									value.c_str(), std::to_string(type).c_str());
+
 	///*SimpleResult result = */ q_insert_entity.execute();
 }
 

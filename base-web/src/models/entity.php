@@ -21,7 +21,7 @@ class Entity
      */
     protected $timestamp;
     /**
-     * @Column(type="decimal",nullable=false)
+     * @Column(type="decimal",precision=12,scale=6,nullable=false)
      */
     protected $value;
     /**
@@ -32,6 +32,10 @@ class Entity
      * @ManyToOne(targetEntity="Experiment")
      */
     protected $experiment;
+    /**
+     * @ManyToOne(targetEntity="Type")
+     */
+    protected $entity_type;
 
 
     public function getId() {
@@ -68,6 +72,14 @@ class Entity
 
     public function setExperiment($f) {
         $this->experiment = $f;
+    }
+
+    public function getEntityType() {
+        return $this->entity_type;
+    }
+
+    public function setEntityType($f) {
+        $this->entity_type = $f;
     }
 }
 

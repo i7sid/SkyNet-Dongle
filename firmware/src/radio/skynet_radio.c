@@ -115,17 +115,9 @@ void radio_reset_packet_size(void) {
 void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 {
 	uint8_t data[length+2];
-#ifdef DEBUG
-	uint8_t status_ph[0xfff];
-	uint8_t status_mod[0xfff];
-	uint8_t status_chip[0xfff];
-	uint16_t i = 0;
-	memset(status_ph, 0, 0xfff);
-	memset(status_mod, 0, 0xfff);
-	memset(status_chip, 0, 0xfff);
-#endif
 
 	radio_disable_irq();
+	//__disable_irq();
 
 	// Leave RX state
 	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
@@ -184,16 +176,6 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 		while (true) {
 			si446x_get_int_status(0u, 0u, 0u);
 
-#ifdef DEBUG
-			// DEBUG
-			if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
-				status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
-				status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
-				status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
-				++i;
-			}
-#endif
-
 			if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
 					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
@@ -201,12 +183,16 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 				//skynet_led_blink_red_passive(1000);
 
 				// reset chip to assure correct behaviour next time
+				events_enqueue(EVENT_RADIO_RESTART, NULL);
+
+				/*
 				radio_shutdown();
 				msDelayActive(50);
 				msDelay(100);
 				radio_init(); // also reenables interrupts
 				radio_reset_packet_size(); // reset size of Field 2
 				return;
+				*/
 			}
 			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
 				if (remaining > 0) {
@@ -229,41 +215,24 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 	}
-	//DBG("remaining: %d\n", remaining);
+	DBG("sent: %d, remaining: %d\n", length, remaining);
 
-#ifdef DEBUG
-	for (int j = 0; j < i; ++j) {
-		//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
-	}
-#endif
 
 	radio_reset_packet_size(); // reset size of Field 2
 	radio_enable_irq();
+	//__enable_irq();
+	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
+
 }
 
 
 
 void radio_packet_handler(void) {
-#ifdef DEBUG
-	uint8_t status_ph[0xfff];
-	uint8_t status_mod[0xfff];
-	uint8_t status_chip[0xfff];
-	uint16_t i = 0;
-	memset(status_ph, 0, 0xfff);
-	memset(status_mod, 0, 0xfff);
-	memset(status_chip, 0, 0xfff);
-#endif
-
 	si446x_get_int_status(0u, 0u, 0u);
 
-#ifdef DEBUG
-	status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
-	status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
-	status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
-	++i;
-#endif
 
 	radio_disable_irq();
+	//__disable_irq();
 
 
 	// error occurred
@@ -320,14 +289,7 @@ void radio_packet_handler(void) {
 
 			while (true) {
 				si446x_get_int_status(0u, 0u, 0u);
-#ifdef DEBUG
-				if (Si446xCmd.GET_INT_STATUS.PH_PEND > 0) {
-					++i;
-					status_ph[i] = Si446xCmd.GET_INT_STATUS.PH_PEND;
-					status_mod[i] = Si446xCmd.GET_INT_STATUS.MODEM_STATUS;
-					status_chip[i] = Si446xCmd.GET_INT_STATUS.CHIP_STATUS;
-				}
-#endif
+
 				if (Si446xCmd.GET_INT_STATUS.PH_STATUS & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 					//DBG("RECEIVED, remaining: %d\n", remaining);
 					break;
@@ -363,16 +325,11 @@ void radio_packet_handler(void) {
 		}
 
 
-#ifdef DEBUG
-		for (int j = 0; j < i; ++j) {
-			//DBG("status[%d] = %d %d %d\n", j, status_ph[j], status_mod[j], status_chip[j]);
-		}
-#endif
-
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 	}
 
 	radio_enable_irq();
+	//__enable_irq();
 }
 
 INLINE bool radio_get_gpio0(void) {

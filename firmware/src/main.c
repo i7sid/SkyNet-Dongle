@@ -183,6 +183,7 @@ int main(void) {
     // send regularily data events
     register_delayed_event(1000, generate_event_wind_base);
 	register_delayed_event(5000, generate_event_pos_base);
+    //debug_send_rf(); // TODO Debug
 
 	// start first GPS position query
 	skynetbase_gps_query();
@@ -234,6 +235,18 @@ int main(void) {
     	skynetbase_gps_receive_data();
 #endif
 
+		si446x_get_int_status(0u, 0u, 0u);
+
+		if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+				Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+			DBG("[ERROR] RF chip reported error: %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		}
+
+		si446x_fifo_info(0);
+		if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
+			DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.RX_FIFO_COUNT, Si446xCmd.FIFO_INFO.TX_FIFO_SPACE);
+		}
 
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
@@ -253,29 +266,43 @@ int main(void) {
 				msDelay(100);
 				radio_init(); // also reenables interrupts
 				radio_reset_packet_size(); // reset size of Field 2
+				si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT | SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
 				break;
 
 			case EVENT_BASE_QUERY_POS:
 			{
 				gps_pubx_data* gps = skynetbase_gps_get_data();
+
+				// start next query
+				skynetbase_gps_query();
+
+				if (!(gps->status) || !(gps->lat_dir) || !(gps->lon_dir) || !(gps->lat) || !(gps->lon)) {
+					// TODO send notification to network?
+					break; // no gps data available yet
+				}
+
+
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
 				uint8_t pos = 0;
 				uint8_t buf[64];
 
+
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%02d%02d%02d|%c|%f|%c|%f|%f",
+						"%02d%02d%02d|%c:%f:%c:%f|%f",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
 						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon, compass);
+
 				pos++; // trailing null byte of string
 
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
-				frame.payload_size = pos+4; // TODO Debug (+4)
+				frame.payload_size = pos;
+				//frame.payload_size = pos+4; // TODO Debug (+4)
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
@@ -291,16 +318,14 @@ int main(void) {
 				mac_extheader hdr;
 				mac_extheader_init(&hdr);
 				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 1;
-				hdr.data[0] = SENSOR_POSITION | SENSOR_COMPASS;
+				hdr.typelength_union.type_length.length = 2;
+				hdr.data[0] = SENSOR_POSITION;
+				hdr.data[1] = SENSOR_COMPASS; // TODO DEBUG
 
 				frame.extheader = &hdr;
 
 				// send frame
 				mac_transmit_packet(&frame);
-
-				// start next query
-				skynetbase_gps_query();
 
 				break;
 			}
@@ -341,8 +366,10 @@ int main(void) {
 				mac_extheader hdr;
 				mac_extheader_init(&hdr);
 				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 1;
-				hdr.data[0] = SENSOR_WIND;
+				hdr.typelength_union.type_length.length = 3;
+				hdr.data[0] = SENSOR_WIND_DIR;
+				hdr.data[1] = SENSOR_WIND_SPEED;
+				hdr.data[2] = SENSOR_COMPASS;
 
 				frame.extheader = &hdr;
 
@@ -411,7 +438,7 @@ int main(void) {
 				mac_extheader_init(&hdr);
 				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
 				hdr.typelength_union.type_length.length = 1;
-				hdr.data[0] = SENSOR_WIND;
+				hdr.data[0] = SENSOR_WIND_SPEED;
 
 				frame.extheader = &hdr;
 

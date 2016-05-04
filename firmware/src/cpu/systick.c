@@ -49,6 +49,7 @@ void register_delayed_event(uint32_t ms, void* f) {
 			tick_events_t[i] = ms;
 			tick_events_f[i] = f;
 			enable_systick();
+			__enable_irq();
 			return;
 		}
 	}

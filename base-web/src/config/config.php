@@ -9,7 +9,8 @@
 
 $config['db']['host']       = 'localhost';
 $config['db']['user']       = 'skynetbaseweb';
-$config['db']['password']   = '72qRDccieWQAQpQm';
+$config['db']['password']   = 'skynetbaseweb';
+#$config['db']['password']   = '72qRDccieWQAQpQm';
 $config['db']['name']       = 'skynetbaseweb';
 
 ?>

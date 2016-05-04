@@ -84,8 +84,9 @@ void usb_tty::usb_tty_rx_worker(void) {
 
 
 		if (first == 0) {
-			cerr << "usb_tty stream not good: EOF." << endl;
+			cerr << endl << "EOF." << endl;
             close(tty_fd);
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
             while ((tty_fd = open(tty_path.c_str(), O_RDWR | O_NOCTTY)) <= -1) {
                 cerr << "Could not reconnect. Waiting..." << endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(2500));
@@ -98,8 +99,11 @@ void usb_tty::usb_tty_rx_worker(void) {
 		// wait for first (magic) character
 		if ((unsigned char)first != USB_MAGIC_BYTE1 && (unsigned char)first != USB_MAGIC_BYTE2) {
 			if (first == 10) continue;
+			cerr << "-";
+/*
 			cerr << "Unexpected character received from USB: " << (int)first <<
                 " (0x" << std::hex << (int)first << ")" << std::dec << endl;
+ */
 		}
 		else {
 			char expect = 0;

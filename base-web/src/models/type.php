@@ -17,9 +17,22 @@ class Type
      */
     protected $id;
 
+    /**
+     * @var string
+     * @Column(type="string")
+     */
+    protected $description;
+
 
     public function getId() {
         return $this->id;
+    }
+
+    public function getDescription() {
+        return $this->description;
+    }
+    public function setDescription($d) {
+        $this->description = $d;
     }
 
 }

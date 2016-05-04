@@ -7,6 +7,8 @@
 
 #include <fstream>
 #include <iomanip>
+#include <vector>
+#include <ctime>
 
 #include <usb/message.h>
 #include <mac/mac.h>
@@ -15,12 +17,14 @@
 #include "usbtty.h"
 #include "cmdline.h"
 #include "gui/gui.h"
+#include "db/db.h"
 
 
 using namespace std;
 
 extern usb_tty* ptr_tty;
 extern cmdline arg_parser;
+extern gui gui;
 
 #ifndef NO_TAP
 #include <net/ethernet.h>
@@ -37,6 +41,22 @@ extern db* ptr_db;
 #endif // NO_DB
 
 
+vector<string> split(const char *str, char c = ' ')
+{
+    vector<string> result;
+
+    do
+    {
+        const char *begin = str;
+
+        while(*str != c && *str)
+            str++;
+
+        result.push_back(string(begin, str));
+    } while (0 != *str++);
+
+    return result;
+}
 
 void usbReceiveHandler(usb_message pkt) {
 	if (pkt.type == USB_DEBUG) {
@@ -70,9 +90,7 @@ void usbReceiveHandler(usb_message pkt) {
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
-		cerr << "Packet." << endl;
-
-
+		//cerr << "  "  << (unsigned int)pkt.payload_length << endl;
 		mac_payload_type frame_type = mac_payload_type::NONE;
 
 		// process extheaders
@@ -87,11 +105,66 @@ void usbReceiveHandler(usb_message pkt) {
 					break;
 
 				case mac_extheader_types::EXTHDR_SENSOR_VALUES:
-					// TODO Sensordaten verarbeiten (in DB einfügen)
-					//char sensorbuf[128];
+				{
+					// parse sensor data and add to database
+
+					vector<string> parts = split((const char*)frame.payload, '|');
+					if (parts.size() < (size_t)(next_hdr->typelength_union.type_length.length) + 1) {
+						COLOR_ERR();
+						cerr << endl << "Received invalid sensor data packet. (too few data elements)" << endl;
+						cerr << frame.payload << endl;
+						COLOR_RESET();
+						break;
+					}
+
+					time_t t = time(0);   // get time now
+					struct tm * now = localtime(&t);
+					stringstream db_timestamp;
+					db_timestamp << setfill('0') << setw(4)
+							<< now->tm_year + 1900 << "-" << setfill('0') << setw(2) << now->tm_mon + 1
+							<< "-" << setfill('0') << setw(2) << now->tm_mday
+							<< " " << parts[0][0] << parts[0][1] << ":"
+							<< parts[0][2] << parts[0][3] << ":"
+							<< parts[0][4] << parts[0][5];
+					//cerr << "ts: " << db_timestamp.str() << endl;
+
+					for (int i = 0; i < next_hdr->typelength_union.type_length.length; ++i) {
+						if (next_hdr->data[i] == SENSOR_POSITION) {
+							//cerr << "Pos: " << parts[i+1] << endl;
+							//ptr_db->record_entity(0, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
+							// TODO database?
+							gui.val_pos = parts[i+1];
+							cerr << "#";
+						}
+						else if (next_hdr->data[i] == SENSOR_COMPASS) {
+							//cerr << "Compass: " << parts[i+1] << endl;
+							ptr_db->record_entity(0, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
+							gui.val_compass = parts[i+1];
+						}
+						else if (next_hdr->data[i] == SENSOR_DATE) {
+							cerr << "Date: " << parts[i+1] << endl;
+						}
+						else if (next_hdr->data[i] == SENSOR_WIND_SPEED) {
+							//cerr << "Wind speed: " << parts[i+1] << endl;
+							ptr_db->record_entity(0, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
+							gui.val_windspeed = parts[i+1];
+						}
+						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
+							//cerr << "Wind dir: " << parts[i+1] << endl;
+							ptr_db->record_entity(0, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
+							gui.val_winddir = parts[i+1];
+						}
+					}
+
+
+
 					frame_type = mac_payload_type::BASE_SENSOR_DATA;
-					cerr << frame.payload << endl;
+					cerr << ".";
+					gui.update_status_win();
+					flush(cerr);
+					//cerr << frame.payload << endl;
 					break;
+				}
 
 				case mac_extheader_types::EXTHDR_DONGLE_CMD_ANSWER:
                     {
