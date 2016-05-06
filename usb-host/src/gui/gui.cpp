@@ -631,8 +631,9 @@ void test_device(void) {
                 mac_frame_data frame;
                 mac_frame_data_init(&frame);
 
-                frame.payload = NULL;
-                frame.payload_size = 0;
+                // TODO heavily DEBUG
+                frame.payload = (uint8_t*)string("..........").c_str();
+                frame.payload_size = 10;
 
                 MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.dest_pan_id[0] = 0;

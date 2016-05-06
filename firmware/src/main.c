@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-//#define IS_BASESTATION
+#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -189,7 +189,7 @@ int main(void) {
 	skynetbase_gps_query();
 #endif
 
-	debug_send_rf(); // TODO Debug
+	//debug_send_rf(); // TODO Debug
 
 
 #ifdef DEBUG_SEND_USB_TEST

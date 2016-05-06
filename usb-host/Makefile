@@ -11,7 +11,7 @@ CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -I"../firmware/src/mac" -I"../firmware/src" -O3 -s -Wall \
 		   -fmessage-length=0 -Wno-packed-bitfield-compat \
 		   -Werror -Wno-unused-result \
-		   -DPKT_DBG_OVERHEAD=\(0\) \
+		   -DPKT_DBG_OVERHEAD=\(8\) \
 
 #CXXFLAGS += -DNO_TAP
 CXXFLAGS += -I"/usr/include/mysql"
