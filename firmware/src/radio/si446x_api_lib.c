@@ -128,6 +128,8 @@ U8 si446x_apply_patch(void)
 
     uint8_t Si446xPatchCommands[][8] = { SI446X_PATCH_CMDS };
 
+    //msDelayActive(200);
+
     /* Check if patch is needed. */
     si446x_part_info();
 

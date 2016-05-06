@@ -49,6 +49,9 @@ void vRadio_PowerUp(void)
 	msDelayActive(100);
 }
 
+
+#define RADIO_CONFIGURATION_USE_PATCH
+
 /*!
  *  Radio Initialization.
  *
@@ -71,6 +74,17 @@ void vRadio_Init(void)
 	/* Power Up the radio chip */
 	DBG("Power up radio...\n");
 	vRadio_PowerUp();
+
+
+#ifdef RADIO_CONFIGURATION_USE_PATCH
+	uint16_t wDelay;
+	while(SI446X_SUCCESS != si446x_apply_patch()) {
+		for (wDelay = 0x7FFF; wDelay--; ) ;
+		/* Power Up the radio chip */
+		vRadio_PowerUp();
+	}
+#endif
+
 
 	/* Load radio configuration */
 	while (SI446X_SUCCESS != si446x_configuration_init(pRadioConfiguration->Radio_ConfigurationArray))

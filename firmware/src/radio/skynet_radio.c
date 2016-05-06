@@ -44,9 +44,6 @@ void radio_init(void) {
 
 	vRadio_Init();	// intialize radio chip
 
-	//uint8_t ret = si446x_apply_patch();
-	//DBG("patched: %d\n", ret);
-
 	si446x_part_info();
 	si446x_func_info();
 
@@ -114,11 +111,25 @@ void radio_reset_packet_size(void) {
 	si446x_set_property_lpc(0x12, 2, 0x11);
 }
 
+// for neccessarity of this function refer to errata sheet
+static void tx_fifo_reset_fixed(void) {
+	// send reset command
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+
+	// fill one dummy byte
+	uint8_t n = 0;
+	si446x_write_tx_fifo(1, &n);
+
+	// send reset request again
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+}
+
 void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 {
 	uint8_t data[length+2];
 
-	radio_disable_irq();
+	//radio_disable_irq();
+	__disable_irq();
 
 	// Leave RX state
 	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
@@ -127,7 +138,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	si446x_get_int_status(0u, 0u, 0u);
 
 	// Reset the Tx Fifo
-	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+	tx_fifo_reset_fixed();
 
 	// copy payload data to send buffer
 	memcpy(data+2, packet, length);
@@ -215,7 +226,24 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	//DBG("remaining: %d\n", remaining);
 
 	radio_reset_packet_size(); // reset size of Field 2
-	radio_enable_irq();
+	//radio_enable_irq();
+	__enable_irq();
+
+	// TODO check if other interrupts occurred
+
+	// TODO check FIFO state
+	si446x_fifo_info(0);
+	if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
+		DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.TX_FIFO_SPACE, Si446xCmd.FIFO_INFO.RX_FIFO_COUNT);
+	}
+
+	si446x_get_int_status(0u, 0u, 0u);
+	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+		DBG("[ERROR] RF chip reported error: 0x%x\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+	}
+
 }
 
 
