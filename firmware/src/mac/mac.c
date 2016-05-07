@@ -28,10 +28,11 @@ inline int mac_random(int max) {
 
 bool channel_idle(void) {
     si446x_get_modem_status(0xFF);
-    //uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
-    uint8_t latched = Si446xCmd.GET_MODEM_STATUS.LATCH_RSSI;
-    //DBG("%d, %d\n", rssi, latched);
-    return (latched != 1);
+    uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
+    //uint8_t latched = Si446xCmd.GET_MODEM_STATUS.LATCH_RSSI;
+    //skynet_cdc_write_debug("%d, %d\n", rssi, latched);
+    //return (latched != 1);
+    return (rssi < SKYNET_RADIO_RSSI_CCA_THRESHOLD);
 }
 
 bool mac_transmit_packet(mac_frame_data *frame) {
