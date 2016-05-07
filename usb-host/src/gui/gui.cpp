@@ -86,6 +86,7 @@ gui::~gui() {
 
 void gui::update_status_win() {
 	int i = 1;
+	redrawwin(status_win);
 	mvwprintw(status_win, i++, 2, "Position:");
 	mvwprintw(status_win, i++, 2, "%s", val_pos.c_str());
 	mvwprintw(status_win, i++, 2, " ");
@@ -419,7 +420,6 @@ void calib_compass(void) {
             2 == sscanf(mac.c_str(), "%x:%x",
                         &values[0], &values[1])) {
 
-        		cerr << "address: " << (int)values[0] << " " << (int)values[1] << endl;
                 char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
                 mac_frame_data frame;
                 mac_frame_data_init(&frame);
@@ -626,14 +626,13 @@ void test_device(void) {
             2 == sscanf(mac.c_str(), "%x:%x",
                         &values[0], &values[1])) {
 
-        		cerr << "address: " << (int)values[0] << " " << (int)values[1] << endl;
                 char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
                 mac_frame_data frame;
                 mac_frame_data_init(&frame);
 
-                // TODO heavily DEBUG
-                frame.payload = (uint8_t*)string("..........").c_str();
-                frame.payload_size = 10;
+                // TODO heavily DEBUG (overhead by header: 16 Byte)
+                frame.payload = (uint8_t*)string("..........abcdefghijklmnopqrstABCDEFGHIJKLMNOPQRST----------a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,A,B,C,D,E,F,G,H,I,J,K,L,MNOPQRST").c_str();
+                frame.payload_size = 0;
 
                 MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.dest_pan_id[0] = 0;
@@ -667,7 +666,7 @@ void test_device(void) {
         }
         else {
         	COLOR_ERR();
-            cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
+            cerr << endl << "MAC address malformed. Please use format   AA:BB ." << endl;
             COLOR_RESET();
         }
 	}
