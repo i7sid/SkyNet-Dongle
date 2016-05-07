@@ -59,6 +59,7 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 		case MAC_FRAME_BEACON:
 			break;
 		case MAC_FRAME_DATA:
+		{
 			// ignore security for first implementation
 			MHR_FC_SET_SECURITY_ENABLED(frame->mhr.frame_control, 0);
 
@@ -128,6 +129,7 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 			// ignore aux security header for now
 
 			break;
+		}
 		case MAC_FRAME_ACK:
 			break;
 		case MAC_FRAME_MAC_CMD:

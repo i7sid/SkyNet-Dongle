@@ -193,8 +193,10 @@ void vRadio_StartRX(U8 channel, U8 packetLenght)
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
 
 	/* Start Receiving packet, channel 0, START immediately, Packet length used or not according to packetLength */
-	si446x_start_rx(channel, 0u, packetLenght, SI446X_CMD_START_RX_ARG_RXTIMEOUT_STATE_ENUM_NOCHANGE,
-			SI446X_CMD_START_RX_ARG_RXVALID_STATE_ENUM_READY, SI446X_CMD_START_RX_ARG_RXINVALID_STATE_ENUM_RX);
+	si446x_start_rx(channel, 0u, packetLenght,
+			SI446X_CMD_START_RX_ARG_RXTIMEOUT_STATE_ENUM_NOCHANGE,	// state after preamble timeout
+			SI446X_CMD_START_RX_ARG_RXVALID_STATE_ENUM_READY,		// state after PACKET_RX interrupt / valid CRC
+			SI446X_CMD_START_RX_ARG_RXINVALID_STATE_ENUM_RX);		// state after invalid CRC detected
 }
 
 /*!
@@ -205,6 +207,7 @@ void vRadio_StartRX(U8 channel, U8 packetLenght)
  *  @note
  *
  */
+/*
 void vRadio_StartRXlong(U8 channel)
 {
 	// Read ITs, clear pending ones
@@ -213,12 +216,13 @@ void vRadio_StartRXlong(U8 channel)
 	// Reset the Rx Fifo
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
 
-	/* Start Receiving packet, channel 0, START immediately, Packet length used or not according to packetLength */
+	/// Start Receiving packet, channel 0, START immediately, Packet length used or not according to packetLength
 	si446x_start_rx(channel, 0u, 0x00,
             SI446X_CMD_START_RX_ARG_RXTIMEOUT_STATE_ENUM_NOCHANGE,
             SI446X_CMD_START_RX_ARG_RXVALID_STATE_ENUM_READY,
             SI446X_CMD_START_RX_ARG_RXINVALID_STATE_ENUM_RX);
 }
+*/
 
 
 
@@ -231,24 +235,26 @@ void vRadio_StartRXlong(U8 channel)
  *  @note
  *
  */
+/*
 void vRadio_StartTx_Variable_Packet(U8 channel, U8 *pioRadioPacket, U8 length)
 {
-	/* Leave RX state */
+	// Leave RX state
 	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
 
-	/* Read ITs, clear pending ones */
+	// Read ITs, clear pending ones
 	si446x_get_int_status(0u, 0u, 0u);
 
-	/* Reset the Tx Fifo */
+	// Reset the Tx Fifo
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
 
-	/* Fill the TX fifo with datas */
+	// Fill the TX fifo with datas
 	si446x_write_tx_fifo(length, pioRadioPacket);
 
-	/* Start sending packet, channel 0, START immediately */
+	// Start sending packet, channel 0, START immediately
 	si446x_start_tx(channel, 0x80, length);
 
 }
+*/
 
 /*!
  *  Set Radio to TX mode, fixed packet length.

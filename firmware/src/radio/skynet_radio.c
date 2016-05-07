@@ -69,7 +69,8 @@ void radio_init(void) {
 	radio_set_irq();
 
 	// start receiving...
-	vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
+	//vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
+	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0);
 	DBG("Radio RX started.\n");
 }
 
@@ -124,6 +125,27 @@ static void tx_fifo_reset_fixed(void) {
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
 }
 
+static inline void wait_for_packet_sent_irq(void) {
+	while (true) {
+		while (radio_hal_NirqLevel()) { } 	// wait for interrupt line to get low
+		si446x_get_int_status(0u, 0u, 0u); 	// read interrupt state
+		if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
+			break;
+		}
+	}
+}
+
+static inline void wait_for_tx_fifo_almost_empty_irq(void) {
+	while (true) {
+		while (radio_hal_NirqLevel()) { } 	// wait for interrupt line to get low
+		si446x_get_int_status(0u, 0u, 0u); 	// read interrupt state
+		if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_TX_FIFO_ALMOST_EMPTY_BIT) {
+			break;
+		}
+	}
+}
+
+/*
 void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 {
 	uint8_t data[length+2];
@@ -134,11 +156,153 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	// Leave RX state
 	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
 
+	// Reset the Tx Fifo
+	tx_fifo_reset_fixed();
+
 	// Read ITs, clear pending ones
 	si446x_get_int_status(0u, 0u, 0u);
 
+	// copy payload data to send buffer
+	memcpy(data+2, packet, length);
+
+	data[0] = length >> 8;
+	data[1] = length & 0xFF;
+
+	int16_t remaining = length+2;
+	uint8_t* ptr = data;
+
+	// fill FIFO for first time
+	if (remaining < RADIO_MAX_PACKET_LENGTH) {
+		si446x_write_tx_fifo(remaining, ptr);
+		ptr += remaining;
+		remaining = 0;
+
+		// wait for packet sent interrupt
+		wait_for_packet_sent_irq();
+
+		// TODO finished
+	}
+	else {
+		si446x_write_tx_fifo(RADIO_MAX_PACKET_LENGTH, ptr);
+		ptr += RADIO_MAX_PACKET_LENGTH;
+		remaining -= RADIO_MAX_PACKET_LENGTH;
+
+		// wait that enough bytes are sent
+		wait_for_tx_fifo_almost_empty_irq();
+
+		// TODO weiter
+
+	}
+
+
+
+	while(remaining > 0) {
+		uint8_t nowLength;
+		//if (first_run) {
+		if (first_run && RADIO_MAX_PACKET_LENGTH <= remaining) {
+			nowLength = RADIO_MAX_PACKET_LENGTH;
+		}
+		else if (first_run && RADIO_MAX_PACKET_LENGTH > remaining) {
+			nowLength = remaining;
+		}
+		else if (RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
+			nowLength = RADIO_TX_ALMOST_EMPTY_THRESHOLD;
+		}
+		else {
+			nowLength = remaining;
+		}
+
+		// Fill the TX fifo with datas
+		si446x_write_tx_fifo(nowLength, ptr);
+		ptr += nowLength;
+		remaining -= nowLength;
+
+		if (first_run) {
+			si446x_start_tx(pRadioConfiguration->Radio_ChannelNumber, 0x80, 0x0);
+			first_run = false;
+		}
+
+		while (true) {
+			si446x_get_int_status(0u, 0u, 0u);
+
+			//			if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			//					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+			if (Si446xCmd.GET_INT_STATUS.CHIP_PEND & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+				DBG("[ERROR] RF chip reported error while sending.\n");
+				//skynet_led_blink_red_passive(1000);
+
+				// reset chip to assure correct behaviour next time
+				radio_shutdown();
+				msDelayActive(50);
+				msDelay(100);
+				radio_init(); // also reenables interrupts
+				radio_reset_packet_size(); // reset size of Field 2
+				return;
+			}
+			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_SENT_BIT) {
+				if (remaining > 0) {
+					// ERROR CASE! PACKET_SENT interrupt occurred,
+					// even if not all remaining bytes have been put to FIFO
+					DBG("[ERROR] PACKET_SENT, but remaining: %d\n", remaining);
+					//skynet_led_blink_red_passive(1000);
+
+					// clear remaining bytes to avoid pushing further bytes to FIFO
+					remaining = 0;
+				}
+
+				break;
+			}
+			else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_TX_FIFO_ALMOST_EMPTY_BIT) {
+				// not all bytes sent yet, but chip is ready to receive more
+				if (remaining > 0) break;
+			}
+		}
+
+
+	}
+	//DBG("remaining: %d\n", remaining);
+
+	radio_reset_packet_size(); // reset size of Field 2
+	radio_enable_irq();
+	__enable_irq();
+
+	// TODO check if other interrupts occurred
+
+	// TODO check FIFO state
+	si446x_fifo_info(0);
+	if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
+		DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.TX_FIFO_SPACE, Si446xCmd.FIFO_INFO.RX_FIFO_COUNT);
+	}
+
+	si446x_get_int_status(0u, 0u, 0u);
+	if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+		DBG("[ERROR] RF chip reported error: 0x%x\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+	}
+
+}
+
+
+*/
+
+void radio_send_variable_packet(uint8_t *packet, uint16_t length)
+{
+	uint8_t data[length+2];
+
+	//radio_disable_irq();
+	__disable_irq();
+
+	// Leave RX state
+	si446x_change_state(SI446X_CMD_CHANGE_STATE_ARG_NEW_STATE_ENUM_READY);
+
 	// Reset the Tx Fifo
 	tx_fifo_reset_fixed();
+
+	// Read ITs, clear pending ones
+	si446x_get_int_status(0u, 0u, 0u);
 
 	// copy payload data to send buffer
 	memcpy(data+2, packet, length);
@@ -188,7 +352,9 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 		while (true) {
 			si446x_get_int_status(0u, 0u, 0u);
 
-			if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			//			if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+			//					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+			if (Si446xCmd.GET_INT_STATUS.CHIP_PEND & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
 					Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
 				DBG("[ERROR] RF chip reported error while sending.\n");
@@ -226,7 +392,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	//DBG("remaining: %d\n", remaining);
 
 	radio_reset_packet_size(); // reset size of Field 2
-	//radio_enable_irq();
+	radio_enable_irq();
 	__enable_irq();
 
 	// TODO check if other interrupts occurred
@@ -248,13 +414,18 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 
 
+
 void radio_packet_handler(void) {
+	// the TX fifo seems to be damaged somehow...
+	// (spurious FIFO_UNDERFLOW_OVERFLOW_ERRORs happening...)
+	//tx_fifo_reset_fixed();
+
 	si446x_get_int_status(0u, 0u, 0u);
 
 	radio_disable_irq();
 
 	// error occurred
-	/*if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+	if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
 			Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
 
 		//DBG("[ERROR] RF chip reported error by interrupt: %d.\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
@@ -263,10 +434,26 @@ void radio_packet_handler(void) {
 		// reset chip to assure correct behaviour next time
 		events_enqueue(EVENT_RADIO_RESTART, NULL);
 
+
+		msDelayActive(10);
+
+		// TODO check FIFO state
+		si446x_fifo_info(0);
+		if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
+			DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.TX_FIFO_SPACE, Si446xCmd.FIFO_INFO.RX_FIFO_COUNT);
+		}
+
+		si446x_get_int_status(0u, 0u, 0u);
+		if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+				Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+			DBG("[ERROR] RF chip reported error: 0x%x\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		}
+
 		return;
 	}
 	// Packet beginning or completely received
-	else */if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
+	else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
 			Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 		uint16_t length_low;
 		uint16_t length_high;
@@ -280,6 +467,24 @@ void radio_packet_handler(void) {
 		uint8_t data[length+1];
 		data[length] = 0;		// terminate with null character
 		uint8_t* ptr = data;
+
+		// check FIFO state
+
+		/*
+		si446x_fifo_info(0);
+		if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
+			//DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.TX_FIFO_SPACE, Si446xCmd.FIFO_INFO.RX_FIFO_COUNT);
+
+		}
+
+		si446x_get_int_status(0u, 0u, 0u);
+		if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
+				Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
+
+			//DBG("[ERROR] RF chip reported error: 0x%x\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
+		}
+		*/
+
 
 		uint16_t remaining = length;
 		while (remaining > 0) {
@@ -299,6 +504,7 @@ void radio_packet_handler(void) {
 			while (true) {
 				si446x_get_int_status(0u, 0u, 0u);
 
+//				if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 				if (Si446xCmd.GET_INT_STATUS.PH_STATUS & SI446X_CMD_GET_INT_STATUS_REP_PACKET_RX_BIT) {
 					//DBG("RECEIVED, remaining: %d\n", remaining);
 					break;

@@ -64,7 +64,7 @@ void debug_send_usb(void) {
 
 void debug_send_rf(void) {
 	events_enqueue(EVENT_DEBUG_2, NULL);
-	register_delayed_event(1000, debug_send_rf);
+	register_delayed_event(10000, debug_send_rf);
 }
 
 void generate_event_wind_base(void) {
@@ -189,7 +189,8 @@ int main(void) {
 	skynetbase_gps_query();
 #endif
 
-	//debug_send_rf(); // TODO Debug
+	//register_delayed_event(10000, debug_send_rf); // TODO Debug
+
 
 
 #ifdef DEBUG_SEND_USB_TEST
@@ -415,7 +416,7 @@ int main(void) {
 				uint8_t buf[64];
 
 				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|........\n",
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|..........abcdefghijklmnopqrstuvwxyzABCD\n",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND]);
@@ -424,7 +425,7 @@ int main(void) {
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
-				frame.payload_size = pos;
+				frame.payload_size = 41;
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
