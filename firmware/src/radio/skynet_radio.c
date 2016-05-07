@@ -264,7 +264,12 @@ void radio_packet_handler(void) {
 		DBG("[ERROR] %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
 
 		// reset chip to assure correct behaviour next time
-		events_enqueue(EVENT_RADIO_RESTART, NULL);
+		//events_enqueue(EVENT_RADIO_RESTART, NULL);
+
+		// reset FIFOs
+		tx_fifo_reset_fixed();
+		si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT | SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
+		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 
 		return;
 	}
@@ -289,6 +294,7 @@ void radio_packet_handler(void) {
 		uint8_t* ptr = data;
 
 		uint16_t remaining = length;
+		bool abort = false;
 		while (remaining > 0) {
 			uint8_t nowLength;
 			if (remaining > 0xFF || RADIO_RX_ALMOST_FULL_THRESHOLD < remaining) {
@@ -314,41 +320,35 @@ void radio_packet_handler(void) {
 				else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT) {
 					break;
 				}
-
+				else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT) {
+					// too many bytes read, perhaps a corrupt packet was received
+					abort = true;
+					remaining = 0;
+					break;
+				}
 			}
 		}
 
-		ptr = data;
-		//DBG("RX str (%d/%d)  : %s\n", remaining, length, ptr);
+		if (!abort) {
+			ptr = data;
 
-		// copy packet
-		int copy_length = length;
-		if ((uint16_t)SKYNET_RADIO_MAX_SIZE < length) {
-			copy_length = SKYNET_RADIO_MAX_SIZE;
-		}
-
-		/*
-		if (copy_length < 50) {
-			// TODO DEBUG
-			for (uint16_t i = 0; i < copy_length; ++i) {
-				DBG("%02x ", data[i]);
+			// copy packet
+			int copy_length = length;
+			if ((uint16_t)SKYNET_RADIO_MAX_SIZE < length) {
+				copy_length = SKYNET_RADIO_MAX_SIZE;
 			}
-			DBG("\n");
-		}
-		*/
 
-		skynet_packet *pkt = malloc(sizeof(skynet_packet));
-		char* newdata = malloc(copy_length * sizeof(char));
-		if (pkt != NULL) {
-			//printf("pkt: %p\n", pkt);				// DEBUG: pointer check
-			//printf("newdata: %p\n", newdata);		// DEBUG: pointer check
-			memcpy(newdata, data, copy_length);
-			pkt->data = newdata;
-			pkt->length = copy_length;
-			events_enqueue(EVENT_RF_GOT_PACKET, pkt);
-		}
-		else {
-			// TODO: ERROR, could not malloc memory
+			skynet_packet *pkt = malloc(sizeof(skynet_packet));
+			char* newdata = malloc(copy_length * sizeof(char));
+			if (pkt != NULL) {
+				memcpy(newdata, data, copy_length);
+				pkt->data = newdata;
+				pkt->length = copy_length;
+				events_enqueue(EVENT_RF_GOT_PACKET, pkt);
+			}
+			else {
+				// TODO: ERROR, could not malloc memory
+			}
 		}
 
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
