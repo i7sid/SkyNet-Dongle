@@ -302,6 +302,7 @@ void si446x_gpio_pin_cfg(U8 GPIO0, U8 GPIO1, U8 GPIO2, U8 GPIO3, U8 NIRQ, U8 SDO
 #ifdef __C51__
 #pragma maxargs (13)  /* allow 13 bytes for parameters */
 #endif
+/*
 void si446x_set_property( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP, ... )
 {
     va_list argList;
@@ -324,6 +325,7 @@ void si446x_set_property( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PROP, 
 
     radio_comm_SendCmd( cmdIndex, Pro2Cmd );
 }
+*/
 
 /*!
  * Issue a change state command to the radio.
