@@ -361,15 +361,19 @@ int main(void) {
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
+				// wind dir: compensate orientation of station via compass
+				wind_dir += compass;
+				wind_dir = wind_dir % 360;
+
 				uint8_t pos = 0;
 				uint8_t buf[64];
 
 				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f|%f\n",
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f|%d\n",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
-						wind_dir, windspeed, compass);
+						wind_dir, windspeed, (uint16_t)compass);
 				pos++; // trailing null byte of string
 
 				mac_frame_data frame;

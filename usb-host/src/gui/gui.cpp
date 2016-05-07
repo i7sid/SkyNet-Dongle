@@ -86,7 +86,8 @@ gui::~gui() {
 
 void gui::update_status_win() {
 	int i = 1;
-	redrawwin(status_win);
+	werase(status_win);
+	box(status_win, 0 , 0);
 	mvwprintw(status_win, i++, 2, "Position:");
 	mvwprintw(status_win, i++, 2, "%s", val_pos.c_str());
 	mvwprintw(status_win, i++, 2, " ");

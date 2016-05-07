@@ -128,6 +128,8 @@ void usbReceiveHandler(usb_message pkt) {
 							<< parts[0][2] << parts[0][3] << ":"
 							<< parts[0][4] << parts[0][5];
 					//cerr << "ts: " << db_timestamp.str() << endl;
+#endif // NO_DB
+
 
 					for (int i = 0; i < next_hdr->typelength_union.type_length.length; ++i) {
 						if (next_hdr->data[i] == SENSOR_POSITION) {
@@ -139,7 +141,9 @@ void usbReceiveHandler(usb_message pkt) {
 						}
 						else if (next_hdr->data[i] == SENSOR_COMPASS) {
 							//cerr << "Compass: " << parts[i+1] << endl;
+#ifndef NO_DB
 							ptr_db->record_entity(0, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
+#endif // NO_DB
 							gui.val_compass = parts[i+1];
 						}
 						else if (next_hdr->data[i] == SENSOR_DATE) {
@@ -147,16 +151,19 @@ void usbReceiveHandler(usb_message pkt) {
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_SPEED) {
 							//cerr << "Wind speed: " << parts[i+1] << endl;
+#ifndef NO_DB
 							ptr_db->record_entity(0, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
+#endif // NO_DB
 							gui.val_windspeed = parts[i+1];
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
 							//cerr << "Wind dir: " << parts[i+1] << endl;
-							ptr_db->record_entity(0, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
+#ifndef NO_DB
+							ptr_db->record_entity(0, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
+#endif // NO_DB
 							gui.val_winddir = parts[i+1];
 						}
 					}
-#endif // NO_DB
 
 
 					frame_type = mac_payload_type::BASE_SENSOR_DATA;
