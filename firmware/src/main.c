@@ -159,17 +159,24 @@ int main(void) {
 #ifdef IS_BASESTATION
     NV_DATA_T *config = skynet_nv_get();
 
-    // TODO generate random mac address?
-    /*
-    config->mac_addr[0] = 0x03;
-    config->mac_addr[1] = 0x6B;
-    config->mac_addr[2] = 0x84;
-    config->mac_addr[3] = 0xA0;
-    config->mac_addr[4] = 0x70;
-    config->mac_addr[5] = 0x86;
+    // generate random mac address if none set
+    if (config->mac_addr[0] == 0xFF &&
+		config->mac_addr[1] == 0xFF &&
+		config->mac_addr[2] == 0xFF &&
+		config->mac_addr[3] == 0xFF &&
+		config->mac_addr[4] == 0xFF &&
+		config->mac_addr[5] == 0xFF
+		) {
 
-    skynet_nv_write(config);
-    */
+    	config->mac_addr[0] = 0x03;
+    	config->mac_addr[1] = 0x6B;
+    	config->mac_addr[2] = 0x84;
+    	config->mac_addr[3] = 0xA0;
+    	config->mac_addr[4] = (rand() & 0xFF);
+    	config->mac_addr[5] = (rand() & 0xFF);
+
+    	skynet_nv_write(config);
+    }
 
     // base station init
     skynetbase_init();
