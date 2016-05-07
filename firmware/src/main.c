@@ -126,11 +126,25 @@ int main(void) {
     DBG("Initialize radio module...\n");
     radio_init();
 
-    // init RNG
-    Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
-    srand(FullTime.time[RTC_TIMETYPE_SECOND] * FullTime.time[RTC_TIMETYPE_MINUTE] *
-    		FullTime.time[RTC_TIMETYPE_HOUR] * FullTime.time[RTC_TIMETYPE_DAYOFYEAR]);
-    // TODO better seed (perhaps via adc?)
+    // init RNG (seed via ADC)
+    unsigned int rand_seed = 0;
+    for (uint8_t i = 0; i < 10; ++i) {
+    	uint16_t data = 0;
+    	adc_activate();
+
+    	// Waiting for A/D conversion complete
+    	while (Chip_ADC_ReadStatus(LPC_ADC, ADC_CHANNEL, ADC_DR_DONE_STAT) != SET) {}
+
+    	// Read ADC value
+    	Chip_ADC_ReadValue(LPC_ADC, ADC_CHANNEL, &data);
+    	rand_seed += (data >> 1);
+
+    	adc_deactivate();
+    	msDelay(10);
+    }
+    DBG("%d\n", rand_seed);
+
+    srand(rand_seed);
 
     skynet_nv_init();
 

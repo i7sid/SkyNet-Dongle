@@ -29,7 +29,7 @@ static volatile uint16_t adc_buffered_value = 0xFFF; // 4095
 
 void adc_init(void) {
 	// init pwr pin
-	Chip_GPIO_SetPinDIROutput(LPC_GPIO, ADC_PWR_PORT, ADC_PWR_PIN);
+	//Chip_GPIO_SetPinDIROutput(LPC_GPIO, ADC_PWR_PORT, ADC_PWR_PIN);
 
 	// init ADC
 	Chip_ADC_Init(LPC_ADC, &ADCSetup);
@@ -90,13 +90,13 @@ uint16_t adc_measure(void) {
 
 
 INLINE void adc_activate(void) {
-	PINSET(ADC_PWR_PORT, ADC_PWR_PIN);
-	msDelayActive(50);
+	//PINSET(ADC_PWR_PORT, ADC_PWR_PIN);
+	//msDelayActive(50);
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, ENABLE);
 	Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
 }
 
 INLINE void adc_deactivate(void) {
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CHANNEL, DISABLE);
-	PINCLR(ADC_PWR_PORT, ADC_PWR_PIN);
+	//PINCLR(ADC_PWR_PORT, ADC_PWR_PIN);
 }
