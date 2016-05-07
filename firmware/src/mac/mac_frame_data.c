@@ -234,8 +234,10 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		last_ptr = &(hdr->next);
 	}
 
+	/*
 	DBG("pos: %d\n", pos);
 	DBG("len: %d\n", length);
+	*/
 
 	// payload
 	frame->payload_size = length - 2 - pos;
@@ -245,8 +247,10 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		return pos;
 	}
 
+	/*
 	DBG("d: %d\n", length);
 	DBG("e: %d\n", frame->payload_size);
+	*/
 	memcpy(frame->payload, buffer + pos, frame->payload_size);
 	pos += frame->payload_size;
 

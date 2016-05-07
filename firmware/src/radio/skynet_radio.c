@@ -193,7 +193,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 		remaining -= nowLength;
 
 		if (first_run) {
-			si446x_start_tx(pRadioConfiguration->Radio_ChannelNumber, 0x80, 0x0);
+			si446x_start_tx(pRadioConfiguration->Radio_ChannelNumber, 0x30, 0x0);
 			first_run = false;
 		}
 
@@ -237,9 +237,15 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 
 	radio_reset_packet_size(); // reset size of Field 2
 	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT | SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
+	uint8_t ebuf[64];
+	memset(ebuf, 0, sizeof(ebuf));
+	si446x_write_tx_fifo(64, ebuf);
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT | SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
 
 	radio_enable_irq();
 	__enable_irq();
+
+	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
 }
 
 
