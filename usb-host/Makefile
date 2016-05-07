@@ -3,8 +3,6 @@
 # Michael Zapf, 2016-04-08 12:52
 #
 
-#TODO command line flag for NO_MYSQL and NO_TAP
-
 RM = rm -rf
 GXX = g++
 CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
@@ -13,13 +11,22 @@ CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -Werror -Wno-unused-result \
 		   -DPKT_DBG_OVERHEAD=\(4\) \
 
-#CXXFLAGS += -DNO_TAP
-#CXXFLAGS += -DNO_DB
-CXXFLAGS += -I"/usr/include/mysql"
+LDFLAGS = -pthread -lmenu -lform -lncurses
+
+ifeq ($(NO_TAP),1)
+	CXXFLAGS += -DNO_TAP
+else
+endif
+
+ifeq ($(NO_DB),1)
+	CXXFLAGS += -DNO_DB
+else
+	CXXFLAGS += -I"/usr/include/mysql"
+	LDFLAGS += -lmysqlclient -lmysqlpp
+endif
+
 CXXFLAGS += -g -rdynamic
 
-LDFLAGS = -pthread -lmenu -lform -lncurses
-LDFLAGS += -lmysqlclient -lmysqlpp
  
 SRC = $(wildcard src/*.cpp) $(wildcard src/gui/*.cpp) $(wildcard src/db/*.cpp) ../firmware/src/mac/mac_frame_data.c
 
