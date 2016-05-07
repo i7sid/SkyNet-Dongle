@@ -97,4 +97,10 @@ void disable_systick(void);
  */
 void msDelayCallback(void);
 
+
+/**
+ * @brief	Returns the current all-time millisecond counter since bootup.
+ */
+uint32_t skynet_systick_get(void);
+
 #endif /* SYSTICK_H_ */

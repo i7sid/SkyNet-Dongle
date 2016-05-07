@@ -6,37 +6,28 @@
 
 #include "windspeed.h"
 
-static volatile uint32_t ticksPerSecond;
-static volatile uint32_t tick_counter = 0;
-
+static uint32_t last_tick = 0;
 static float current_speed = 0;
 
 float skynetbase_windspeed_get(void) {
 	return current_speed;
 }
 
-static void measurement(void) {
-	volatile uint32_t curtick;	// temporary buffer
-
-	disable_gpio_irq(WINCUPS_PORT, WINCUPS_PIN);	// disable counting of new ticks for a moment
-	curtick = tick_counter;
-	tick_counter = 0;
-	enable_gpio_irq(WINCUPS_PORT, WINCUPS_PIN);		// we can enable it again
-
-	float div = (float)Chip_TIMER_ReadCount(LPC_TIMER2) / (float)ticksPerSecond;
-	Chip_TIMER_Reset(LPC_TIMER2);
-
-
-	// convert to mph and to km/h  ( mph: http://www.emesystems.com/OL2wind.htm )
-	current_speed = (float)curtick * (2.25 / (div)) * 1.609344;
-
-	//DBG("div:%4.4f; count:%d; speed:%4.4f\n", div, curtick, current_speed);
-
-	register_delayed_event(1000, measurement); // enqueue next measurement
-}
-
 __INLINE void skynetbase_windspeed_tickhandler(){
-	tick_counter++;
+	// measure time between two impulses
+
+	__disable_irq();
+	uint32_t now = skynet_systick_get();
+	__enable_irq();
+
+	if (last_tick > 0) {
+		uint32_t diff = now - last_tick;
+		float f = (float)1000.0 / (float)diff;
+		current_speed = 2.25 * 1.609344 * f;
+	}
+
+	last_tick = now;
+
 }
 
 int skynetbase_windspeed_init(void) {
@@ -48,20 +39,13 @@ int skynetbase_windspeed_init(void) {
 
 	Chip_IOCON_PinMux(LPC_IOCON, WINCUPS_PORT, WINCUPS_PIN, IOCON_MODE_PULLUP, IOCON_FUNC0);
 
-	const uint32_t prescaleDivisor = 8;
-	Chip_TIMER_Init(LPC_TIMER2);
-	Chip_TIMER_PrescaleSet(LPC_TIMER2, prescaleDivisor - 1);
-	Chip_TIMER_Enable(LPC_TIMER2);
-	ticksPerSecond = Chip_Clock_GetSystemClockRate() / prescaleDivisor / 4;
-
 	Chip_GPIOINT_SetIntFalling(LPC_GPIOINT, GPIOINT_PORT2, (1 << WINCUPS_PIN));
 	Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT2, (1 << WINCUPS_PIN));
 
 	NVIC_ClearPendingIRQ(EINT3_IRQn);
 	NVIC_EnableIRQ(EINT3_IRQn);
-	DBG("Initialize Wind Cups complete.\n");
 
-	register_delayed_event(1000, measurement);
+	DBG("Initialize Wind Cups complete.\n");
 
 	return true;
 }
