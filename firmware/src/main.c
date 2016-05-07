@@ -506,6 +506,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 	mac_frame_data inframe;
 	mac_frame_data_init(&inframe);
+
 	mac_frame_data_unpack(&inframe, (uint8_t*)pkt->data, pkt->length);
 
 	if (MHR_FC_GET_DEST_ADDR_MODE(inframe.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
@@ -566,6 +567,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 						hdr.data[1] = 0;
 
 						frame.extheader = &hdr;
+
 
 						// send frame
 						mac_transmit_packet(&frame);

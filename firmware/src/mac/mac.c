@@ -41,6 +41,15 @@ bool mac_transmit_packet(mac_frame_data *frame) {
 	memset(buf, 0, sizeof(buf));								// TODO remove, DEBUG!
 	uint16_t size = mac_frame_data_pack(frame, buf);
 	//mac_frame_calc_crc(buf, size);
+
+	/*
+	// TODO DEBUG
+	for (uint16_t i = 0; i < size; ++i) {
+		DBG("%02x ", buf[i]);
+	}
+	DBG("\n");
+	*/
+
 	return mac_transmit_data(buf, size);
 	/*
 	uint16_t size = mac_frame_data_get_size(frame);

@@ -222,7 +222,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	next_ext_type.raw = buffer[pos++];
 	mac_extheader** last_ptr = &(frame->extheader);
 	while (next_ext_type.type_length.type != EXTHDR_NO) {
-		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader));
+		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader)); // TODO error check NULL
 		mac_extheader_init(hdr);
 		hdr->typelength_union.raw = next_ext_type.raw;
 		memcpy(hdr->data, &(buffer[pos]), next_ext_type.type_length.length);
@@ -234,6 +234,9 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		last_ptr = &(hdr->next);
 	}
 
+	DBG("pos: %d\n", pos);
+	DBG("len: %d\n", length);
+
 	// payload
 	frame->payload_size = length - 2 - pos;
 	frame->payload = (uint8_t*)malloc(frame->payload_size);
@@ -242,6 +245,8 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		return pos;
 	}
 
+	DBG("d: %d\n", length);
+	DBG("e: %d\n", frame->payload_size);
 	memcpy(frame->payload, buffer + pos, frame->payload_size);
 	pos += frame->payload_size;
 

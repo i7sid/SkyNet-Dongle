@@ -144,6 +144,7 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	// copy payload data to send buffer
 	memcpy(data+2, packet, length);
 
+
 	// Field 1 length
 	Si446xCmd.GET_PROPERTY.DATA0 = 0x0;
 	Si446xCmd.GET_PROPERTY.DATA1 = 0x2;
@@ -154,6 +155,16 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	Si446xCmd.GET_PROPERTY.DATA1 = length & 0xFF;
 	si446x_set_property_lpc(0x12, 2, 0x11);
 
+	// TODO DEBUG
+	/*
+	if (length < 50) {
+		for (uint16_t i = 0; i < length + 2; ++i) {
+			DBG("%02x ", data[i]);
+		}
+		DBG("\n");
+	}
+*/
+
 	data[0] = length >> 8;
 	data[1] = length & 0xFF;
 
@@ -163,13 +174,13 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	while(remaining > 0) {
 		uint8_t nowLength;
 		//if (first_run) {
-		if (first_run && RADIO_MAX_PACKET_LENGTH <= remaining) {
+		if (first_run && (uint16_t)RADIO_MAX_PACKET_LENGTH <= remaining) {
 			nowLength = RADIO_MAX_PACKET_LENGTH;
 		}
-		else if (first_run && RADIO_MAX_PACKET_LENGTH > remaining) {
+		else if (first_run && (uint16_t)RADIO_MAX_PACKET_LENGTH > remaining) {
 			nowLength = remaining;
 		}
-		else if (RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
+		else if ((uint16_t)RADIO_TX_ALMOST_EMPTY_THRESHOLD < remaining) {
 			nowLength = RADIO_TX_ALMOST_EMPTY_THRESHOLD;
 		}
 		else {
@@ -225,6 +236,8 @@ void radio_send_variable_packet(uint8_t *packet, uint16_t length)
 	//DBG("remaining: %d\n", remaining);
 
 	radio_reset_packet_size(); // reset size of Field 2
+	si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_TX_BIT | SI446X_CMD_FIFO_INFO_ARG_RX_BIT);
+
 	radio_enable_irq();
 	__enable_irq();
 }
@@ -248,6 +261,10 @@ void radio_packet_handler(void) {
 		events_enqueue(EVENT_RADIO_RESTART, NULL);
 
 		return;
+	}
+	// CRC checksum fail
+	else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_CRC_ERROR_BIT) {
+		DBG("CRC error.\n");
 	}
 	// Packet beginning or completely received
 	else if (Si446xCmd.GET_INT_STATUS.PH_PEND & SI446X_CMD_GET_INT_STATUS_REP_RX_FIFO_ALMOST_FULL_BIT ||
@@ -300,9 +317,19 @@ void radio_packet_handler(void) {
 
 		// copy packet
 		int copy_length = length;
-		if (SKYNET_RADIO_MAX_SIZE < length) {
+		if ((uint16_t)SKYNET_RADIO_MAX_SIZE < length) {
 			copy_length = SKYNET_RADIO_MAX_SIZE;
 		}
+
+		/*
+		if (copy_length < 50) {
+			// TODO DEBUG
+			for (uint16_t i = 0; i < copy_length; ++i) {
+				DBG("%02x ", data[i]);
+			}
+			DBG("\n");
+		}
+		*/
 
 		skynet_packet *pkt = malloc(sizeof(skynet_packet));
 		char* newdata = malloc(copy_length * sizeof(char));
