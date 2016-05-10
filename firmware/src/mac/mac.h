@@ -83,6 +83,11 @@ typedef struct mac_frame_control {
 #include "util.h"
 
 /**
+ * @brief	Initializes the mac layer. (i.e. create first random sequence number)
+ */
+void mac_init(void);
+
+/**
  * @brief	Tries to send a packet over PHY using \ref max_transmit_data.
  *
  * @return	True, if sent successfully, false otherwise.
@@ -93,5 +98,12 @@ bool mac_transmit_packet(mac_frame_data* frame);
  * @brief	Returns a random integer strict smaller than max.
  */
 int mac_random(int max);
+
+
+/**
+ * @brief	Generates and transmits an acknolodgement packet with given sequence number.
+ */
+bool mac_transmit_ack(uint8_t seq_no);
+
 
 #endif /* !MAC_H */

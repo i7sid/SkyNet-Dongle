@@ -11,7 +11,7 @@
 //#define DEBUG_SEND_RF_TEST
 
 ///@brief This module is a basestation
-//#define IS_BASESTATION
+#define IS_BASESTATION
 
 
 #if defined (__USE_LPCOPEN)
@@ -41,6 +41,7 @@
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
 #include "cpu/nv_storage.h"
+#include "cpu/v_storage.h"
 
 #include "mac/mac.h"
 #include "mac/mac_extheader.h"
@@ -69,12 +70,12 @@ void debug_send_rf(void) {
 
 void generate_event_wind_base(void) {
 	events_enqueue(EVENT_BASE_SEND_WIND, NULL);
-	register_delayed_event(1000, generate_event_wind_base);
+	register_delayed_event(v_configuration.time_wind_wait, generate_event_wind_base);
 }
 
 void generate_event_pos_base(void) {
 	events_enqueue(EVENT_BASE_QUERY_POS, NULL);
-	register_delayed_event(10243, generate_event_pos_base);
+	register_delayed_event(v_configuration.time_pos_wait, generate_event_pos_base);
 }
 
 
@@ -146,7 +147,9 @@ int main(void) {
 
     srand(rand_seed);
 
+    mac_init();
     skynet_nv_init();
+    skynet_v_init();
 
     // usb init
     skynet_cdc_init();
@@ -202,15 +205,12 @@ int main(void) {
     skynetbase_compass_calibration_set(&(config->compass_calibration));
 
     // send regularily data events
-    register_delayed_event(1000, generate_event_wind_base);
-	register_delayed_event(5000, generate_event_pos_base);
-    //debug_send_rf(); // TODO Debug
+    register_delayed_event(v_configuration.time_wind_wait, generate_event_wind_base);
+	register_delayed_event(v_configuration.time_pos_wait, generate_event_pos_base);
 
 	// start first GPS position query
 	skynetbase_gps_query();
 #endif
-
-	//register_delayed_event(10000, debug_send_rf); // TODO Debug
 
 
 

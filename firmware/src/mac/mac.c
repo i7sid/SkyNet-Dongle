@@ -19,13 +19,16 @@ extern union si446x_cmd_reply_union Si446xCmd;
 uint8_t nb; ///<@brief How many backoff-times have been needed in current try?
 uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waited
 
-uint8_t seq_no = 0; ///<@brief Current sequence number
+static uint8_t seq_no = 0; ///<@brief Current sequence number
 
 /// @brief  Returns a pseudo random number (strictly) smaller than max.
 inline int mac_random(int max) {
     return (rand() % max);
 }
 
+void mac_init(void) {
+	seq_no = (uint8_t)mac_random(0x100);
+}
 bool channel_idle(void) {
     si446x_get_modem_status(0xFF);
     uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
@@ -86,5 +89,21 @@ bool mac_transmit_data(uint8_t* data, uint16_t length) {
         }
     } while (nb <= MAC_CONST_MAX_CSMA_BACKOFFS);
     return false;
+}
+
+bool mac_transmit_ack(uint8_t seq_no) {
+	mac_frame_ack ack;
+	mac_frame_ack_init(&ack);
+	ack.seq_no = seq_no++;
+	//mac_frame_ack_calc_crc(&ack);
+
+	uint8_t i = 0;
+    while (!channel_idle()) {
+    	msDelayActiveUs(100);
+    	i++;
+    	if (i > 100) return false;
+    }
+	phy_transmit((uint8_t*)&ack, sizeof(mac_frame_ack));
+	return true;
 }
 
