@@ -42,7 +42,8 @@ public:
 	void init();
 	void worker();
 	void update_status_win();
-	void redraw();
+	void redraw();    
+    void update_size();
 
 	void log(std::string);
 	void debug(std::string);

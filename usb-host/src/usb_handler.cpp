@@ -91,17 +91,21 @@ void usbReceiveHandler(usb_message pkt) {
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
 		//cerr << "  "  << (unsigned int)pkt.payload_length << endl;
+#ifndef NO_TAP
 		mac_payload_type frame_type = mac_payload_type::NONE;
+        uint16_t ether_type = 0;
+#endif // NO_TAP
 
 		// process extheaders
-        uint16_t ether_type = 0;
         mac_extheader* next_hdr = frame.extheader;
         while (next_hdr != NULL) {
         	switch (next_hdr->typelength_union.type_length.type) {
 				case mac_extheader_types::EXTHDR_ETHER_TYPE:
+#ifndef NO_TAP
                     frame_type = mac_payload_type::ETHERFRAME;
 					ether_type = ((uint16_t)(next_hdr->data[0]) << 8)
 							                           + next_hdr->data[1];
+#endif // NO_TAP
 					break;
 
 				case mac_extheader_types::EXTHDR_SENSOR_VALUES:
@@ -166,7 +170,9 @@ void usbReceiveHandler(usb_message pkt) {
 					}
 
 
+#ifndef NO_TAP
 					frame_type = mac_payload_type::BASE_SENSOR_DATA;
+#endif // NO_TAP
 					cerr << ".";
 					gui.update_status_win();
 					flush(cerr);

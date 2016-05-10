@@ -28,6 +28,9 @@ int menu_item_count = 0;
 
 WINDOW* log_win;
 
+static int menu_width = 36;
+static int status_height = 12;
+
 void clear_log(void);
 void restart_dongle(void);
 void goto_bootloader(void);
@@ -97,6 +100,33 @@ void gui::update_status_win() {
 	wrefresh(status_win);
 }
 
+void gui::update_size(void) {
+    //cout << LINES << "x" << COLS << endl;
+    clear();
+//    resize_term(LINES, COLS);
+
+    wresize(log_border_win, LINES, COLS - menu_width);
+    box(log_border_win, 0 , 0);
+    wrefresh(log_border_win);
+
+    // left log window
+    wresize(log_win, LINES - 2, COLS - menu_width - 2);
+    wrefresh(log_win);
+
+    // status window
+    wmove(status_win, LINES - status_height, COLS - menu_width);
+    wresize(status_win, status_height, menu_width);
+	box(status_win, 0 , 0);
+	update_status_win();
+
+    // TODO refresh menu
+    wrefresh(cmd_win);
+
+    redraw();
+    cout << "lll" << endl;
+    refresh();
+}
+
 void gui::init() {
     initscr();
     cbreak();
@@ -108,9 +138,6 @@ void gui::init() {
     keypad(stdscr, TRUE);
     curs_set(FALSE);
     refresh();
-
-    int menu_width = 36;
-    int status_height = 12;
 
     ncurses_stream foo(std::cout);
     //ncurses_stream foo2(std::cerr);
@@ -196,6 +223,9 @@ void gui::worker() {
                 pos_menu_cursor(menu);
                 break;
             }
+            case KEY_RESIZE:
+                update_size();
+                break;
         }
         wrefresh(cmd_win);
         refresh();
