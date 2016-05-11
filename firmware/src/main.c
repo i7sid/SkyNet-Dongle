@@ -245,21 +245,6 @@ int main(void) {
     	skynetbase_gps_receive_data();
 #endif
 
-    	/*
-		si446x_get_int_status(0u, 0u, 0u);
-
-		if (Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_FIFO_UNDERFLOW_OVERFLOW_ERROR_BIT ||
-				Si446xCmd.GET_INT_STATUS.CHIP_STATUS & SI446X_CMD_GET_INT_STATUS_REP_CMD_ERROR_BIT) {
-
-			DBG("[ERROR] RF chip reported error: %d\n", Si446xCmd.GET_INT_STATUS.CHIP_STATUS);
-		}
-
-		si446x_fifo_info(0);
-		if (Si446xCmd.FIFO_INFO.RX_FIFO_COUNT > 0 || Si446xCmd.FIFO_INFO.TX_FIFO_SPACE < 64) {
-			DBG("FIFO: %d %d\n", Si446xCmd.FIFO_INFO.RX_FIFO_COUNT, Si446xCmd.FIFO_INFO.TX_FIFO_SPACE);
-		}
-*/
-
 		queued_event event;
 		event_types event_type = events_dequeue(&event);
 		//if (event_type) DBG("dequeued: %d\n", event_type);

@@ -28,8 +28,10 @@ void skynet_received_packet(skynet_packet *pkt) {
 	mac_frame_data_unpack(&inframe, (uint8_t*)pkt->data, pkt->length);
 
 	if (MHR_FC_GET_DEST_ADDR_MODE(inframe.mhr.frame_control) == MAC_ADDR_MODE_SHORT) {
-		if (inframe.mhr.dest_address[0] == config->mac_addr[4] &&
-				inframe.mhr.dest_address[1] == config->mac_addr[5]) {
+		if ((inframe.mhr.dest_address[0] == config->mac_addr[4] &&	// me
+				inframe.mhr.dest_address[1] == config->mac_addr[5]) ||
+			(inframe.mhr.dest_address[0] == 0xFF &&					// broadcast
+				inframe.mhr.dest_address[1] == 0xFF)) {
 
 			to_usb = false;
 		}
