@@ -10,6 +10,7 @@
 *.o
 *.d
 firmware/core
+firmware/BASE*
 firmware/Release*
 firmware/Debug*
 
