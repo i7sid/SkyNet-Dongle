@@ -8,12 +8,14 @@
 
 static uint32_t last_tick = 0;
 static float current_speed = 0;
+static float last_checked_speed = 0;
+static uint8_t null_ticks = 0;
 
 float skynetbase_windspeed_get(void) {
 	return current_speed;
 }
 
-__INLINE void skynetbase_windspeed_tickhandler(){
+__INLINE void skynetbase_windspeed_tickhandler() {
 	// measure time between two impulses
 
 	__disable_irq();
@@ -27,7 +29,20 @@ __INLINE void skynetbase_windspeed_tickhandler(){
 	}
 
 	last_tick = now;
+}
 
+void skynetbase_windspeed_check_null(void) {
+	if (current_speed == last_checked_speed) {
+		null_ticks++;
+	}
+
+	if (null_ticks >= 4) {
+		current_speed = 0;
+		null_ticks = 0;
+	}
+
+	last_checked_speed = current_speed;
+	register_delayed_event(1000, skynetbase_windspeed_check_null);
 }
 
 int skynetbase_windspeed_init(void) {
@@ -47,5 +62,6 @@ int skynetbase_windspeed_init(void) {
 
 	DBG("Initialize Wind Cups complete.\n");
 
+	register_delayed_event(1000, skynetbase_windspeed_check_null);
 	return true;
 }
