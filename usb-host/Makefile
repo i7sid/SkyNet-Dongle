@@ -5,11 +5,15 @@
 
 RM = rm -rf
 GXX = g++
+
+MAC_ADDR = 03:6B:84:A0:75:CB
+
 CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -I"../firmware/src/mac" -I"../firmware/src" -O3 -s -Wall \
 		   -fmessage-length=0 -Wno-packed-bitfield-compat \
 		   -Werror -Wno-unused-result \
 		   -DPKT_DBG_OVERHEAD=\(4\) \
+		   -DMAC_ADDR=\"$(MAC_ADDR)\"
 
 LDFLAGS = -pthread -lmenu -lform -lncurses
 

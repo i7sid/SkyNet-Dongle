@@ -42,6 +42,7 @@ cmdline arg_parser;
 gui gui;
 std::ofstream of_wind;
 std::ofstream of_pos;
+int local_mac[6];
 
 
 #ifndef NO_TAP
@@ -115,6 +116,15 @@ int main(int argc, char** argv) {
         usb_tx_thread.detach();
         usb_rx_thread.detach();
         cerr << "Serial port  " << args.tty << " opened." << endl;
+
+        // parse local mac address
+        string local_mac_s(MAC_ADDR);
+        if (local_mac_s.length() != 17 ||
+				6 != sscanf(local_mac_s.c_str(), "%x:%x:%x:%x:%x:%x",
+							&local_mac[0], &local_mac[1], &local_mac[2],
+							&local_mac[3], &local_mac[4], &local_mac[5])) {
+        	throw 902;
+        }
 
         if (args.set_mac.length() > 0) {
             int values[6];
@@ -250,6 +260,7 @@ int main(int argc, char** argv) {
 
 		// give visually feedback that we are running
 		cerr << "Ready." << endl;
+		cerr << "My mac address is  " << MAC_ADDR << " . " << endl;
 
 		// you can do fancy stuff in here
 		while (true) {

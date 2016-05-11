@@ -23,6 +23,7 @@ extern tap* ptr_tap;
 
 extern usb_tty* ptr_tty;
 extern gui gui;
+extern int local_mac[6];
 
 int menu_item_count = 0;
 
@@ -119,11 +120,11 @@ void gui::update_size(void) {
 	box(status_win, 0 , 0);
 	update_status_win();
 
-    // TODO refresh menu
+    // refresh menu
     wrefresh(cmd_win);
 
     redraw();
-    cout << "lll" << endl;
+    ///cout << "lll" << endl;
     refresh();
 }
 
@@ -467,8 +468,8 @@ void calib_compass(void) {
                 MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.src_pan_id[0] = 0;
                 frame.mhr.src_pan_id[1] = 0;
-                frame.mhr.src_address[0] = 0; // TODO get local
-                frame.mhr.src_address[1] = 0; // TODO get local
+                frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+                frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
 
 
                 // generate extended headers
@@ -516,8 +517,8 @@ void calib_compass(void) {
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				frame.mhr.src_pan_id[0] = 0;
 				frame.mhr.src_pan_id[1] = 0;
-				frame.mhr.src_address[0] = 0; // TODO get local
-				frame.mhr.src_address[1] = 0; // TODO get local
+				frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+				frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
 
 
 				// generate extended headers
@@ -661,7 +662,7 @@ void test_device(void) {
                 mac_frame_data frame;
                 mac_frame_data_init(&frame);
 
-                // TODO heavily DEBUG (overhead by header: 16 Byte)
+                // can be used to DEBUG  RF (be reminded about overhead by header: 16 Byte)
                 frame.payload = (uint8_t*)string("..........abcdefghijklmnopqrstABCDEFGHIJKLMNOPQRST----------a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,A,B,C,D,E,F,G,H,I,J,K,L,MNOPQRST").c_str();
                 frame.payload_size = 0;
 
@@ -674,8 +675,8 @@ void test_device(void) {
                 MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.src_pan_id[0] = 0;
                 frame.mhr.src_pan_id[1] = 0;
-                frame.mhr.src_address[0] = 0; // TODO get local
-                frame.mhr.src_address[1] = 0; // TODO get local
+                frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+                frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
 
 
                 // generate extended headers

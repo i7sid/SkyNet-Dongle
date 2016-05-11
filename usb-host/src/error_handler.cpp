@@ -16,6 +16,7 @@ error_handler::error_handler() : messages() {
 	messages[202] = "usb tty was closed. Perhaps the device was disconnected?";
 	messages[301] = "Database connection failed.";
 	messages[901] = "Invalid Argument.";
+	messages[902] = "Local MAC address not set properly. See Makefile.";
 
 }
 
