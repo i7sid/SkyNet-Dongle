@@ -23,6 +23,7 @@ class db : mysqlpp::Connection {
 public:
 	db(std::string host, std::string user, std::string pass, std::string dbname);
 
+	int get_station(std::string mac);
 	void record_entity(int station, int type, std::string timestamp, std::string value);
 
 private:
@@ -34,6 +35,8 @@ private:
 	unsigned long long experiment = 0;
 
 	mysqlpp::Query q_insert_entity;
+	mysqlpp::Query q_insert_station;
+	mysqlpp::Query q_get_station;
 	mysqlpp::Query q_insert_experiment;
 };
 

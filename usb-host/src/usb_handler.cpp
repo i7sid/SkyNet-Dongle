@@ -9,6 +9,10 @@
 #include <iomanip>
 #include <vector>
 #include <ctime>
+#include <algorithm>
+#include <functional>
+#include <cctype>
+#include <locale>
 
 #include <usb/message.h>
 #include <mac/mac.h>
@@ -40,6 +44,25 @@ extern tap* ptr_tap;
 extern db* ptr_db;
 #endif // NO_DB
 
+extern std::ofstream of_wind;
+extern std::ofstream of_pos;
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+        return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+        return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+        return ltrim(rtrim(s));
+}
 
 vector<string> split(const char *str, char c = ' ')
 {
@@ -52,7 +75,8 @@ vector<string> split(const char *str, char c = ' ')
         while(*str != c && *str)
             str++;
 
-        result.push_back(string(begin, str));
+        string tmp(string(begin, str));
+        result.push_back(trim(tmp));
     } while (0 != *str++);
 
     return result;
@@ -121,6 +145,13 @@ void usbReceiveHandler(usb_message pkt) {
 						break;
 					}
 
+					// build mac address string
+					stringstream mac_builder;
+					mac_builder << setfill('0') << setw(2) << std::hex <<
+							(unsigned int)(frame.mhr.src_address[0]) << ":" <<
+							setfill('0') << setw(2) << std::hex <<
+							(unsigned int)(frame.mhr.src_address[1]);
+
 #ifndef NO_DB
 					time_t t = time(0);   // get time now
 					struct tm * now = localtime(&t);
@@ -132,6 +163,8 @@ void usbReceiveHandler(usb_message pkt) {
 							<< parts[0][2] << parts[0][3] << ":"
 							<< parts[0][4] << parts[0][5];
 					//cerr << "ts: " << db_timestamp.str() << endl;
+
+					int station = ptr_db->get_station(mac_builder.str());
 #endif // NO_DB
 
 
@@ -142,13 +175,19 @@ void usbReceiveHandler(usb_message pkt) {
 							// TODO database?
 							gui.val_pos = parts[i+1];
 							cerr << "#";
+
+							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
+									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
+
 						}
 						else if (next_hdr->data[i] == SENSOR_COMPASS) {
 							//cerr << "Compass: " << parts[i+1] << endl;
 #ifndef NO_DB
-							ptr_db->record_entity(0, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
+							ptr_db->record_entity(station, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
 							gui.val_compass = parts[i+1];
+							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
+									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
 						else if (next_hdr->data[i] == SENSOR_DATE) {
 							cerr << "Date: " << parts[i+1] << endl;
@@ -156,16 +195,20 @@ void usbReceiveHandler(usb_message pkt) {
 						else if (next_hdr->data[i] == SENSOR_WIND_SPEED) {
 							//cerr << "Wind speed: " << parts[i+1] << endl;
 #ifndef NO_DB
-							ptr_db->record_entity(0, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
+							ptr_db->record_entity(station, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
+							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
+									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 							gui.val_windspeed = parts[i+1];
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
 							//cerr << "Wind dir: " << parts[i+1] << endl;
 #ifndef NO_DB
-							ptr_db->record_entity(0, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
+							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
 							gui.val_winddir = parts[i+1];
+							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
+									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
 					}
 

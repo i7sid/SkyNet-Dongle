@@ -26,6 +26,11 @@ class Station
      * @Column(type="string")
      */
     protected $latitude;
+    /**
+     * @var string
+     * @Column(type="string")
+     */
+    protected $mac;
 
 
     public function getId() {
@@ -46,6 +51,14 @@ class Station
 
     public function setLatitude($d) {
         $this->latitude = $d;
+    }
+
+    public function getMac() {
+        return $this->mac;
+    }
+
+    public function setMac($m) {
+        $this->mac = $d;
     }
 
 }

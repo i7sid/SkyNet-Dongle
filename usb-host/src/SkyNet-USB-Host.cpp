@@ -40,6 +40,9 @@ error_handler err;
 usb_tty* ptr_tty;
 cmdline arg_parser;
 gui gui;
+std::ofstream of_wind;
+std::ofstream of_pos;
+
 
 #ifndef NO_TAP
 tap* ptr_tap;
@@ -92,8 +95,25 @@ int main(int argc, char** argv) {
 	    ncurses_stream foo(std::cout);
 	    ncurses_stream foo2(std::cerr);
 
+	    // get current time
+	    time_t t = time(0);
+		struct tm * now = localtime(&t);
+		stringstream time_string;
+		time_string << setfill('0') << setw(4) << now->tm_year + 1900 << "-"
+				<< setfill('0') << setw(2) << now->tm_mon + 1 << "-"
+				<< setfill('0') << setw(2) << now->tm_mday << "-"
+				<< setfill('0') << setw(2) << now->tm_hour << "-"
+				<< setfill('0') << setw(2) << now->tm_min << "-"
+				<< setfill('0') << setw(2) << now->tm_sec;
+
+	    // open output file streams
+	    of_wind.open("wind-" + time_string.str() + ".csv", std::ofstream::out);
+	    of_pos.open("pos-" + time_string.str() + ".csv", std::ofstream::out);
+
 		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
+        usb_tx_thread.detach();
+        usb_rx_thread.detach();
         cerr << "Serial port  " << args.tty << " opened." << endl;
 
         if (args.set_mac.length() > 0) {
@@ -245,6 +265,8 @@ int main(int argc, char** argv) {
 			delete ptr_tap;
 			delete ptr_tap_rx_thread;
 		}
+		of_pos.close();
+		of_wind.close();
 #endif
 
 	} catch (int i) {
@@ -252,10 +274,9 @@ int main(int argc, char** argv) {
 		cerr << "ERROR: " << i << endl;
 		cerr << err.get_message(i) << endl;
 
-		/*
-		 cerr << "Is it possible that you forgot to call setup-tap.sh " <<
-				"with correct user name and group?" << endl;
-				*/
+		of_pos.close();
+		of_wind.close();
+
 		exit(1);
 		COLOR_RESET();
 	}

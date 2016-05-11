@@ -16,6 +16,8 @@ using namespace mysqlpp;
 db::db(std::string host, std::string user, std::string pass, std::string dbname) :
 		Connection(true), host(host), user(user), pass(pass), dbname(dbname),
 		q_insert_entity(this, true, string("").c_str()),
+		q_insert_station(this, true, string("").c_str()),
+		q_get_station(this, true, string("").c_str()),
 		q_insert_experiment(this, true, string("").c_str()) {
 
 	this->connect(dbname.c_str(), host.c_str(), user.c_str(), pass.c_str(), 0);
@@ -25,9 +27,37 @@ db::db(std::string host, std::string user, std::string pass, std::string dbname)
 	q_insert_entity.parse();
 
 
+	q_insert_station << "INSERT INTO stations ( `longitude` , `latitude` , `mac` ) " <<
+				" VALUES ( '%0:longitude' , '%1:latitude' ,  '%2:mac' );";
+	q_insert_station.parse();
+
+
+	q_get_station << "SELECT * FROM stations WHERE `mac`='%0:mac';";
+	q_get_station.parse();
+
+
+
 	q_insert_experiment << "INSERT INTO experiments () VALUES ();";
 	SimpleResult r_exp = q_insert_experiment.execute();
 	experiment = r_exp.insert_id();
+
+
+}
+
+int db::get_station(std::string mac) {
+	StoreQueryResult res = q_get_station.store(mac.c_str(), "");
+
+	// found station
+	if (res.num_rows() > 0) {
+		mysqlpp::StoreQueryResult::const_iterator it;
+		mysqlpp::Row row = *(res.begin());
+		return row[0];
+	}
+
+	cerr << mac << endl;
+	// new station to db
+	SimpleResult r_exp = q_insert_station.execute("0", "0", mac.c_str());
+	return r_exp.insert_id();
 }
 
 
