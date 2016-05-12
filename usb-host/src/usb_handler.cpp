@@ -230,8 +230,13 @@ void usbReceiveHandler(usb_message pkt) {
 
                         if (ack == 0) {
                             COLOR_OK();
-                            cout << "Dongle command " << (((unsigned int)seqno) & 0xFF)
-                                << ": ACK." << endl;
+                            cout << "Dongle command (" <<
+                                setfill('0') << setw(2) << std::hex <<
+                                (unsigned int)(frame.mhr.src_address[0]) << ":" <<
+                                setfill('0') << setw(2) << std::hex <<
+                                (unsigned int)(frame.mhr.src_address[1]) <<
+                                ", " << (((unsigned int)seqno) & 0xFF)
+                                << "): ACK." << endl;
                             COLOR_RESET();
                         }
                         else {

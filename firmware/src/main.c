@@ -150,21 +150,34 @@ int main(void) {
 
 #ifdef IS_BASESTATION
 
+
     // generate random mac address if none set
-    if (config->mac_addr[0] == 0xFF &&
-		config->mac_addr[1] == 0xFF &&
-		config->mac_addr[2] == 0xFF &&
-		config->mac_addr[3] == 0xFF &&
-		config->mac_addr[4] == 0xFF &&
-		config->mac_addr[5] == 0xFF
+    if (config->mac_addr[0] == 0xFF ||
+		config->mac_addr[1] == 0xFF ||
+		config->mac_addr[2] == 0xFF ||
+		config->mac_addr[3] == 0xFF ||
+		config->mac_addr[4] == 0xFF ||
+		config->mac_addr[5] == 0xFF ||
+		config->mac_addr[0] == 0x0 ||
+		config->mac_addr[1] == 0x0 ||
+		config->mac_addr[2] == 0x0 ||
+		config->mac_addr[3] == 0x0 ||
+		config->mac_addr[4] == 0x0 ||
+		config->mac_addr[5] == 0x0
 		) {
 
     	config->mac_addr[0] = 0x03;
     	config->mac_addr[1] = 0x6B;
     	config->mac_addr[2] = 0x84;
     	config->mac_addr[3] = 0xA0;
-    	config->mac_addr[4] = (rand() & 0xFF);
-    	config->mac_addr[5] = (rand() & 0xFF);
+
+    	uint8_t rand1 = (rand() & 0xFF);
+    	while (rand1 == 0x0 || rand1 == 0xFF) rand1 = (rand() & 0xFF);
+    	config->mac_addr[4] = rand1;
+
+    	rand1 = (rand() & 0xFF);
+    	while (rand1 == 0x0 || rand1 == 0xFF) rand1 = (rand() & 0xFF);
+    	config->mac_addr[5] = rand1;
 
     	skynet_nv_write(config);
     }
