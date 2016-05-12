@@ -17,6 +17,7 @@
 
 #include <thread>         // std::thread (C++11!)
 #include <vector>
+#include <sstream>
 
 #include <usb/message.h>
 #include <mac/mac.h>

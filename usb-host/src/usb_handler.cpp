@@ -13,6 +13,7 @@
 #include <functional>
 #include <cctype>
 #include <locale>
+#include <sstream>
 
 #include <usb/message.h>
 #include <mac/mac.h>
@@ -152,7 +153,6 @@ void usbReceiveHandler(usb_message pkt) {
 							setfill('0') << setw(2) << std::hex <<
 							(unsigned int)(frame.mhr.src_address[1]);
 
-#ifndef NO_DB
 					time_t t = time(0);   // get time now
 					struct tm * now = localtime(&t);
 					stringstream db_timestamp;
@@ -162,8 +162,8 @@ void usbReceiveHandler(usb_message pkt) {
 							<< " " << parts[0][0] << parts[0][1] << ":"
 							<< parts[0][2] << parts[0][3] << ":"
 							<< parts[0][4] << parts[0][5];
-					//cerr << "ts: " << db_timestamp.str() << endl;
 
+#ifndef NO_DB
 					int station = ptr_db->get_station(mac_builder.str());
 #endif // NO_DB
 

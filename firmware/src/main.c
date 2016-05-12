@@ -111,9 +111,6 @@ int main(void) {
 	adc_init();
 	//adc_start_buffered_measure();
 
-    DBG("Initialize radio module...\n");
-    radio_init();
-
     // init RNG (seed via ADC)
     unsigned int rand_seed = 0;
     for (uint8_t i = 0; i < 10; ++i) {
@@ -137,6 +134,12 @@ int main(void) {
     mac_init();
     skynet_nv_init();
     skynet_v_init();
+    NV_DATA_T *config = skynet_nv_get();
+
+    DBG("Initialize radio module...\n");
+    radio_init();
+    vRadio_Change_PwrLvl(config->radio_pa_level);
+    radio_start_rx();
 
     // usb init
     skynet_cdc_init();
@@ -145,9 +148,7 @@ int main(void) {
 
 
 
-
 #ifdef IS_BASESTATION
-    NV_DATA_T *config = skynet_nv_get();
 
     // generate random mac address if none set
     if (config->mac_addr[0] == 0xFF &&
@@ -264,6 +265,7 @@ int main(void) {
 				radio_init(); // also reenables interrupts
 				radio_reset_packet_size(); // reset size of Field 2
 				si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT | SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
+			    radio_start_rx();
 				break;
 
 			case EVENT_BASE_QUERY_POS:

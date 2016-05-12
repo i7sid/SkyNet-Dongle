@@ -28,6 +28,11 @@ volatile bool radio_initialized = false;
 
 #undef DEBUG
 
+void radio_start_rx(void) {
+	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
+	DBG("Radio RX started.\n");
+}
+
 void radio_pin_init(void) {
 	// "on/off" pin
 	Chip_GPIO_SetPinDIROutput(LPC_GPIO, RADIO_ON_PORT, RADIO_ON_PIN);
@@ -70,8 +75,8 @@ void radio_init(void) {
 
 	// start receiving...
 	//vRadio_StartRXlong(pRadioConfiguration->Radio_ChannelNumber);
-	vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0);
-	DBG("Radio RX started.\n");
+	//vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0);
+	//DBG("Radio RX started.\n");
 }
 
 void radio_shutdown(void) {

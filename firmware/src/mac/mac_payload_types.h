@@ -37,7 +37,8 @@ typedef enum dongle_command {
 	CALIB_COMPASS		= 2,	///<@brief Start the compass calibration.
 	CALIB_COMPASS_STOP	= 3,	///<@brief Stop the compass calibration.
 	BASE_START_SENDING	= 4,	///<@brief Start sending regular updates.
-	BASE_STOP_SENDING	= 5		///<@brief Stop sending regular updates.
+	BASE_STOP_SENDING	= 5,	///<@brief Stop sending regular updates.
+	RF_SET_PARAMETERS	= 6		///<@brief Set parameters of RF communication.
 } dongle_command;
 
 

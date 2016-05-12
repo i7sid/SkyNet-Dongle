@@ -27,7 +27,8 @@ extern int local_mac[6];
 
 int menu_item_count = 0;
 
-WINDOW* log_win;
+WINDOW *log_win = nullptr;
+WINDOW *my_form_win = nullptr;
 
 static int menu_width = 36;
 static int status_height = 12;
@@ -344,7 +345,6 @@ void get_ip_address(void) {
 void calib_compass(void) {
 	FIELD *field[3];
 	FORM  *my_form;
-	WINDOW *my_form_win;
 	int ch, rows, cols;
 
 	// Initialize the fields
@@ -441,6 +441,8 @@ void calib_compass(void) {
 	free_field(field[1]);
 	redrawwin(log_win);
 	wrefresh(log_win);
+	delwin(my_form_win);
+	my_form_win = nullptr;
 
 	if (mac.length() > 0) {
 		COLOR_DBG();
@@ -647,6 +649,8 @@ void test_device(void) {
 	free_field(field[1]);
 	redrawwin(log_win);
 	wrefresh(log_win);
+	delwin(my_form_win);
+	my_form_win = nullptr;
 
 	if (mac.length() > 0) {
 		COLOR_DBG();

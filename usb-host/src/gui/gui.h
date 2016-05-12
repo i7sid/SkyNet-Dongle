@@ -69,14 +69,20 @@ private:
 
 void print_in_middle(WINDOW *win, int starty, int startx, int width, std::string s, chtype color);
 
-extern WINDOW* log_win;
+extern WINDOW *log_win;
+extern WINDOW *my_form_win;
+
 class ncursesbuf: public std::streambuf {
     public:
         ncursesbuf() {}
         virtual int overflow(int c) {
         	waddch(log_win, c);
         	wrefresh(log_win);
-        	// TODO also write to log file
+
+        	if (my_form_win != nullptr) {
+        		redrawwin(my_form_win);
+        		wrefresh(my_form_win);
+        	}
         	return c;
         }
 

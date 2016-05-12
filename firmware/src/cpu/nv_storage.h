@@ -26,7 +26,8 @@ typedef struct NV_DATA_T {
 	char						mac_addr[8];
 	char						ipv4_addr[4];
 	compass_calibration_data	compass_calibration;
-	char						reserved_padding[256-1-8-4-sizeof(compass_calibration_data)];
+	char						radio_pa_level;
+	char						reserved_padding[256-1-8-4-sizeof(compass_calibration_data)-1];
 } __attribute__((aligned(1),packed)) NV_DATA_T;
 
 

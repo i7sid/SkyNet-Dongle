@@ -38,6 +38,11 @@ typedef struct skynet_packet {
 
 
 /**
+ * @brief	Starts packet reception. (Chip goes to RX mode.)
+ */
+void radio_start_rx(void);
+
+/**
  * @brief	Initiliaze peripheral pin(s).
  */
 void radio_pin_init(void);

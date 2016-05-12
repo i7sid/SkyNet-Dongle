@@ -93,6 +93,24 @@ void skynet_received_packet(skynet_packet *pkt) {
 						mac_transmit_packet(&frame);
 
 					}
+					else if (next_hdr->data[0] == RF_SET_PARAMETERS) {
+						if (inframe.payload_size < 1) break;
+						NV_DATA_T* config = skynet_nv_get();
+						config->radio_pa_level = inframe.payload[0];
+						skynet_nv_write(config);
+
+						// send answer
+						skycom_send_donglecmd_answer(inframe.mhr.src_address, inframe.mhr.seq_no, 0);
+
+						// set new parameters
+						vRadio_Change_PwrLvl(config->radio_pa_level); // also goes to READY state! (leaves RX)
+						vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);
+
+						// send answer again with new parameters
+						msDelayActive(250);
+						skycom_send_donglecmd_answer(inframe.mhr.src_address, inframe.mhr.seq_no, 0);
+
+					}
 #ifdef IS_BASESTATION
 					else if (next_hdr->data[0] == CALIB_COMPASS) {
 						// now start calibration
