@@ -247,7 +247,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 
 	// payload
 	frame->payload_size = length - 2 - pos;
-	frame->payload = (uint8_t*)malloc(frame->payload_size); 	malloc_count();
+	frame->payload = (uint8_t*)malloc(frame->payload_size+1); 	malloc_count(); // +1 for additional NULL byte
 	if (frame->payload == NULL) {
 		// TODO throw error? return -1?
 		return pos;
@@ -258,6 +258,10 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	DBG("e: %d\n", frame->payload_size);
 	*/
 	memcpy(frame->payload, buffer + pos, frame->payload_size);
+
+	// additional function for more comfort: add trailing null byte
+	frame->payload[frame->payload_size] = 0;
+
 	pos += frame->payload_size;
 
 	// fcs

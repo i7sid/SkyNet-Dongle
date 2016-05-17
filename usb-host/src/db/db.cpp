@@ -62,10 +62,24 @@ int db::get_station(std::string mac) {
 
 
 void db::record_entity(int station, int type, std::string timestamp, std::string value) {
+    try {
 	/*StoreQueryResult res =*/ q_insert_entity.store(std::to_string(station).c_str(),
 									std::to_string(experiment).c_str(), timestamp.c_str(),
 									value.c_str(), std::to_string(type).c_str());
 
+    }
+    catch (std::exception ex) {
+        cerr << endl << "MySQL exception occurred." << endl;
+        cerr << "Station:   " << station << endl;
+        cerr << "Timestamp: " << timestamp << endl;
+        cerr << "value:   " << value << endl << endl;
+       
+        cerr << "Query: " << q_insert_entity.str(
+                std::to_string(station).c_str(),
+									std::to_string(experiment).c_str(), timestamp.c_str(),
+									value.c_str(), std::to_string(type).c_str()
+                ) << endl;
+    }
 	///*SimpleResult result = */ q_insert_entity.execute();
 }
 

@@ -170,9 +170,9 @@ void usbReceiveHandler(usb_message pkt) {
 
 					for (int i = 0; i < next_hdr->typelength_union.type_length.length; ++i) {
 						if (next_hdr->data[i] == SENSOR_POSITION) {
-							//cerr << "Pos: " << parts[i+1] << endl;
-							//ptr_db->record_entity(0, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
-							// TODO database?
+#ifndef NO_DB
+							ptr_db->record_entity(station, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
+#endif
 							gui.val_pos = parts[i+1];
 							cerr << "#";
 
@@ -181,7 +181,6 @@ void usbReceiveHandler(usb_message pkt) {
 
 						}
 						else if (next_hdr->data[i] == SENSOR_COMPASS) {
-							//cerr << "Compass: " << parts[i+1] << endl;
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
@@ -193,7 +192,6 @@ void usbReceiveHandler(usb_message pkt) {
 							cerr << "Date: " << parts[i+1] << endl;
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_SPEED) {
-							//cerr << "Wind speed: " << parts[i+1] << endl;
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
@@ -202,7 +200,6 @@ void usbReceiveHandler(usb_message pkt) {
 							gui.val_windspeed = parts[i+1];
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
-							//cerr << "Wind dir: " << parts[i+1] << endl;
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
@@ -219,7 +216,6 @@ void usbReceiveHandler(usb_message pkt) {
 					cerr << ".";
 					gui.update_status_win();
 					flush(cerr);
-					//cerr << frame.payload << endl;
 					break;
 				}
 
