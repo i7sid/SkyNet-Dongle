@@ -1,6 +1,8 @@
 Debug/**
 Release/**
 
+debug_logs/**
+
 *.csv
 *~
 *.swp
