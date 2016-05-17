@@ -21,7 +21,7 @@ class Entity
      */
     protected $timestamp;
     /**
-     * @Column(type="decimal",precision=12,scale=6,nullable=false)
+     * @Column(type="string",nullable=false)
      */
     protected $value;
     /**
