@@ -343,8 +343,8 @@ void radio_packet_handler(void) {
 				copy_length = SKYNET_RADIO_MAX_SIZE;
 			}
 
-			skynet_packet *pkt = malloc(sizeof(skynet_packet));
-			char* newdata = malloc(copy_length * sizeof(char));
+			skynet_packet *pkt = malloc(sizeof(skynet_packet));	malloc_count();
+			char* newdata = malloc(copy_length * sizeof(char));	malloc_count();
 			if (pkt != NULL) {
 				memcpy(newdata, data, copy_length);
 				pkt->data = newdata;

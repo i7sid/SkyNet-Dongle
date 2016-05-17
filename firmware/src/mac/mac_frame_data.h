@@ -94,6 +94,9 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer);
  * @param	length	Total bytes received (important for correct detection of payload size)
  *
  * @return	Exact number of bytes read.
+ *
+ * @warning	After data was processed you have to call \ref mac_frame_data_free_contents()
+ * 			to clean up dynamically allocated memory.
  */
 uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t length);
 

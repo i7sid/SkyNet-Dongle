@@ -98,12 +98,6 @@ void skynetbase_gps_receive_data(void) {
 	}
 	else if (c == '*' && gpsoutpos > 0) { // ending, for now ignore checksum
 		gpsout[gpsoutpos] = 0;
-		/*
-		char *data = malloc(gpsoutpos+1);
-		memcpy(data, gpsout, gpsoutpos);
-		data[gpsoutpos] = 0;
-		events_enqueue(EVENT_GPS_MESSAGE, data);
-		*/
 		skynetbase_gps_received_data(gpsout, gpsoutpos);
 		return;
 	}

@@ -18,15 +18,17 @@ extern "C" {
 #include "mac_frame_data.h"
 #include "mac.h"
 
+/*
 void* mac_frame_data_calloc(void) {
 	mac_frame_data *frame = (mac_frame_data *)calloc(sizeof(mac_frame_data), 1);
 	mac_frame_data_init(frame);
 	return frame;
 }
+*/
 
 
 void mac_frame_data_free_contents(mac_frame_data *frame) {
-	if (frame->payload != NULL) free(frame->payload);
+	if (frame->payload != NULL) free(frame->payload);	free_count();
 	mac_frame_extheaders_free(frame->extheader); // nothing happens if NULL
 	//free(frame); // do not do this!
 }
@@ -222,7 +224,11 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	next_ext_type.raw = buffer[pos++];
 	mac_extheader** last_ptr = &(frame->extheader);
 	while (next_ext_type.type_length.type != EXTHDR_NO) {
-		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader)); // TODO error check NULL
+		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader)); malloc_count(); // TODO error check NULL
+		if (hdr == NULL) {
+			// TODO throw error?
+			return pos;
+		}
 		mac_extheader_init(hdr);
 		hdr->typelength_union.raw = next_ext_type.raw;
 		memcpy(hdr->data, &(buffer[pos]), next_ext_type.type_length.length);
@@ -241,7 +247,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 
 	// payload
 	frame->payload_size = length - 2 - pos;
-	frame->payload = (uint8_t*)malloc(frame->payload_size);
+	frame->payload = (uint8_t*)malloc(frame->payload_size); 	malloc_count();
 	if (frame->payload == NULL) {
 		// TODO throw error? return -1?
 		return pos;
@@ -264,6 +270,7 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 void mac_frame_extheaders_free(mac_extheader* hdr) {
 	if (hdr == NULL) return;
 	mac_frame_extheaders_free(hdr->next);
+	free(hdr);		free_count();
 }
 
 #ifdef __cplusplus

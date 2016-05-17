@@ -174,7 +174,6 @@ void skynet_received_packet(skynet_packet *pkt) {
 			}
 			next_hdr = next_hdr->next;
 		}
-		mac_frame_extheaders_free(inframe.extheader);
 	}
 
 	// Damn, that wasn't for me...
@@ -190,13 +189,13 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 		skynet_cdc_write_message(&msg);
 
-		// Must be done! Memory was allocated dynamically.
-		free(pkt->data);
-		free(pkt);
 	}
 
-	// cleanup
+	// Must be done! Memory was allocated dynamically.
+	//mac_frame_extheaders_free(inframe.extheader);
 	mac_frame_data_free_contents(&inframe);
+	free(pkt->data);
+	free(pkt);
 
 	skynet_led_blink_passive(5);
 }

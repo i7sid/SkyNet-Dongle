@@ -309,8 +309,8 @@ void skynet_cdc_receive_data(void) {
 				usb_rx_state = USB_RECEIVE_IDLE;
 
 				// copy msg
-				usb_message *new_msg = malloc(sizeof(usb_message));
-				char *new_msg_payload = malloc(usb_received_message.payload_length * sizeof(unsigned char));
+				usb_message *new_msg = malloc(sizeof(usb_message));												malloc_count();
+				char *new_msg_payload = malloc(usb_received_message.payload_length * sizeof(unsigned char));	malloc_count();
 
 				if (new_msg == NULL || new_msg_payload == NULL) {
 					DBG("Not enough heap memory for buffering USB packet. Aborting.\n");
@@ -323,8 +323,8 @@ void skynet_cdc_receive_data(void) {
 
 				// Now enqueue event. On error free space again.
 				if (!events_enqueue(EVENT_USB_RX_MESSAGE, new_msg)) {
-					free(new_msg_payload);
-					free(new_msg);
+					free(new_msg_payload);	free_count();
+					free(new_msg);			free_count();
 					new_msg_payload = NULL;
 					new_msg = NULL;
 				}

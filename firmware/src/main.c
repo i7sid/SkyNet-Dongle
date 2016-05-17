@@ -594,7 +594,13 @@ void skynet_cdc_received_message(usb_message *msg) {
 	}
 
 	// Must be done! Memory was allocated dynamically.
-	free(msg->payload);
-	free(msg);
+	free(msg->payload);	free_count();
+	free(msg);			free_count();
 	skynet_led_blink_passive(5);
 }
+
+
+uint32_t sn_cnt_mallocs = 0;
+uint32_t sn_cnt_frees = 0;
+void malloc_count(void) { sn_cnt_mallocs++; }
+void free_count(void) { sn_cnt_mallocs++; }
