@@ -81,6 +81,15 @@ gui::gui() {
 	items[i].name = "   ";
 	items[i++].func = nullptr;
 
+	items[i].name = "Base: Starte Messung";
+	items[i++].func = start_base;
+
+	items[i].name = "Base: Stoppe Messung";
+	items[i++].func = stop_base;
+
+	items[i].name = "   ";
+	items[i++].func = nullptr;
+
 	items[i].name = "Beenden";
 	items[i++].func = exit_programm;
 
@@ -325,7 +334,7 @@ void get_ip_address(void) {
 void calib_compass(void) {
 	bool loop = true;
     int ch;
-    string mac = gui_dialog_mac("FF:FF");
+    string mac = gui_dialog_mac("Kompass kalibrieren", "FF:FF");
 
 	if (mac.length() > 0) {
 		COLOR_DBG();
@@ -421,19 +430,21 @@ void calib_compass(void) {
 				m.payload = usb_payload;
 				ptr_tty->usbSendMessage(m);
 
+                COLOR_DBG();
+                cerr << endl << "Request sent..." << endl;
+                COLOR_RESET();
+
         }
         else {
         	COLOR_ERR();
             cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
             COLOR_RESET();
         }
-
 	}
-
 }
 
 void test_device(void) {
-    string mac = gui_dialog_mac("FF:FF");
+    string mac = gui_dialog_mac("Gerät testen", "FF:FF");
 
 	if (mac.length() > 0) {
 		COLOR_DBG();
@@ -482,6 +493,10 @@ void test_device(void) {
                 m.payload_length = usb_length;
                 m.payload = usb_payload;
                 ptr_tty->usbSendMessage(m);
+
+                COLOR_DBG();
+                cerr << endl << "Request sent..." << endl;
+                COLOR_RESET();
         }
         else {
         	COLOR_ERR();
@@ -492,9 +507,136 @@ void test_device(void) {
 }
 
 void start_base(void) {
+    start_base_t times = gui_dialog_base_start("Messung starten", "FF:FF",
+                                                "5000", "61000");
+    int values[2];
+    if (times.mac.length() < 5 ||
+        2 != sscanf(times.mac.c_str(), "%x:%x",
+                    &values[0], &values[1])) {
+
+        COLOR_ERR();
+        cerr << endl << "MAC address malformed. Please use format   AA:BB ." << endl;
+        COLOR_RESET();
+        return;
+    }
+    try {
+        int time_wind = stoi(times.time_wind);
+        int time_pos = stoi(times.time_pos);
+        cerr << time_wind << ": " << time_pos << endl;
+
+        char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
+        mac_frame_data frame;
+        mac_frame_data_init(&frame);
+
+        frame.payload = new uint8_t[8];
+        frame.payload_size = 8;
+
+        MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+        frame.mhr.dest_pan_id[0] = 0;
+        frame.mhr.dest_pan_id[1] = 0;
+        frame.mhr.dest_address[0] = values[0];
+        frame.mhr.dest_address[1] = values[1];
+
+        MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+        frame.mhr.src_pan_id[0] = 0;
+        frame.mhr.src_pan_id[1] = 0;
+        frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+        frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
+
+
+        // generate extended headers
+        mac_extheader hdr;
+        mac_extheader_init(&hdr);
+        hdr.typelength_union.type_length.length = 1;
+        hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD;
+        hdr.data[0] = dongle_command::BASE_START_SENDING;
+
+        frame.extheader = &hdr;
+
+        frame.payload[0] = ((time_wind     ) & 0xFF);
+        frame.payload[1] = ((time_wind >>  8) & 0xFF);
+        frame.payload[2] = ((time_wind >> 16) & 0xFF);
+        frame.payload[3] = ((time_wind >> 24) & 0xFF);
+        frame.payload[4] = ((time_pos      ) & 0xFF);
+        frame.payload[5] = ((time_pos >>  8) & 0xFF);
+        frame.payload[6] = ((time_pos >> 16) & 0xFF);
+        frame.payload[7] = ((time_pos >> 24) & 0xFF);
+
+        uint16_t usb_length = mac_frame_data_pack(&frame, (uint8_t*)usb_payload);
+
+        usb_message m;
+        m.type = USB_SKYNET_PACKET;
+        m.payload_length = usb_length;
+        m.payload = usb_payload;
+        ptr_tty->usbSendMessage(m);
+
+        COLOR_DBG();
+        cerr << endl << "Request sent..." << endl;
+        COLOR_RESET();
+    }
+    catch (std::exception) {
+        COLOR_ERR();
+        cerr << endl << "Error. Malformed input?" << endl;
+        COLOR_RESET();
+    }
 }
 
 void stop_base(void) {
+    string mac = gui_dialog_mac("Messung stoppen", "FF:FF");
+
+    int values[2];
+    if (mac.length() < 5 ||
+        2 != sscanf(mac.c_str(), "%x:%x",
+                    &values[0], &values[1])) {
+
+        COLOR_ERR();
+        cerr << endl << "MAC address malformed. Please use format   AA:BB ." << endl;
+        COLOR_RESET();
+        return;
+    }
+
+    char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
+    mac_frame_data frame;
+    mac_frame_data_init(&frame);
+
+    frame.payload = NULL;
+    frame.payload_size = 0;
+
+    MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+    frame.mhr.dest_pan_id[0] = 0;
+    frame.mhr.dest_pan_id[1] = 0;
+    frame.mhr.dest_address[0] = values[0];
+    frame.mhr.dest_address[1] = values[1];
+
+    MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+    frame.mhr.src_pan_id[0] = 0;
+    frame.mhr.src_pan_id[1] = 0;
+    frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+    frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
+
+
+    // generate extended headers
+    mac_extheader hdr;
+    mac_extheader_init(&hdr);
+    hdr.typelength_union.type_length.length = 1;
+    hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD;
+    hdr.data[0] = dongle_command::BASE_STOP_SENDING;
+
+    frame.extheader = &hdr;
+
+
+    uint16_t usb_length = mac_frame_data_pack(&frame, (uint8_t*)usb_payload);
+
+    usb_message m;
+    m.type = USB_SKYNET_PACKET;
+    m.payload_length = usb_length;
+    m.payload = usb_payload;
+    ptr_tty->usbSendMessage(m);
+
+    COLOR_DBG();
+    cerr << endl << "Request sent..." << endl;
+    COLOR_RESET();
+
 }
 
 void exit_programm(void) {
