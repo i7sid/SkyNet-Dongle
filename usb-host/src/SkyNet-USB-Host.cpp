@@ -79,7 +79,6 @@ int main(int argc, char** argv) {
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";
 		//string init = "stty -F " + args.tty + " raw pass8 -hupcl clocal 115200";
 		string init = "stty -F " + args.tty + " raw pass8 -echo -hupcl clocal 115200";
-#endif
 
 		// TODO Überspringen bzw. nicht abstürzen
 		int s = system(init.c_str());
@@ -89,6 +88,7 @@ int main(int argc, char** argv) {
 			COLOR_RESET();
 			return 1;
 		}
+#endif
 
 		// create usb_tty object and start rx thread
 		usb_tty tty(args.tty, usbReceiveHandler);
