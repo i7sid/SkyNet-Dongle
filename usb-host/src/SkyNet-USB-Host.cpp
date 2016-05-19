@@ -73,10 +73,13 @@ int main(int argc, char** argv) {
 		ptr_db = &db;
 #endif
 
+
+#ifndef __CYGWIN__
 		// init serial port on linux systems
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";
 		//string init = "stty -F " + args.tty + " raw pass8 -hupcl clocal 115200";
 		string init = "stty -F " + args.tty + " raw pass8 -echo -hupcl clocal 115200";
+#endif
 
 		// TODO Überspringen bzw. nicht abstürzen
 		int s = system(init.c_str());
