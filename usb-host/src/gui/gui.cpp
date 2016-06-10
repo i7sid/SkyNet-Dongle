@@ -11,6 +11,7 @@
 #include "guihelper.h"
 #include <usb/message.h>
 #include <mac/mac.h>
+#include <thread>         // std::thread (C++11!)
 
 #include <ncurses.h>
 #include <menu.h>
@@ -34,6 +35,8 @@ static int menu_width = 36;
 static int status_height = 12;
 
 static uint8_t seq_no = 0;
+
+std::mutex log_mtx;           // mutex for critical log output section
 
 void clear_log(void);
 void restart_dongle(void);
@@ -117,29 +120,47 @@ void gui::update_status_win() {
 
 void gui::update_size(void) {
     //cout << LINES << "x" << COLS << endl;
-    clear();
-//    resize_term(LINES, COLS);
+    //clear();
+    //resize_term(LINES, COLS);
 
-    wresize(log_border_win, LINES, COLS - menu_width);
-    box(log_border_win, 0 , 0);
-    wrefresh(log_border_win);
+    /*
+    clear();
+    refresh();
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    */
+
+    clearok(curscr, TRUE);
 
     // left log window
+    wresize(log_border_win, LINES, COLS - menu_width);
     wresize(log_win, LINES - 2, COLS - menu_width - 2);
-    wrefresh(log_win);
 
     // status window
-    wmove(status_win, LINES - status_height, COLS - menu_width);
     wresize(status_win, status_height, menu_width);
+    mvwin(status_win, LINES - status_height, COLS - menu_width);
+
+    // menu win
+    wresize(cmd_win, LINES - status_height, menu_width);
+    mvwin(cmd_win, 0, COLS - menu_width);
+
+    box(log_border_win, 0 , 0);
+    box(cmd_win, 0 , 0);
 	box(status_win, 0 , 0);
+    /*
+    wrefresh(cmd_win);
+    wrefresh(log_border_win);
+    wrefresh(log_win);
+    */
+
+    wnoutrefresh(cmd_win);
+    wnoutrefresh(log_border_win);
+    wnoutrefresh(log_win);
+    doupdate();
 	update_status_win();
 
-    // refresh menu
-    wrefresh(cmd_win);
-
     redraw();
-    ///cout << "lll" << endl;
-    refresh();
+
+    cout << endl;
 }
 
 void gui::init() {
@@ -243,7 +264,7 @@ void gui::worker() {
                 break;
         }
         wrefresh(cmd_win);
-        refresh();
+        //refresh();
 }
 
 void gui::log(std::string s) {
@@ -265,12 +286,12 @@ void gui::error(std::string s) {
 void gui::redraw() {
 	redrawwin(log_win);
 	redrawwin(status_win);
+	redrawwin(log_border_win);
 	redrawwin(cmd_win);
 }
 
 void clear_log(void) {
 	gui.redraw();
-
 }
 void restart_dongle(void) {
 	COLOR_DBG();

@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <string>
+#include <mutex>          // std::mutex
 
 #include <ncurses.h>
 #include <menu.h>
@@ -71,11 +72,13 @@ void print_in_middle(WINDOW *win, int starty, int startx, int width, std::string
 
 extern WINDOW *log_win;
 extern WINDOW *my_form_win;
+extern std::mutex log_mtx;           // mutex for critical log output section
 
 class ncursesbuf: public std::streambuf {
     public:
         ncursesbuf() {}
         virtual int overflow(int c) {
+            log_mtx.lock();
         	waddch(log_win, c);
         	wrefresh(log_win);
 
@@ -83,6 +86,7 @@ class ncursesbuf: public std::streambuf {
         		redrawwin(my_form_win);
         		wrefresh(my_form_win);
         	}
+            log_mtx.unlock();
         	return c;
         }
 
