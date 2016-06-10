@@ -339,21 +339,28 @@ void radio_packet_handler(void) {
 
 			// copy packet
 			int copy_length = length;
-			if ((uint16_t)SKYNET_RADIO_MAX_SIZE < length) {
-				copy_length = SKYNET_RADIO_MAX_SIZE;
-			}
+			if ((uint16_t)SKYNET_RADIO_MAX_SIZE >= length) {
+				skynet_packet *pkt = malloc(sizeof(skynet_packet));	malloc_count();
+				char* newdata = malloc(copy_length * sizeof(char));	malloc_count();
+				if (pkt != NULL) {
+					memcpy(newdata, data, copy_length);
+					pkt->data = newdata;
+					pkt->length = copy_length;
 
-			skynet_packet *pkt = malloc(sizeof(skynet_packet));	malloc_count();
-			char* newdata = malloc(copy_length * sizeof(char));	malloc_count();
-			if (pkt != NULL) {
-				memcpy(newdata, data, copy_length);
-				pkt->data = newdata;
-				pkt->length = copy_length;
-				events_enqueue(EVENT_RF_GOT_PACKET, pkt);
+					// TODO prüfen/ unterscheiden, ob es DATA oder ACK o.ä. ist
+					//		nur DATAs sollen in die event_queue, ACKs werden in received_ack gespeichert
+
+					events_enqueue(EVENT_RF_GOT_PACKET, pkt);
+				}
+				else {
+					// TODO: ERROR, could not malloc memory
+				}
 			}
+			/*
 			else {
-				// TODO: ERROR, could not malloc memory
+				//copy_length = SKYNET_RADIO_MAX_SIZE;
 			}
+			*/
 		}
 
 		vRadio_StartRX(pRadioConfiguration->Radio_ChannelNumber, 0x0);

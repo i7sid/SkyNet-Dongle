@@ -29,6 +29,7 @@
 #define MAC_CONST_MAX_BE                    (8)
 #define MAC_CONST_MIN_BE                    (3)
 #define MAC_CONST_MAX_CSMA_BACKOFFS         (4)
+#define MAC_CONST_ACK_WAIT_DURATION         (100000) // in "symbols"
 
 
 #endif /* !MAC_CONFIG_H */

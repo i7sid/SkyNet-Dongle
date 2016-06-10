@@ -18,6 +18,8 @@ extern union si446x_cmd_reply_union Si446xCmd;
 
 uint8_t nb; ///<@brief How many backoff-times have been needed in current try?
 uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waited
+uint8_t expected_ack; ///<@brief seq_no of ACK that is expected
+uint8_t received_ack; ///<@brief seq_no of ACK that was received last
 
 static uint8_t seq_no = 0; ///<@brief Current sequence number
 
@@ -38,6 +40,8 @@ bool channel_idle(void) {
     return (rssi < SKYNET_RADIO_RSSI_CCA_THRESHOLD);
 }
 
+#define MAC_SEND_TRIES		(3)
+
 bool mac_transmit_packet(mac_frame_data *frame) {
 	uint16_t est_size = mac_frame_data_estimate_size(frame);
 	uint8_t buf[est_size];
@@ -54,7 +58,29 @@ bool mac_transmit_packet(mac_frame_data *frame) {
 	DBG("\n");
 	*/
 
-	return mac_transmit_data(buf, size);
+	bool r = false;
+	for (uint8_t i = 0; i < MAC_SEND_TRIES; ++i) {
+		r |= mac_transmit_data(buf, size);
+		msDelayActive(15);
+	}
+	if (!r) return false;
+
+	// do not wait for ack if not needed
+	if (!MHR_FC_GET_ACK_REQUEST(frame->mhr.frame_control)) return true;
+
+	// wait for ack
+	expected_ack = frame->mhr.seq_no;
+
+	uint32_t max_wait = MAC_CONST_ACK_WAIT_DURATION / 10;
+	for (uint32_t c = 0; c < max_wait; ++c) {
+		msDelayActiveUs(10);
+
+		if (expected_ack == received_ack) return true; 	// correct ACK received
+	}
+
+	return false; // no ACK received
+
+
 	/*
 	uint16_t size = mac_frame_data_get_size(frame);
 	uint8_t buf[size];
@@ -94,12 +120,12 @@ bool mac_transmit_data(uint8_t* data, uint16_t length) {
 bool mac_transmit_ack(uint8_t seq_no) {
 	mac_frame_ack ack;
 	mac_frame_ack_init(&ack);
-	ack.seq_no = seq_no++;
+	ack.seq_no = seq_no;
 	//mac_frame_ack_calc_crc(&ack);
 
 	uint8_t i = 0;
-    while (!channel_idle()) {
-    	msDelayActiveUs(100);
+    while (!channel_idle()) {		// TODO korrektes Timing
+    	msDelayActiveUs(10);
     	i++;
     	if (i > 100) return false;
     }

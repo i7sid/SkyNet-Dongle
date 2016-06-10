@@ -33,6 +33,8 @@ WINDOW *log_win = nullptr;
 static int menu_width = 36;
 static int status_height = 12;
 
+static uint8_t seq_no = 0;
+
 void clear_log(void);
 void restart_dongle(void);
 void goto_bootloader(void);
@@ -352,6 +354,7 @@ void calib_compass(void) {
 
                 frame.payload = NULL;
                 frame.payload_size = 0;
+                frame.mhr.seq_no = seq_no++;
 
                 MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.dest_pan_id[0] = 0;
@@ -401,6 +404,7 @@ void calib_compass(void) {
 
 				frame.payload = NULL;
 				frame.payload_size = 0;
+                frame.mhr.seq_no = seq_no++;
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				frame.mhr.dest_pan_id[0] = 0;
@@ -463,6 +467,7 @@ void test_device(void) {
                 // can be used to DEBUG  RF (be reminded about overhead by header: 16 Byte)
                 frame.payload = (uint8_t*)string("..........abcdefghijklmnopqrstABCDEFGHIJKLMNOPQRST----------a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,A,B,C,D,E,F,G,H,I,J,K,L,MNOPQRST").c_str();
                 frame.payload_size = 0;
+                frame.mhr.seq_no = seq_no++;
 
                 MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
                 frame.mhr.dest_pan_id[0] = 0;
@@ -530,6 +535,7 @@ void start_base(void) {
 
         frame.payload = new uint8_t[8];
         frame.payload_size = 8;
+        frame.mhr.seq_no = seq_no++;
 
         MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
         frame.mhr.dest_pan_id[0] = 0;
@@ -601,6 +607,7 @@ void stop_base(void) {
 
     frame.payload = NULL;
     frame.payload_size = 0;
+    frame.mhr.seq_no = seq_no++;
 
     MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
     frame.mhr.dest_pan_id[0] = 0;

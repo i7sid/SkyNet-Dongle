@@ -13,6 +13,6 @@
 V_DATA_T v_configuration;
 
 void skynet_v_init(void) {
-	v_configuration.time_pos_wait = 20000;
-	v_configuration.time_wind_wait = 1000;
+	v_configuration.time_pos_wait = 31000;
+	v_configuration.time_wind_wait = 4000;
 }
