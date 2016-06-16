@@ -112,7 +112,7 @@ float skynetbase_compass_read(void) {
 		bearing += 360.0f;
 	}
 
-	DBG("%d\t%d\t%6.3f\t%6.3f\t%6.3f\n", raw_y, raw_x, scaled_y, scaled_z, bearing);
+	DBG("%d\t%d\t%d\t%6.3f\t%6.3f\t%6.3f\n", raw_y, raw_x, raw_z, scaled_y, scaled_z, bearing);
 
 	return bearing;
 }
@@ -137,6 +137,8 @@ static void compass_calib_worker(void) {
 	if (compass_y_scaled < calib_y_min) calib_y_min = compass_y_scaled;
 	if (compass_z_scaled > calib_z_max) calib_z_max = compass_z_scaled;
 	if (compass_z_scaled < calib_z_min) calib_z_min = compass_z_scaled;
+
+	//DBG("calib: %d %d %d\n", compass_x, compass_y, compass_z);
 
 	// reschedule
 	register_delayed_event(125, compass_calib_worker);
@@ -168,7 +170,8 @@ void skynetbase_compass_stop_calibration(void) {
 	calib.offset_x = (calib_x_max + calib_x_min) * 0.5;
 	calib.offset_y = (calib_y_max + calib_y_min) * 0.5;
 	calib.offset_z = (calib_z_max + calib_z_min) * 0.5;
-	calib.factor_z = (calib_y_max + calib_y_min) / (calib_z_max + calib_z_min);
+	calib.factor_z = (calib_y_max - calib_y_min) / (calib_z_max - calib_z_min);
 	__enable_irq();
 }
+
 

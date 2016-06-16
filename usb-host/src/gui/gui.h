@@ -54,6 +54,7 @@ public:
 	std::string val_pos;
 	std::string val_windspeed;
 	std::string val_winddir;
+	std::string val_winddir_raw;
 
 protected:
 

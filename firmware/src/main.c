@@ -344,7 +344,8 @@ int main(void) {
 			case EVENT_BASE_SEND_WIND:
 			{
 				float windspeed = skynetbase_windspeed_get();
-				uint16_t wind_dir = skynetbase_windvane_measure();
+				uint16_t wind_dir_raw = skynetbase_windvane_measure();
+				uint16_t wind_dir = wind_dir_raw;
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
@@ -356,11 +357,11 @@ int main(void) {
 				uint8_t buf[64];
 
 				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f\n",
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f|%d\n",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
-						wind_dir, windspeed);
+						wind_dir, windspeed, wind_dir_raw);
 				pos++; // trailing null byte of string
 
 				mac_frame_data frame;
@@ -382,10 +383,11 @@ int main(void) {
 				mac_extheader hdr;
 				mac_extheader_init(&hdr);
 				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 2;
+				hdr.typelength_union.type_length.length = 3;
 				hdr.data[0] = SENSOR_WIND_DIR;
 				hdr.data[1] = SENSOR_WIND_SPEED;
-				//hdr.data[2] = SENSOR_COMPASS;
+				hdr.data[2] = SENSOR_WIND_DIR_RAW;
+				//hdr.data[3] = SENSOR_COMPASS;
 
 				frame.extheader = &hdr;
 
@@ -396,7 +398,7 @@ int main(void) {
 			}
 			case EVENT_GPS_DATA_AVAILABLE:
 			{
-				DBG("GPS data received.\n");
+				//DBG("GPS data received.\n");
 			}
 			case EVENT_DEBUG_1:
 			{

@@ -207,6 +207,14 @@ void usbReceiveHandler(usb_message pkt) {
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
+						else if (next_hdr->data[i] == SENSOR_WIND_DIR_RAW) {
+#ifndef NO_DB
+//							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
+#endif // NO_DB
+							gui.val_winddir_raw = parts[i+1];
+							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
+									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
+						}
 					}
 
 
