@@ -46,6 +46,7 @@ void get_mac_address(void);
 void set_ip_address(void);
 void get_ip_address(void);
 void calib_compass(void);
+void calib_compass_stop(void);
 void test_device(void);
 void start_base(void);
 void stop_base(void);
@@ -82,6 +83,9 @@ gui::gui() {
 
 	items[i].name = "Kompass kalibrieren...";
 	items[i++].func = calib_compass;
+
+	items[i].name = "Kompasskalib. stoppen...";
+	items[i++].func = calib_compass_stop;
 
 	items[i].name = "   ";
 	items[i++].func = nullptr;
@@ -467,6 +471,72 @@ void calib_compass(void) {
         }
 	}
 }
+
+void calib_compass_stop(void) {
+    string mac = gui_dialog_mac("Kompass kalibrieren", "FF:FF");
+
+	if (mac.length() > 0) {
+		COLOR_DBG();
+		cerr << endl << "Try to stop calibration routine on " << mac << endl;
+		COLOR_RESET();
+
+        int values[2];
+        if (mac.length() >= 5 &&
+            2 == sscanf(mac.c_str(), "%x:%x",
+                        &values[0], &values[1])) {
+
+                // try to stop calibration
+                char* usb_payload = new char[USB_MAX_PAYLOAD_LENGTH];
+                mac_frame_data frame;
+				mac_frame_data_init(&frame);
+
+				frame.payload = NULL;
+				frame.payload_size = 0;
+                frame.mhr.seq_no = seq_no++;
+
+				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				frame.mhr.dest_pan_id[0] = 0;
+				frame.mhr.dest_pan_id[1] = 0;
+				frame.mhr.dest_address[0] = values[0];
+				frame.mhr.dest_address[1] = values[1];
+
+				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
+				frame.mhr.src_pan_id[0] = 0;
+				frame.mhr.src_pan_id[1] = 0;
+				frame.mhr.src_address[0] = (local_mac[4] & 0xFF);
+				frame.mhr.src_address[1] = (local_mac[5] & 0xFF);
+
+
+				// generate extended headers
+                mac_extheader hdr;
+				mac_extheader_init(&hdr);
+				hdr.typelength_union.type_length.length = 1;
+				hdr.typelength_union.type_length.type = EXTHDR_DONGLE_CMD;
+				hdr.data[0] = dongle_command::CALIB_COMPASS_STOP;
+
+				frame.extheader = &hdr;
+
+				uint16_t usb_length = mac_frame_data_pack(&frame, (uint8_t*)usb_payload);
+
+                usb_message m;
+				m.type = USB_SKYNET_PACKET;
+				m.payload_length = usb_length;
+				m.payload = usb_payload;
+				ptr_tty->usbSendMessage(m);
+
+                COLOR_DBG();
+                cerr << endl << "Request sent..." << endl;
+                COLOR_RESET();
+
+        }
+        else {
+        	COLOR_ERR();
+            cerr << "MAC address malformed. Please use format   AA:BB ." << endl;
+            COLOR_RESET();
+        }
+	}
+}
+
 
 void test_device(void) {
     string mac = gui_dialog_mac("Gerät testen", "FF:FF");
