@@ -9,9 +9,11 @@
 #include "tap.h"
 #include "usbtty.h"
 #include "guihelper.h"
+#include "station.h"
 #include <usb/message.h>
 #include <mac/mac.h>
 #include <thread>         // std::thread (C++11!)
+#include <sstream>
 
 #include <ncurses.h>
 #include <menu.h>
@@ -32,7 +34,7 @@ int menu_item_count = 0;
 WINDOW *log_win = nullptr;
 
 static int menu_width = 36;
-static int status_height = 12;
+static int status_height = 24;
 
 static uint8_t seq_no = 0;
 
@@ -110,15 +112,14 @@ gui::~gui() {
 }
 
 void gui::update_status_win() {
+    stringstream ss;
+    list_stations(ss);
+
 	int i = 1;
-	werase(status_win);
-	box(status_win, 0 , 0);
-	mvwprintw(status_win, i++, 2, "Position:");
-	mvwprintw(status_win, i++, 2, "%s", val_pos.c_str());
-	mvwprintw(status_win, i++, 2, " ");
-	mvwprintw(status_win, i++, 2, "Kompass:      %s", val_compass.c_str());
-	mvwprintw(status_win, i++, 2, "Windrichtung: %s", val_winddir.c_str());
-	mvwprintw(status_win, i++, 2, "Windgeschw.:  %s", val_windspeed.c_str());
+    for (std::string line; std::getline(ss, line);)
+    {
+        mvwprintw(status_win, i++, 2, line.c_str());
+    }
 	wrefresh(status_win);
 }
 

@@ -23,6 +23,7 @@
 #include "cmdline.h"
 #include "gui/gui.h"
 #include "db/db.h"
+#include "station.h"
 
 
 using namespace std;
@@ -115,11 +116,19 @@ void usbReceiveHandler(usb_message pkt) {
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
-		//cerr << "  "  << (unsigned int)pkt.payload_length << endl;
 #ifndef NO_TAP
 		mac_payload_type frame_type = mac_payload_type::NONE;
         uint16_t ether_type = 0;
 #endif // NO_TAP
+
+        // build mac address string
+        stringstream mac_builder;
+        mac_builder << setfill('0') << setw(2) << std::hex <<
+                (unsigned int)(frame.mhr.src_address[0]) << ":" <<
+                setfill('0') << setw(2) << std::hex <<
+                (unsigned int)(frame.mhr.src_address[1]);
+
+        station &from_s = get_station(mac_builder.str());
 
 		// process extheaders
         mac_extheader* next_hdr = frame.extheader;
@@ -146,13 +155,6 @@ void usbReceiveHandler(usb_message pkt) {
 						break;
 					}
 
-					// build mac address string
-					stringstream mac_builder;
-					mac_builder << setfill('0') << setw(2) << std::hex <<
-							(unsigned int)(frame.mhr.src_address[0]) << ":" <<
-							setfill('0') << setw(2) << std::hex <<
-							(unsigned int)(frame.mhr.src_address[1]);
-
 					time_t t = time(0);   // get time now
 					struct tm * now = localtime(&t);
 					stringstream db_timestamp;
@@ -173,7 +175,7 @@ void usbReceiveHandler(usb_message pkt) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
 #endif
-							gui.val_pos = parts[i+1];
+                            from_s.update_position(parts[i+1]);
 							cerr << "#";
 
 							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
@@ -184,7 +186,7 @@ void usbReceiveHandler(usb_message pkt) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-							gui.val_compass = parts[i+1];
+                            from_s.set_compass(stof(parts[i+1]));
 							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
@@ -197,21 +199,21 @@ void usbReceiveHandler(usb_message pkt) {
 #endif // NO_DB
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
-							gui.val_windspeed = parts[i+1];
+                            from_s.set_wind_speed(stof(parts[i+1]));
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-							gui.val_winddir = parts[i+1];
+                            from_s.set_wind_direction(stof(parts[i+1]));
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR_RAW) {
 #ifndef NO_DB
-//							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
+							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-							gui.val_winddir_raw = parts[i+1];
+                            from_s.set_wind_direction_raw(stof(parts[i+1]));
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}

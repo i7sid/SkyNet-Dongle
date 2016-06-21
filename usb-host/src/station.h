@@ -32,7 +32,9 @@ class station {
 
         void    set_wind_speed(float value);
         void    set_wind_direction(float value);
+        void    set_wind_direction_raw(float value);
         void    set_compass(float value);
+        void    update_position(std::string);
 
         // getters
         std::string get_mac(void) const;
@@ -41,16 +43,20 @@ class station {
         double  get_longitude(void) const;
         float   get_wind_speed(void) const;
         float   get_wind_direction(void) const;
+        float   get_wind_direction_raw(void) const;
         float   get_compass(void) const;
+        std::string get_position_string(void) const;
 
         friend std::ostream& operator<< (std::ostream &out, const station &s);
 
     protected:
         std::string mac;
+        std::string pos_string  = "";
         double  latitude        = 0;
         double  longitude       = 0;
         float   current_speed   = 0;
         float   current_dir     = 0;
+        float   current_dir_raw = 0;
         float   current_compass = 0;
         float   historic_speed[FILTER_LONG_WINDOW];
         float   historic_dir[FILTER_LONG_WINDOW];

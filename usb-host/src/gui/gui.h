@@ -50,12 +50,6 @@ public:
 	void debug(std::string);
 	void error(std::string);
 
-	std::string val_compass;
-	std::string val_pos;
-	std::string val_windspeed;
-	std::string val_winddir;
-	std::string val_winddir_raw;
-
 protected:
 
 private:

@@ -41,8 +41,14 @@ void station::set_wind_direction(float value) {
     this->current_dir = value;
     // TODO fill history
 }
+void station::set_wind_direction_raw(float value) {
+    this->current_dir_raw = value;
+}
 void station::set_compass(float value) {
     this->current_compass = value;
+}
+void station::update_position(string value) {
+    this->pos_string = value;
 }
 
 // getters
@@ -65,14 +71,21 @@ float station::get_wind_speed(void) const {
 float station::get_wind_direction(void) const {
     return current_dir;
 }
+float station::get_wind_direction_raw(void) const {
+    return current_dir_raw;
+}
 float station::get_compass(void) const {
     return current_compass;
+}
+string station::get_position_string(void) const {
+    return pos_string;
 }
 
 
 std::ostream& operator<< (std::ostream &out, const station &s) {
-    out << s.get_mac() << endl
-        << s.get_latitude() << " | " << s.get_longitude()
+    out << "Station: " << s.get_mac() << endl
+        << s.get_position_string() << endl
+        << s.get_latitude() << " | " << s.get_longitude() << " | "
         << s.get_compass() << "°" << endl
         << s.get_wind_speed() << " km/h | "
         << s.get_wind_direction() << "°" << endl;
@@ -83,10 +96,12 @@ std::ostream& operator<< (std::ostream &out, const station &s) {
 
 // utility stuff, map management
 
+int i = 0;
 station& get_station(std::string mac) {
     station &s = stations[mac];
+    s.set_wind_direction(i++);
     s.set_mac(mac);
-    return s;
+    return stations[mac];
 }
 
 
