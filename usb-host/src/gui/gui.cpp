@@ -112,6 +112,8 @@ gui::~gui() {
 }
 
 void gui::update_status_win() {
+    werase(status_win);
+	box(status_win, 0 , 0);
     stringstream ss;
     list_stations(ss);
 

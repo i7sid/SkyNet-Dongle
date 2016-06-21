@@ -32,7 +32,7 @@ endif
 CXXFLAGS += -g -rdynamic
 
  
-SRC = $(wildcard src/*.cpp) $(wildcard src/gui/*.cpp) $(wildcard src/db/*.cpp) ../firmware/src/mac/mac_frame_data.c
+SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp) ../firmware/src/mac/mac_frame_data.c
 
 .PHONY: all clean
 

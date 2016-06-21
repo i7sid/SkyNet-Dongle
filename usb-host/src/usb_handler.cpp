@@ -24,7 +24,8 @@
 #include "gui/gui.h"
 #include "db/db.h"
 #include "station.h"
-
+#include "output/output.h"
+#include "string_helper.h"
 
 using namespace std;
 
@@ -48,41 +49,6 @@ extern db* ptr_db;
 
 extern std::ofstream of_wind;
 extern std::ofstream of_pos;
-
-// trim from start
-static inline std::string &ltrim(std::string &s) {
-        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-        return s;
-}
-
-// trim from end
-static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
-        return s;
-}
-
-// trim from both ends
-static inline std::string &trim(std::string &s) {
-        return ltrim(rtrim(s));
-}
-
-vector<string> split(const char *str, char c = ' ')
-{
-    vector<string> result;
-
-    do
-    {
-        const char *begin = str;
-
-        while(*str != c && *str)
-            str++;
-
-        string tmp(string(begin, str));
-        result.push_back(trim(tmp));
-    } while (0 != *str++);
-
-    return result;
-}
 
 void usbReceiveHandler(usb_message pkt) {
 	if (pkt.type == USB_DEBUG) {
@@ -186,7 +152,10 @@ void usbReceiveHandler(usb_message pkt) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-                            from_s.set_compass(stof(parts[i+1]));
+                            try {
+                                from_s.set_compass(stof(parts[i+1]));
+                            }
+                            catch (exception) {}
 							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
@@ -199,13 +168,20 @@ void usbReceiveHandler(usb_message pkt) {
 #endif // NO_DB
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
-                            from_s.set_wind_speed(stof(parts[i+1]));
+                            
+                            try {
+                                from_s.set_wind_speed(stof(parts[i+1]));
+                            }
+                            catch (exception) {}
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-                            from_s.set_wind_direction(stof(parts[i+1]));
+                            try {
+                                from_s.set_wind_direction(stof(parts[i+1]));
+                            }
+                            catch (exception) {}
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
@@ -213,7 +189,10 @@ void usbReceiveHandler(usb_message pkt) {
 #ifndef NO_DB
 							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
 #endif // NO_DB
-                            from_s.set_wind_direction_raw(stof(parts[i+1]));
+                            try {
+                                from_s.set_wind_direction_raw(stof(parts[i+1]));
+                            }
+                            catch (exception) {}
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
 									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
 						}
@@ -226,6 +205,7 @@ void usbReceiveHandler(usb_message pkt) {
 					cerr << ".";
 					gui.update_status_win();
 					flush(cerr);
+                    DataOutput::update_all();
 					break;
 				}
 

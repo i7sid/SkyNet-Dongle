@@ -6,6 +6,7 @@
  */
 
 #include "station.h"
+#include "string_helper.h"
 using namespace std;
 
 unordered_map<string, station> stations;
@@ -49,6 +50,13 @@ void station::set_compass(float value) {
 }
 void station::update_position(string value) {
     this->pos_string = value;
+
+    // split string up
+    vector<string> parts = split(value.c_str(), ':');
+    this->latitude = stod(parts[1]);
+    if (parts[0].at(0) == 'S') this->latitude = -this->latitude;
+    this->longitude = stod(parts[3]);
+    if (parts[2].at(0) == 'S') this->longitude = -this->longitude;
 }
 
 // getters
@@ -85,9 +93,13 @@ string station::get_position_string(void) const {
 std::ostream& operator<< (std::ostream &out, const station &s) {
     out << "Station: " << s.get_mac() << endl
         << s.get_position_string() << endl
-        << s.get_latitude() << " | " << s.get_longitude() << " | "
-        << s.get_compass() << "°" << endl
-        << s.get_wind_speed() << " km/h | "
+        << std::setprecision(16)
+        << s.get_latitude() << " | "
+        << std::setprecision(16)
+        << s.get_longitude() << endl
+        << std::setprecision(5)
+        << "Compass: " << s.get_compass() << "°" << endl
+        << "Wind: " << s.get_wind_speed() << " km/h | "
         << s.get_wind_direction() << "°" << endl;
     return out;
 }
