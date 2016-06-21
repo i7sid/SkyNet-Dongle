@@ -75,7 +75,9 @@
 // Descriptions:
 //   GLOBAL_CONFIG - Global configuration settings.
 */
-#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x60
+//#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x60
+#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x61
+//#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x02
 
 /*
 // Set properties:           RF_INT_CTL_ENABLE_2
@@ -255,7 +257,7 @@
 //   MODEM_FREQ_DEV_1 - 17-bit unsigned TX frequency deviation word.
 */
 #define RF_MODEM_MOD_TYPE_12 0x11, 0x20, 0x0C, 0x00, 0x03, 0x00, 0x07, 0x0F, 0x42, 0x40, 0x09, 0xC9, 0xC3, 0x80, 0x00, 0x02
-
+																	// data rate ------
 /*
 // Set properties:           RF_MODEM_FREQ_DEV_0_1
 // Number of properties:     1
