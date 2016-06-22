@@ -33,6 +33,7 @@
 #include "station.h"
 #include "output/output.h"
 #include "output/json.h"
+#include "output/csv.h"
 
 
 using namespace std;
@@ -49,6 +50,7 @@ std::ofstream of_pos;
 int local_mac[6];
 //JsonOutput out_json("wind.json");
 JsonOutput out_json("/var/www/tmp/wind.json");
+CsvOutput out_csv;
 
 
 #ifndef NO_TAP
@@ -97,8 +99,6 @@ int main(int argc, char** argv) {
 		ptr_db = &db;
 #endif
 
-        DataOutput::register_output(&out_json);
-
 #ifndef __CYGWIN__
 		// init serial port on linux systems
 		//string init = "stty -F " + args.tty + " sane raw pass8 -echo -hupcl clocal 115200";
@@ -135,6 +135,10 @@ int main(int argc, char** argv) {
 				<< setfill('0') << setw(2) << now->tm_hour << "-"
 				<< setfill('0') << setw(2) << now->tm_min << "-"
 				<< setfill('0') << setw(2) << now->tm_sec;
+
+        out_csv.set_filename("data-" + time_string.str() + ".csv");
+        DataOutput::register_output(&out_json);
+        DataOutput::register_output(&out_csv);
 
 	    // open output file streams
 	    of_wind.open("wind-" + time_string.str() + ".csv", std::ofstream::out);

@@ -66,6 +66,12 @@ void station::update_position(string value) {
     if (parts[0].at(0) == 'S') this->latitude = -this->latitude;
     if (parts[2].at(0) == 'S') this->longitude = -this->longitude;
 }
+void station::set_last_wind_time(std::string time) {
+    last_wind_time = time;
+}
+void station::set_last_pos_time(std::string time) {
+    last_pos_time = time;
+}
 
 // getters
 string station::get_mac(void) const {
@@ -95,6 +101,12 @@ float station::get_compass(void) const {
 }
 string station::get_position_string(void) const {
     return pos_string;
+}
+string station::get_last_wind_time(void) const {
+    return last_wind_time;
+}
+string station::get_last_pos_time(void) const {
+    return last_pos_time;
 }
 
 

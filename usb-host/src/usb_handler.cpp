@@ -142,6 +142,7 @@ void usbReceiveHandler(usb_message pkt) {
 							ptr_db->record_entity(station, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
 #endif
                             from_s.update_position(parts[i+1]);
+                            from_s.set_last_pos_time(db_timestamp.str());
 							cerr << "#";
 
 							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
@@ -154,6 +155,7 @@ void usbReceiveHandler(usb_message pkt) {
 #endif // NO_DB
                             try {
                                 from_s.set_compass(stof(parts[i+1]));
+                                from_s.set_last_pos_time(db_timestamp.str());
                             }
                             catch (exception) {}
 							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
@@ -171,6 +173,7 @@ void usbReceiveHandler(usb_message pkt) {
                             
                             try {
                                 from_s.set_wind_speed(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
                             }
                             catch (exception) {}
 						}
@@ -180,6 +183,7 @@ void usbReceiveHandler(usb_message pkt) {
 #endif // NO_DB
                             try {
                                 from_s.set_wind_direction(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
                             }
                             catch (exception) {}
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
@@ -191,6 +195,7 @@ void usbReceiveHandler(usb_message pkt) {
 #endif // NO_DB
                             try {
                                 from_s.set_wind_direction_raw(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
                             }
                             catch (exception) {}
 							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<

@@ -27,6 +27,7 @@ class station {
         // setters
         void    set_mac(std::string mac);
         void    set_position(double latitude, double longitude);
+        void    update_position(std::string);
 
         void    set_latitude(double latitude);
         void    set_longitude(double longitude);
@@ -35,7 +36,8 @@ class station {
         void    set_wind_direction(float value);
         void    set_wind_direction_raw(float value);
         void    set_compass(float value);
-        void    update_position(std::string);
+        void    set_last_wind_time(std::string time);
+        void    set_last_pos_time(std::string time);
 
         // getters
         std::string get_mac(void) const;
@@ -47,12 +49,16 @@ class station {
         float   get_wind_direction_raw(void) const;
         float   get_compass(void) const;
         std::string get_position_string(void) const;
+        std::string get_last_wind_time(void) const;
+        std::string get_last_pos_time(void) const;
 
         friend std::ostream& operator<< (std::ostream &out, const station &s);
 
     protected:
         std::string mac;
         std::string pos_string  = "";
+        std::string last_pos_time = "";
+        std::string last_wind_time = "";
         double  latitude        = 0;
         double  longitude       = 0;
         float   current_speed   = 0;
