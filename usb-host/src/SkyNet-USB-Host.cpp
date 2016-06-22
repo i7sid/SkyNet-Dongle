@@ -30,6 +30,9 @@
 #include "usb_handler.h"
 #include "gui/gui.h"
 #include "db/db.h"
+#include "station.h"
+#include "output/output.h"
+#include "output/json.h"
 
 
 using namespace std;
@@ -44,6 +47,8 @@ gui gui;
 std::ofstream of_wind;
 std::ofstream of_pos;
 int local_mac[6];
+//JsonOutput out_json("wind.json");
+JsonOutput out_json("/var/www/tmp/wind.json");
 
 
 #ifndef NO_TAP
@@ -58,6 +63,25 @@ db* ptr_db;
 void do_tap_debug(string);
 
 int main(int argc, char** argv) {
+    /*
+    /// example station list DEBUG
+    cerr << "1" << endl;
+    station &s = get_station(string("AA:BB"));
+    s.set_wind_speed(1.23456);
+    //list_stations(cerr);
+    
+    cerr << "2" << endl;
+    station &s2 = get_station(string("CC:DD"));
+    s2.set_wind_speed(6.54321);
+
+    cerr << "3" << endl;
+    station &s3 = get_station(string("AA:BB"));
+    s3.set_wind_direction(2.2222);
+    
+    list_stations(cerr);
+    return 0;
+    */
+
 	try {
 		arg_parser.parse(argc, argv);
 		cmdargs& args = arg_parser.get();
@@ -73,6 +97,7 @@ int main(int argc, char** argv) {
 		ptr_db = &db;
 #endif
 
+        DataOutput::register_output(&out_json);
 
 #ifndef __CYGWIN__
 		// init serial port on linux systems

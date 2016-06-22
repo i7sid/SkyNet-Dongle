@@ -53,9 +53,17 @@ void station::update_position(string value) {
 
     // split string up
     vector<string> parts = split(value.c_str(), ':');
-    this->latitude = stod(parts[1]);
+    double src_lat = stod(parts[1]);
+    double deg_lat = floor(src_lat / 100.0);
+    double min_lat = src_lat - deg_lat * 100.0;
+    this->latitude = deg_lat + min_lat / 60.0;
+
+    double src_lon = stod(parts[3]);
+    double deg_lon = floor(src_lon / 100.0);
+    double min_lon = src_lon - deg_lon * 100.0;
+    this->longitude = deg_lon + min_lon / 60.0;
+
     if (parts[0].at(0) == 'S') this->latitude = -this->latitude;
-    this->longitude = stod(parts[3]);
     if (parts[2].at(0) == 'S') this->longitude = -this->longitude;
 }
 
@@ -93,9 +101,9 @@ string station::get_position_string(void) const {
 std::ostream& operator<< (std::ostream &out, const station &s) {
     out << "Station: " << s.get_mac() << endl
         << s.get_position_string() << endl
-        << std::setprecision(16)
+        << std::setprecision(10)
         << s.get_latitude() << " | "
-        << std::setprecision(16)
+        << std::setprecision(10)
         << s.get_longitude() << endl
         << std::setprecision(5)
         << "Compass: " << s.get_compass() << "°" << endl
