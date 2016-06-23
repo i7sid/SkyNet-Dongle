@@ -20,7 +20,8 @@
 #define MAGIC_GET_IP 		507
 #define MAGIC_CALIB_COMPASS 506
 #define MAGIC_CALIB_COMPASS_STOP 505
-#define MAGIG_NO_TAP		504
+#define MAGIC_NO_TAP		504
+#define MAGIC_NO_DB 		503
 
 
 
@@ -37,6 +38,7 @@ typedef struct cmdargs {
 	bool 		get_mac 			= false;
 	bool 		get_ip 				= false;
 	bool 		use_tap				= true;
+	bool 		use_db				= true;
 	std::string calib_compass 		= "";
 	std::string calib_compass_stop 	= "";
 	int 		verbosity 			= 0;

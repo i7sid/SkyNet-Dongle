@@ -6,14 +6,13 @@
  */
 
 #include <cmath>
+#include <iostream>
 #include <iomanip>
 #include "station.h"
 #include "csv.h"
 
 using namespace std;
 
-static string last_wind_time = "";
-static string last_pos_time = "";
 
 
 CsvOutput::CsvOutput() : filename("") {}
@@ -30,7 +29,7 @@ void CsvOutput::updated(void) {
 	of_pos.open("pos-" + filename, std::ofstream::out | std::ofstream::app);
 
     for (auto it = stations.begin(); it != stations.end(); ++it) {
-        if (!(last_wind_time.compare(it->second.get_last_wind_time()))) {
+        if (last_wind_time.compare(it->second.get_last_wind_time()) != 0) {
             of << it->second.get_last_wind_time() << ","
                 << it->second.get_mac() << ","
                 << std::setprecision(5)
@@ -38,16 +37,16 @@ void CsvOutput::updated(void) {
                 << it->second.get_wind_direction() << endl;
             last_wind_time = it->second.get_last_wind_time();
         }
-
-        if (!(last_wind_time.compare(it->second.get_last_pos_time()))) {
-            of << it->second.get_last_pos_time() << ","
+        if (this->last_pos_time.compare(it->second.get_last_pos_time()) != 0) {
+            of_pos << it->second.get_last_pos_time() << ","
                 << it->second.get_mac() << ","
                 << std::setprecision(10)
                 << it->second.get_longitude() << ","
                 << it->second.get_latitude() << endl;
-            last_pos_time = it->second.get_last_pos_time();
+            this->last_pos_time = it->second.get_last_pos_time();
         }
     }
 
     of.close();
+    of_pos.close();
 }

@@ -42,13 +42,6 @@ extern gui gui;
 extern tap* ptr_tap;
 #endif // NO_TAP
 
-#ifndef NO_DB
-#include "db/db.h"
-extern db* ptr_db;
-#endif // NO_DB
-
-extern std::ofstream of_wind;
-extern std::ofstream of_pos;
 
 void usbReceiveHandler(usb_message pkt) {
 	if (pkt.type == USB_DEBUG) {
@@ -131,75 +124,42 @@ void usbReceiveHandler(usb_message pkt) {
 							<< parts[0][2] << parts[0][3] << ":"
 							<< parts[0][4] << parts[0][5];
 
-#ifndef NO_DB
-					int station = ptr_db->get_station(mac_builder.str());
-#endif // NO_DB
-
-
 					for (int i = 0; i < next_hdr->typelength_union.type_length.length; ++i) {
 						if (next_hdr->data[i] == SENSOR_POSITION) {
-#ifndef NO_DB
-							ptr_db->record_entity(station, DB_TYPE_GPS, db_timestamp.str(), parts[i+1]);
-#endif
                             from_s.update_position(parts[i+1]);
                             from_s.set_last_pos_time(db_timestamp.str());
 							cerr << "#";
-
-							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
-									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
-
 						}
 						else if (next_hdr->data[i] == SENSOR_COMPASS) {
-#ifndef NO_DB
-							ptr_db->record_entity(station, DB_TYPE_COMPASS, db_timestamp.str(), parts[i+1]);
-#endif // NO_DB
                             try {
                                 from_s.set_compass(stof(parts[i+1]));
                                 from_s.set_last_pos_time(db_timestamp.str());
                             }
-                            catch (exception) {}
-							of_pos << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
-									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
+                            catch (exception) { cerr << "!"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_DATE) {
 							cerr << "Date: " << parts[i+1] << endl;
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_SPEED) {
-#ifndef NO_DB
-							ptr_db->record_entity(station, DB_TYPE_WIND_SPEED, db_timestamp.str(), parts[i+1]);
-#endif // NO_DB
-							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
-									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
-                            
                             try {
                                 from_s.set_wind_speed(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) {}
+                            catch (exception) { cerr << "!"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
-#ifndef NO_DB
-							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_COMP, db_timestamp.str(), parts[i+1]);
-#endif // NO_DB
                             try {
                                 from_s.set_wind_direction(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) {}
-							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
-									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
+                            catch (exception) { cerr << "!"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR_RAW) {
-#ifndef NO_DB
-							ptr_db->record_entity(station, DB_TYPE_WIND_DIR_RAW, db_timestamp.str(), parts[i+1]);
-#endif // NO_DB
                             try {
                                 from_s.set_wind_direction_raw(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) {}
-							of_wind << "\"" << db_timestamp.str() << "\",\"" << mac_builder.str() << "\",\"" <<
-									(unsigned int)(next_hdr->data[i]) << "\",\"" << parts[i+1] << "\"" << endl;
+                            catch (exception) { cerr << "!"; }
 						}
 					}
 

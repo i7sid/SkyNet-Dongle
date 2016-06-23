@@ -1,34 +1,36 @@
 /**
  * @file
  *
- * @brief   TODO
+ * @brief   Database logging.
  *
  * @author  Michael Zapf <michael.zapf@fau.de>
  * @date    2016-06-22
  */
 
-#ifndef CSV_H
-#define CSV_H
+#ifndef NO_DB
+#ifndef OUTPUTDB_H
+#define OUTPUTDB_H
 
 #include <string>
 #include <fstream>
 #include "output.h"
+#include "db/db.h"
 
-class CsvOutput : public DataOutput {
+class DbOutput : public DataOutput {
     public:
-        CsvOutput();
-        CsvOutput(std::string filename);
-        ~CsvOutput() {};
+        DbOutput();
+        ~DbOutput() {};
 
-        void set_filename(std::string filename);
         void updated(void);
 
     private:
-        std::string filename;
+        db dbcon;
         std::string last_wind_time = "";
         std::string last_pos_time = "";
 
 };
 
 
-#endif /* !CSV_H */
+
+#endif /* !OUTPUTDB_H */
+#endif

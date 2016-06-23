@@ -23,10 +23,12 @@ class db : mysqlpp::Connection {
 public:
 	db(std::string host, std::string user, std::string pass, std::string dbname);
 
+    void init(void);
 	int get_station(std::string mac);
 	void record_entity(int station, int type, std::string timestamp, std::string value);
 
 private:
+    bool        inited = false;
 	std::string host;
 	std::string user;
 	std::string pass;

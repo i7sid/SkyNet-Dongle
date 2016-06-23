@@ -33,7 +33,8 @@ void cmdline::parse(int argc, char** argv) {
         {"help",     no_argument,       0, 'h'},
         {"tty",      required_argument, 0, 't'},
         {"tap",      required_argument, 0, 'a'},
-        {"no-tap",   no_argument, 		0, MAGIG_NO_TAP},
+        {"no-db",    no_argument, 		0, MAGIC_NO_DB},
+        {"no-tap",   no_argument, 		0, MAGIC_NO_TAP},
 		{"debug-tap",no_argument, 		0, MAGIC_TAP_DEBUG},
 		{"debug-usb",no_argument, 		0, MAGIC_USB_DEBUG},
 		{"reset",    no_argument,       0, 'r'},
@@ -73,8 +74,11 @@ void cmdline::parse(int argc, char** argv) {
 			case MAGIC_NO_COLOR:
 				args.prompt_colored = false;
 				break;
-			case MAGIG_NO_TAP:
+			case MAGIC_NO_TAP:
 				args.use_tap = false;
+				break;
+			case MAGIC_NO_DB:
+				args.use_db = false;
 				break;
 			case MAGIC_TAP_DEBUG:
 				args.tap_debug = true;

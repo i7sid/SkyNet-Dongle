@@ -29,11 +29,11 @@
 #include "tap_handler.h"
 #include "usb_handler.h"
 #include "gui/gui.h"
-#include "db/db.h"
 #include "station.h"
 #include "output/output.h"
 #include "output/json.h"
 #include "output/csv.h"
+#include "output/db.h"
 
 
 using namespace std;
@@ -45,45 +45,24 @@ error_handler err;
 usb_tty* ptr_tty;
 cmdline arg_parser;
 gui gui;
-std::ofstream of_wind;
-std::ofstream of_pos;
 int local_mac[6];
 //JsonOutput out_json("wind.json");
 JsonOutput out_json("/var/www/tmp/wind.json");
 CsvOutput out_csv;
+
+#ifndef NO_DB
+DbOutput *out_db;
+#endif
 
 
 #ifndef NO_TAP
 tap* ptr_tap;
 #endif // NO_TAP
 
-#ifndef NO_DB
-db* ptr_db;
-#endif // NO_DB
-
 
 void do_tap_debug(string);
 
 int main(int argc, char** argv) {
-    /*
-    /// example station list DEBUG
-    cerr << "1" << endl;
-    station &s = get_station(string("AA:BB"));
-    s.set_wind_speed(1.23456);
-    //list_stations(cerr);
-    
-    cerr << "2" << endl;
-    station &s2 = get_station(string("CC:DD"));
-    s2.set_wind_speed(6.54321);
-
-    cerr << "3" << endl;
-    station &s3 = get_station(string("AA:BB"));
-    s3.set_wind_direction(2.2222);
-    
-    list_stations(cerr);
-    return 0;
-    */
-
 	try {
 		arg_parser.parse(argc, argv);
 		cmdargs& args = arg_parser.get();
@@ -94,10 +73,6 @@ int main(int argc, char** argv) {
 			arg_parser.printArgs();
 		}
 
-#ifndef NO_DB
-		db db("localhost", "skynetbaseweb", "skynetbaseweb", "skynetbaseweb");
-		ptr_db = &db;
-#endif
 
 #ifndef __CYGWIN__
 		// init serial port on linux systems
@@ -136,14 +111,19 @@ int main(int argc, char** argv) {
 				<< setfill('0') << setw(2) << now->tm_min << "-"
 				<< setfill('0') << setw(2) << now->tm_sec;
 
+	    // output handlers
         out_csv.set_filename("data-" + time_string.str() + ".csv");
         DataOutput::register_output(&out_json);
         DataOutput::register_output(&out_csv);
+#ifndef NO_DB
+		if (args.use_db) {
+            out_db = new DbOutput();
+            DataOutput::register_output(out_db);
+        }
+#endif
 
-	    // open output file streams
-	    of_wind.open("wind-" + time_string.str() + ".csv", std::ofstream::out);
-	    of_pos.open("pos-" + time_string.str() + ".csv", std::ofstream::out);
 
+        // parallel threads
 		std::thread usb_tx_thread(&usb_tty::usb_tty_tx_worker, &tty);
         std::thread usb_rx_thread(&usb_tty::usb_tty_rx_worker, &tty);
         usb_tx_thread.detach();
@@ -309,17 +289,17 @@ int main(int argc, char** argv) {
 			delete ptr_tap;
 			delete ptr_tap_rx_thread;
 		}
-		of_pos.close();
-		of_wind.close();
+#endif
+#ifndef NO_DB
+		if (args.use_db) {
+            delete out_db;
+        }
 #endif
 
 	} catch (int i) {
 		COLOR_ERR();
 		cerr << "ERROR: " << i << endl;
 		cerr << err.get_message(i) << endl;
-
-		of_pos.close();
-		of_wind.close();
 
 		exit(1);
 		COLOR_RESET();
