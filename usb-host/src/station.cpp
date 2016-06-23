@@ -36,11 +36,21 @@ void station::set_longitude(double longitude) {
 
 void station::set_wind_speed(float value) {
     this->current_speed = value;
-    // TODO fill history
+
+    // fill history
+    if (history_speed.size() >= FILTER_LONG_WINDOW) {
+        history_speed.pop_front();
+    }
+    history_speed.push_back(value);
 }
 void station::set_wind_direction(float value) {
     this->current_dir = value;
-    // TODO fill history
+
+    // fill history
+    if (history_dir.size() >= FILTER_LONG_WINDOW) {
+        history_dir.pop_front();
+    }
+    history_dir.push_back(value);
 }
 void station::set_wind_direction_raw(float value) {
     this->current_dir_raw = value;
@@ -108,19 +118,51 @@ string station::get_last_wind_time(void) const {
 string station::get_last_pos_time(void) const {
     return last_pos_time;
 }
+float station::average_wind_speed(size_t window) const {
+    size_t n = min(window, history_speed.size());
+    if (n == 0) return 0;
+
+    float sum = 0;
+    for (size_t i = history_speed.size() - n; i < history_speed.size(); ++i) {
+        sum += history_speed[i];
+    }
+
+    return (sum / static_cast<float>(n));
+}
+float station::average_wind_direction(size_t window) const {
+    size_t n = min(window, history_dir.size());
+    if (n == 0) return 0;
+
+    float sum = 0;
+    for (size_t i = history_dir.size() - n; i < history_dir.size(); ++i) {
+        sum += history_dir[i];
+    }
+
+    return (sum / static_cast<float>(n));
+}
 
 
 std::ostream& operator<< (std::ostream &out, const station &s) {
+    float speed_avg_long = s.average_wind_speed(FILTER_LONG_WINDOW);
+    float speed_avg_short = s.average_wind_speed(FILTER_SHORT_WINDOW);
+
     out << "Station: " << s.get_mac() << endl
         << s.get_position_string() << endl
         << std::setprecision(10)
         << s.get_latitude() << " | "
         << std::setprecision(10)
-        << s.get_longitude() << endl
+        << s.get_longitude() << " | "
         << std::setprecision(5)
-        << "Compass: " << s.get_compass() << "°" << endl
+        << s.get_compass() << "°" << endl
         << "Wind: " << s.get_wind_speed() << " km/h | "
-        << s.get_wind_direction() << "°" << endl;
+        << s.get_wind_direction() << "°" << endl
+        << "Hist (S/L):    "
+        << speed_avg_short << " km/h / "
+        << speed_avg_long << " km/h" << endl
+        << "HistD (S/now): "
+        << speed_avg_short - speed_avg_long << " km/h / "
+        << s.get_wind_speed() - speed_avg_long << " km/h" << endl
+        ;
     return out;
 }
 

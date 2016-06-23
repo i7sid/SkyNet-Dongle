@@ -33,7 +33,7 @@ int menu_item_count = 0;
 
 WINDOW *log_win = nullptr;
 
-static int menu_width = 36;
+static int menu_width = 48;
 static int status_height = 24;
 
 static uint8_t seq_no = 0;

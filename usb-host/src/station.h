@@ -14,6 +14,10 @@
 #include <iostream>
 #include <iomanip>
 #include <unordered_map>
+#include <vector>
+#include <deque>
+#include <algorithm>
+#include <stdlib.h>
 
 #define FILTER_LONG_WINDOW      (180)
 #define FILTER_SHORT_WINDOW     (42)
@@ -52,6 +56,9 @@ class station {
         std::string get_last_wind_time(void) const;
         std::string get_last_pos_time(void) const;
 
+        float   average_wind_speed(size_t window) const;
+        float   average_wind_direction(size_t window) const;
+
         friend std::ostream& operator<< (std::ostream &out, const station &s);
 
     protected:
@@ -65,8 +72,10 @@ class station {
         float   current_dir     = 0;
         float   current_dir_raw = 0;
         float   current_compass = 0;
-        float   historic_speed[FILTER_LONG_WINDOW];
-        float   historic_dir[FILTER_LONG_WINDOW];
+        //float   historic_speed[FILTER_LONG_WINDOW];
+        //float   historic_dir[FILTER_LONG_WINDOW];
+        std::deque<float> history_speed;
+        std::deque<float> history_dir;
 };
 
 extern std::unordered_map<std::string, station> stations;
