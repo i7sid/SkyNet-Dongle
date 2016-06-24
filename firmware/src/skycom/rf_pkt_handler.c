@@ -5,6 +5,8 @@
  *  @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+//#ifndef IS_REPEATER
+
 #include "rf_pkt_handler.h"
 
 uint8_t last_recv_seqno = 0xFF;
@@ -23,6 +25,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 	bool to_usb = true;
 	bool my_mac = false;
+	uint8_t ttl = 0;
 
 	mac_frame_data inframe;
 	mac_frame_data_init(&inframe);
@@ -178,6 +181,15 @@ void skynet_received_packet(skynet_packet *pkt) {
 	#endif
 						break;
 					}
+					case EXTHDR_TTL:
+					{
+						if (next_hdr->typelength_union.type_length.length == 1) {
+							ttl = next_hdr->data[0];
+							ttl -= 1;
+							next_hdr->data[0] = ttl;
+						}
+						break;
+					}
 					default:
 						break;
 				}
@@ -208,11 +220,29 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 	}
 
+#ifdef IS_REPEATER
+	// must be not for me
+	if (!my_mac) {
+		if (ttl > 0) {
+			mac_frame_data frame;
+			memcpy(&(frame.mhr), &(inframe.mhr), sizeof(frame.mhr));
+			frame.payload = inframe.payload;
+			frame.payload_size = inframe.payload_size;
+
+			frame.extheader = inframe.extheader; // ttl was decreased above
+
+			// send frame
+			mac_transmit_packet(&frame);
+		}
+	}
+#endif
+
 	// Must be done! Memory was allocated dynamically.
 	//mac_frame_extheaders_free(inframe.extheader);
 	mac_frame_data_free_contents(&inframe);
-	free(pkt->data);
-	free(pkt);
+	free(pkt->data);	free_count();
+	free(pkt);			free_count();
 
 	skynet_led_blink_passive(5);
 }
+//#endif // !IS_REPEATER

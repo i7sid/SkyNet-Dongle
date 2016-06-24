@@ -28,7 +28,7 @@ void* mac_frame_data_calloc(void) {
 
 
 void mac_frame_data_free_contents(mac_frame_data *frame) {
-	if (frame->payload != NULL) free(frame->payload);	free_count();
+	if (frame->payload != NULL) { free(frame->payload);	free_count(); }
 	mac_frame_extheaders_free(frame->extheader); // nothing happens if NULL
 	//free(frame); // do not do this!
 }

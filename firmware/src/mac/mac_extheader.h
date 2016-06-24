@@ -29,7 +29,8 @@ typedef enum mac_extheader_types {
 	EXTHDR_ETHER_TYPE		= 1,	///<@brief Specifies ether_type of payload.
 	EXTHDR_SENSOR_VALUES	= 2, 	///<@brief Specifies which sensor data is contained in payload.
 	EXTHDR_DONGLE_CMD		= 3, 	///<@brief Contains a command to the dongle.
-	EXTHDR_DONGLE_CMD_ANSWER= 4 	///<@brief Contains an answer to a command to the dongle.
+	EXTHDR_DONGLE_CMD_ANSWER= 4, 	///<@brief Contains an answer to a command to the dongle.
+	EXTHDR_TTL				= 5 	///<@brief Time to live for multihop packets.
 } mac_extheader_types;
 
 
