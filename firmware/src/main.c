@@ -245,6 +245,8 @@ int main(void) {
     Chip_WWDT_Start(LPC_WWDT);
 #endif
 
+    //register_delayed_event(10000, debug_send_rf);
+
 	while (1) {
 #ifndef DEBUG
 		Chip_WWDT_Feed(LPC_WWDT);
@@ -430,16 +432,23 @@ int main(void) {
 				uint8_t buf[64];
 
 				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
+				/*
 				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|..........abcdefghijklmnopqrstuvwxyzABCD\n",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND]);
+				*/
+				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%d|.........\n",
+						FullTime.time[RTC_TIMETYPE_HOUR],
+						FullTime.time[RTC_TIMETYPE_MINUTE],
+						FullTime.time[RTC_TIMETYPE_SECOND],
+						sn_cnt_mallocs, sn_cnt_frees);
 				pos++; // trailing null byte of string
 
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
-				frame.payload_size = 41;
+				frame.payload_size = pos;
 
 				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
 				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
@@ -605,4 +614,4 @@ void skynet_cdc_received_message(usb_message *msg) {
 uint32_t sn_cnt_mallocs = 0;
 uint32_t sn_cnt_frees = 0;
 void malloc_count(void) { sn_cnt_mallocs++; }
-void free_count(void) { sn_cnt_mallocs++; }
+void free_count(void) { sn_cnt_frees++; }
