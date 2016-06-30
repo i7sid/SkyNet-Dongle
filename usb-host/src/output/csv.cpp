@@ -22,30 +22,43 @@ void CsvOutput::set_filename(std::string filename) {
     this->filename = filename;
 }
 
-void CsvOutput::updated(void) {
+void CsvOutput::updated(station *s) {
     ofstream of;
     ofstream of_pos;
 	of.open("wind-" + filename, std::ofstream::out | std::ofstream::app);
 	of_pos.open("pos-" + filename, std::ofstream::out | std::ofstream::app);
 
-    for (auto it = stations.begin(); it != stations.end(); ++it) {
-        if (last_wind_time.compare(it->second.get_last_wind_time()) != 0) {
-            of << it->second.get_last_wind_time() << ","
-                << it->second.get_mac() << ","
-                << std::setprecision(5)
-                << it->second.get_wind_speed() << ","
-                << it->second.get_wind_direction() << endl;
-            last_wind_time = it->second.get_last_wind_time();
-        }
-        if (this->last_pos_time.compare(it->second.get_last_pos_time()) != 0) {
-            of_pos << it->second.get_last_pos_time() << ","
-                << it->second.get_mac() << ","
-                << std::setprecision(10)
-                << it->second.get_longitude() << ","
-                << it->second.get_latitude() << endl;
-            this->last_pos_time = it->second.get_last_pos_time();
-        }
-    }
+    of << s->get_last_wind_time() << ","
+        << s->get_mac() << ","
+        << std::setprecision(5)
+        << s->get_wind_speed() << ","
+        << s->get_wind_direction() << endl;
+
+    of_pos << s->get_last_pos_time() << ","
+        << s->get_mac() << ","
+        << std::setprecision(10)
+        << s->get_longitude() << ","
+        << s->get_latitude() << endl;
+
+
+//    for (auto it = stations.begin(); it != stations.end(); ++it) {
+//        if (last_wind_time.compare(it->second.get_last_wind_time()) != 0) {
+//            of << it->second.get_last_wind_time() << ","
+//                << it->second.get_mac() << ","
+//                << std::setprecision(5)
+//                << it->second.get_wind_speed() << ","
+//                << it->second.get_wind_direction() << endl;
+//            last_wind_time = it->second.get_last_wind_time();
+//        }
+//        if (this->last_pos_time.compare(it->second.get_last_pos_time()) != 0) {
+//            of_pos << it->second.get_last_pos_time() << ","
+//                << it->second.get_mac() << ","
+//                << std::setprecision(10)
+//                << it->second.get_longitude() << ","
+//                << it->second.get_latitude() << endl;
+//            this->last_pos_time = it->second.get_last_pos_time();
+//        }
+//    }
 
     of.close();
     of_pos.close();

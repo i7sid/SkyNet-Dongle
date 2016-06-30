@@ -14,8 +14,8 @@ std::forward_list<DataOutput*> DataOutput::output_handlers;
 void DataOutput::register_output(DataOutput *o) {
     DataOutput::output_handlers.push_front(o);
 }
-void DataOutput::update_all(void) {
+void DataOutput::update_all(station *s) {
     for (auto it = DataOutput::output_handlers.begin(); it != DataOutput::output_handlers.end(); ++it) {
-        (*it)->updated();
+        (*it)->updated(s);
     }
 }

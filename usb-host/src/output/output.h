@@ -11,14 +11,15 @@
 #define OUTPUT_H
 
 #include <forward_list>
+#include "station.h"
 
 class DataOutput {
     public:
         ~DataOutput() {};
 //        virtual ~DataOutput();
-        virtual void updated(void) = 0;
+        virtual void updated(station *s) = 0;
 
-        static void update_all(void);
+        static void update_all(station *s);
         static void register_output(DataOutput *o);
 
     protected:

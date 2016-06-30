@@ -18,7 +18,7 @@ static inline double deg2rad(double input) { return input * (M_PI / 180); }
 JsonOutput::JsonOutput(std::string filename) : filename(filename) {
 }
 
-void JsonOutput::updated(void) {
+void JsonOutput::updated(station*) {
     ofstream of_json;
 	of_json.open(filename, std::ofstream::out | std::ofstream::trunc);
     //list_stations(of_json);

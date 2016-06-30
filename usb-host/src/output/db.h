@@ -21,7 +21,7 @@ class DbOutput : public DataOutput {
         DbOutput();
         ~DbOutput() {};
 
-        void updated(void);
+        void updated(station *s);
 
     private:
         db dbcon;

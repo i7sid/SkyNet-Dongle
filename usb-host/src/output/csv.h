@@ -21,7 +21,7 @@ class CsvOutput : public DataOutput {
         ~CsvOutput() {};
 
         void set_filename(std::string filename);
-        void updated(void);
+        void updated(station *s);
 
     private:
         std::string filename;

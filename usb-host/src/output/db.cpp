@@ -17,7 +17,7 @@ DbOutput::DbOutput() :
     dbcon("localhost", "skynetbaseweb", "skynetbaseweb", "skynetbaseweb") {}
 
 
-void DbOutput::updated(void) {
+void DbOutput::updated(station *s) {
 
     for (auto it = stations.begin(); it != stations.end(); ++it) {
 		int station = dbcon.get_station(it->second.get_mac());

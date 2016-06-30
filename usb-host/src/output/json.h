@@ -18,7 +18,7 @@ class JsonOutput : public DataOutput {
     public:
         JsonOutput(std::string filename);
         ~JsonOutput() {};
-        void updated(void);
+        void updated(station*);
 
     private:
         std::string filename;

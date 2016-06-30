@@ -53,8 +53,8 @@ void usbReceiveHandler(usb_message pkt) {
 	}
 	if (arg_parser.get().verbosity >= 3) {
 		cout << "Received USB message: " << endl;
-		cout << "Type:\t" << (unsigned int)pkt.type << endl;
-		cout << "SeqNo:\t" << (unsigned int)pkt.seqno << endl;
+		cout << "Type:\t" << (unsigned int)(pkt.type & 0xFF) << endl;
+		cout << "SeqNo:\t" << (unsigned int)(pkt.seqno & 0xFF) << endl;
 		cout << "Length:\t" << pkt.payload_length << endl;
 		cout << "Payload:" << endl;
 
@@ -170,7 +170,7 @@ void usbReceiveHandler(usb_message pkt) {
 					cerr << ".";
 					gui.update_status_win();
 					flush(cerr);
-                    DataOutput::update_all();
+                    DataOutput::update_all(&from_s);
 					break;
 				}
 
