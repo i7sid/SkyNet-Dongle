@@ -92,7 +92,7 @@ void mac_init(void);
  *
  * @return	True, if sent successfully, false otherwise.
  */
-bool mac_transmit_packet(mac_frame_data* frame);
+bool mac_transmit_packet(mac_frame_data* frame, bool new_seq);
 
 /**
  * @brief	Returns a random integer strict smaller than max.

@@ -45,6 +45,6 @@ void skycom_send_donglecmd_answer(uint8_t dest[], uint8_t seq_no, uint8_t reply)
 	frame.extheader = &hdr;
 
 	// send frame
-	mac_transmit_packet(&frame);
+	mac_transmit_packet(&frame, true);
 }
 

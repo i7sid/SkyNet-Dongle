@@ -5,6 +5,8 @@
  *      Author: michi
  */
 
+#if 0
+
 #include "udp.h"
 #include "../cpu/nv_storage.h"
 #include "../mac/mac.h"
@@ -67,5 +69,6 @@ void udp_send(uint8_t dest_ip[4], uint16_t src_port, uint16_t dest_port, uint8_t
 
 	memcpy(buf+i, data, size);
 
-	mac_transmit_packet(&frame);
+	mac_transmit_packet(&frame, true);
 }
+#endif

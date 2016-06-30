@@ -8,6 +8,8 @@
 //#ifndef IS_REPEATER
 
 #include "rf_pkt_handler.h"
+#include "seen_packet.h"
+
 
 uint8_t last_recv_seqno = 0xFF;
 
@@ -57,7 +59,8 @@ void skynet_received_packet(skynet_packet *pkt) {
 	// TODO erkennen, ob das Paket schon mal empfangen wurde (verlorenes ACK)
 	// TODO erkennen, dass Paket für angeschlossenes USB-Gerät gedacht ist
 
-	if (last_recv_seqno != inframe.mhr.seq_no) {
+	//if (last_recv_seqno != inframe.mhr.seq_no) {
+	if (!packet_seen(inframe.mhr.src_address[0], inframe.mhr.src_address[1], inframe.mhr.seq_no)) {
 		last_recv_seqno = inframe.mhr.seq_no;
 
 		// seems to be for me
@@ -102,7 +105,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 
 
 							// send frame
-							mac_transmit_packet(&frame);
+							mac_transmit_packet(&frame, true);
 
 						}
 						else if (next_hdr->data[0] == RF_SET_PARAMETERS) {
@@ -232,7 +235,7 @@ void skynet_received_packet(skynet_packet *pkt) {
 			frame.extheader = inframe.extheader; // ttl was decreased above
 
 			// send frame
-			mac_transmit_packet(&frame);
+			mac_transmit_packet(&frame, false);
 		}
 	}
 #endif

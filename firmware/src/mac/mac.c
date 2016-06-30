@@ -42,10 +42,10 @@ bool channel_idle(void) {
 
 #define MAC_SEND_TRIES		(3)
 
-bool mac_transmit_packet(mac_frame_data *frame) {
+bool mac_transmit_packet(mac_frame_data *frame, bool new_seq) {
 	uint16_t est_size = mac_frame_data_estimate_size(frame);
 	uint8_t buf[est_size];
-	frame->mhr.seq_no = seq_no++;
+	if (new_seq) { frame->mhr.seq_no = seq_no++; }
 	memset(buf, 0, sizeof(buf));								// TODO remove, DEBUG!
 	uint16_t size = mac_frame_data_pack(frame, buf);
 	//mac_frame_calc_crc(buf, size);
@@ -107,6 +107,7 @@ bool mac_transmit_data(uint8_t* data, uint16_t length) {
 
         if (channel_idle()) {
         	phy_transmit(data, length); 		// send to PHY
+        	DBG("%d\n", nb);
             return true;
         }
         else {

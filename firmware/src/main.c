@@ -335,11 +335,17 @@ int main(void) {
 				hdr.typelength_union.type_length.length = 2;
 				hdr.data[0] = SENSOR_POSITION;
 				hdr.data[1] = SENSOR_COMPASS; // TODO DEBUG
+				mac_extheader hdr2;
+				mac_extheader_init(&hdr2);
+				hdr2.typelength_union.type_length.type = EXTHDR_TTL;
+				hdr2.typelength_union.type_length.length = 1;
+				hdr2.data[0] = 2;
 
+				hdr.next = &hdr2;
 				frame.extheader = &hdr;
 
 				// send frame
-				mac_transmit_packet(&frame);
+				mac_transmit_packet(&frame, true);
 
 				break;
 			}
@@ -390,11 +396,17 @@ int main(void) {
 				hdr.data[1] = SENSOR_WIND_SPEED;
 				hdr.data[2] = SENSOR_WIND_DIR_RAW;
 				//hdr.data[3] = SENSOR_COMPASS;
+				mac_extheader hdr2;
+				mac_extheader_init(&hdr2);
+				hdr2.typelength_union.type_length.type = EXTHDR_TTL;
+				hdr2.typelength_union.type_length.length = 1;
+				hdr2.data[0] = 2;
 
+				hdr.next = &hdr2;
 				frame.extheader = &hdr;
 
 				// send frame
-				mac_transmit_packet(&frame);
+				mac_transmit_packet(&frame, true);
 
 				break;
 			}
@@ -470,7 +482,7 @@ int main(void) {
 				frame.extheader = &hdr;
 
 				// send frame
-				mac_transmit_packet(&frame);
+				mac_transmit_packet(&frame, true);
 
 
 				skynet_led_blink_active(10);
