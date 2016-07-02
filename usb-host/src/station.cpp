@@ -173,7 +173,6 @@ std::ostream& operator<< (std::ostream &out, const station &s) {
 int i = 0;
 station& get_station(std::string mac) {
     station &s = stations[mac];
-    s.set_wind_direction(i++);
     s.set_mac(mac);
     return stations[mac];
 }
