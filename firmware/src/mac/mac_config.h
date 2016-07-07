@@ -22,7 +22,7 @@
 */
 
 //#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in us?
-#define MAC_CONST_SYMBOL_LENGTH             (2000) // TODO: correct value in us?
+#define MAC_CONST_SYMBOL_LENGTH             (2000)
 //
 
 #define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (20) // in "symbols"
