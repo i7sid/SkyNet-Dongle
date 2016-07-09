@@ -3,6 +3,7 @@ Release/**
 
 debug_logs/**
 
+*.exe
 *.csv
 *~
 *.swp
