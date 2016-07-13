@@ -35,6 +35,9 @@ void skynetbase_windspeed_check_null(void) {
 	if (current_speed == last_checked_speed) {
 		null_ticks++;
 	}
+	else {
+		null_ticks = 0;
+	}
 
 	if (null_ticks >= 4) {
 		current_speed = 0;
