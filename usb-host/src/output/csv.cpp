@@ -32,7 +32,8 @@ void CsvOutput::updated(station *s) {
         << s->get_mac() << ","
         << std::setprecision(5)
         << s->get_wind_speed() << ","
-        << s->get_wind_direction() << endl;
+        << s->get_wind_direction() << ","
+        << s->get_wind_direction_raw() << endl;
     
     of_pos << s->get_last_pos_time() << ","
         << s->get_mac() << ","
