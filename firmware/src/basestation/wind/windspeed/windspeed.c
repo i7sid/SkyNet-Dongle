@@ -8,8 +8,10 @@
 
 static uint32_t last_tick = 0;
 static float current_speed = 0;
+/*static*/ float current_speed_2 = 0;
 static float last_checked_speed = 0;
 static uint8_t null_ticks = 0;
+static uint16_t ticks_2 = 0;
 
 float skynetbase_windspeed_get(void) {
 	return current_speed;
@@ -17,6 +19,7 @@ float skynetbase_windspeed_get(void) {
 
 __INLINE void skynetbase_windspeed_tickhandler() {
 	// measure time between two impulses
+	ticks_2++;
 
 	__disable_irq();
 	uint32_t now = skynet_systick_get();
@@ -46,6 +49,10 @@ void skynetbase_windspeed_check_null(void) {
 
 	last_checked_speed = current_speed;
 	register_delayed_event(1000, skynetbase_windspeed_check_null);
+
+	// try first method
+	current_speed_2 = 2.25 * 1.609344 * ticks_2;
+	ticks_2 = 0;
 }
 
 int skynetbase_windspeed_init(void) {
