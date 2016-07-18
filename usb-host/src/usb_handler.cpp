@@ -70,7 +70,15 @@ void usbReceiveHandler(usb_message pkt) {
 
 	}
 
-	if (pkt.type == USB_SKYNET_PACKET) {
+	if (pkt.type == USB_RANGE_TEST) {
+        ofstream of;
+        of.open("rangetest-rx.csv", std::ofstream::out | std::ofstream::app);
+
+        of << pkt.payload << endl;
+
+        of.close();
+    }
+    else if (pkt.type == USB_SKYNET_PACKET) {
 		mac_frame_data frame;
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
