@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include <vector>
 #include <deque>
+#include <cmath>
 #include <algorithm>
 #include <stdlib.h>
 
