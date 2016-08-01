@@ -7,6 +7,8 @@
  * @brief	Contains functionality for communication with RF module.
  */
 
+#if 0
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -411,3 +413,5 @@ void si446x_set_property_lpc( uint8_t GROUP, uint8_t NUM_PROPS, uint8_t START_PR
 
 	radio_comm_SendCmd(NUM_PROPS+4, Pro2Cmd);
 }
+
+#endif

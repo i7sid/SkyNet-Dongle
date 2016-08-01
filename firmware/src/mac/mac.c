@@ -8,6 +8,8 @@
  * @date    2016-02-05
  */
 
+#if 0
+
 
 #include "mac.h"
 #include "../radio/skynet_radio.h"
@@ -134,3 +136,4 @@ bool mac_transmit_ack(uint8_t seq_no) {
 	return true;
 }
 
+#endif

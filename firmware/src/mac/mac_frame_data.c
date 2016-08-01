@@ -5,6 +5,8 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -279,4 +281,6 @@ void mac_frame_extheaders_free(mac_extheader* hdr) {
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif

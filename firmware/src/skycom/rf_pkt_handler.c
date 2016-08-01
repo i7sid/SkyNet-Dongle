@@ -6,6 +6,7 @@
  */
 
 //#ifndef IS_REPEATER
+#if 0
 
 #include "rf_pkt_handler.h"
 #include "seen_packet.h"
@@ -249,3 +250,5 @@ void skynet_received_packet(skynet_packet *pkt) {
 	skynet_led_blink_passive(5);
 }
 //#endif // !IS_REPEATER
+
+#endif

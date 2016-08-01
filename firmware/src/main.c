@@ -45,6 +45,8 @@
 #include "mac/mac_extheader.h"
 #include "ip/udp.h"
 
+#include "skycom/dfx.h"
+
 
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
@@ -131,21 +133,26 @@ int main(void) {
 
     srand(rand_seed);
 
-    mac_init();
+    //mac_init();
     skynet_nv_init();
     skynet_v_init();
     NV_DATA_T *config = skynet_nv_get();
 
-    DBG("Initialize radio module...\n");
-    radio_init();
-    vRadio_Change_PwrLvl(config->radio_pa_level);
-    radio_start_rx();
+    DBG("Skip radio module.\n");
+    //DBG("Initialize radio module...\n");
+    //radio_init();
+    //vRadio_Change_PwrLvl(config->radio_pa_level);
+    //radio_start_rx();
+
+    // init communication with adafruit feather
+    dfx_init();
 
     // usb init
+    /*
     skynet_cdc_init();
     msDelay(700); // wait a moment to ensure that all systems are up and ready
     register_delayed_event(500, skynet_cdc_task);
-
+     */
 
 
 #ifdef IS_BASESTATION
@@ -269,18 +276,7 @@ int main(void) {
 				skynet_cdc_received_message(event.data);
 				break;
 			case EVENT_RF_GOT_PACKET:
-				skynet_received_packet(event.data);
-				break;
-
-			case EVENT_RADIO_RESTART:
-				// restart radio chip
-				radio_shutdown();
-				msDelayActive(50);
-				msDelay(100);
-				radio_init(); // also reenables interrupts
-				radio_reset_packet_size(); // reset size of Field 2
-				si446x_fifo_info(SI446X_CMD_FIFO_INFO_ARG_RX_BIT | SI446X_CMD_FIFO_INFO_ARG_TX_BIT);
-			    radio_start_rx();
+				//skynet_received_packet(event.data);
 				break;
 
 			case EVENT_BASE_QUERY_POS:
@@ -312,6 +308,7 @@ int main(void) {
 
 				pos++; // trailing null byte of string
 
+				/*
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
@@ -343,9 +340,9 @@ int main(void) {
 
 				hdr.next = &hdr2;
 				frame.extheader = &hdr;
+				*/
 
-				// send frame
-				mac_transmit_packet(&frame, true);
+				// TODO send to radio board
 
 				break;
 			}
@@ -372,6 +369,7 @@ int main(void) {
 						wind_dir, windspeed, wind_dir_raw);
 				pos++; // trailing null byte of string
 
+				/*
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
@@ -404,9 +402,9 @@ int main(void) {
 
 				hdr.next = &hdr2;
 				frame.extheader = &hdr;
+				*/
 
-				// send frame
-				mac_transmit_packet(&frame, true);
+				// TODO send to radio board
 
 				break;
 			}
@@ -457,6 +455,7 @@ int main(void) {
 						sn_cnt_mallocs, sn_cnt_frees);
 				pos++; // trailing null byte of string
 
+				/*
 				mac_frame_data frame;
 				mac_frame_data_init(&frame);
 				frame.payload = buf;
@@ -482,7 +481,11 @@ int main(void) {
 				frame.extheader = &hdr;
 
 				// send frame
-				mac_transmit_packet(&frame, true);
+				//mac_transmit_packet(&frame, true);
+
+*/
+
+				// TODO send to radio board
 
 
 				skynet_led_blink_active(10);
@@ -539,8 +542,7 @@ void skynet_cdc_received_message(usb_message *msg) {
 
 	switch(msg->type) {
 		case USB_SKYNET_PACKET: {
-			mac_transmit_data((uint8_t*)msg->payload, msg->payload_length);
-//			mac_transmit_packet((uint8_t*)msg->payload, msg->payload_length);
+//			mac_transmit_data((uint8_t*)msg->payload, msg->payload_length);
 			break;
 		}
 		case USB_CONTROL: {
