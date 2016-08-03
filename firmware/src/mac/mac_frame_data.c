@@ -5,7 +5,7 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 
-#if 0
+#ifndef IS_BASESTATION
 
 #ifdef __cplusplus
 extern "C" {

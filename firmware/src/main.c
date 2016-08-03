@@ -47,6 +47,7 @@
 #include "ip/udp.h"
 
 #include "skycom/dfx.h"
+#include "skycom/LPC_SWU.h"
 
 #define roundf(x)		{ ( (x - floorf(x)) < (ceilf(x) - x) ) ? floorf(x) : ceilf(x) }
 
@@ -72,7 +73,7 @@ void debug_send_rf(void) {
 
 void ev_send_dfx(void) {
 	events_enqueue(EVENT_DFX_SEND, NULL);
-	register_delayed_event(10000, ev_send_dfx);
+	register_delayed_event(1000, ev_send_dfx);
 }
 
 
@@ -221,6 +222,8 @@ int main(void) {
     // load calibration data
     skynetbase_compass_calibration_set(&(config->compass_calibration));
 
+    v_configuration.time_wind_wait = 500;
+
     // send regularily data events
     register_delayed_event(v_configuration.time_wind_wait, generate_event_wind_base);
 	register_delayed_event(v_configuration.time_pos_wait, generate_event_pos_base);
@@ -290,79 +293,65 @@ int main(void) {
 
 			case EVENT_BASE_QUERY_POS:
 			{
+				// start next query
+				skynetbase_gps_query();
+				break;
+			}
+			case EVENT_BASE_SEND_WIND:
+			{
+				break;
+			}
+			case EVENT_GPS_DATA_AVAILABLE:
+			{
+				//DBG("GPS data received.\n");
+				break;
+			}
+			case EVENT_DFX_SEND:
+			{
 				gps_pubx_data* gps = skynetbase_gps_get_data();
+				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+				float compass = skynetbase_compass_read();
+				float windspeed = skynetbase_windspeed_get();
+				uint16_t wind_dir_raw = skynetbase_windvane_measure();
+				uint16_t wind_dir = wind_dir_raw;
+
+				// wind dir: compensate orientation of station via compass
+				wind_dir += compass;
+				wind_dir = wind_dir % 360;
 
 				// start next query
 				skynetbase_gps_query();
+
 
 				if (!(gps->status) || !(gps->lat_dir) || !(gps->lon_dir) || !(gps->lat) || !(gps->lon)) {
 					// TODO send notification to network?
 					break; // no gps data available yet
 				}
 
-				float compass = skynetbase_compass_read();
-				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
 				uint8_t pos = 0;
-				uint8_t buf[64];
+				uint8_t buf[128];
 
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%c:%f:%c:%f",
-						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon);
-
-/*
-				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%02d%02d%02d|%c:%f:%c:%f|%f",
+						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
-						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon, compass);
-*/
-
-				buf[pos++] = 0; // trailing null byte of string
-
-				dfx_set_pos_n(buf, pos);
-				dfx_set_compass((uint16_t)roundf(compass));
-
-				// TODO send to radio board
-
-				break;
-			}
-			case EVENT_BASE_SEND_WIND:
-			{
-				float windspeed = skynetbase_windspeed_get();
-				uint16_t wind_dir_raw = skynetbase_windvane_measure();
-				uint16_t wind_dir = wind_dir_raw;
-				float compass = skynetbase_compass_read();
-				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
-
-				// wind dir: compensate orientation of station via compass
-				wind_dir += compass;
-				wind_dir = wind_dir % 360;
-
-				uint8_t pos = 0;
-				uint8_t buf[64];
-
-				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%f|%d\n",
-						FullTime.time[RTC_TIMETYPE_HOUR],
-						FullTime.time[RTC_TIMETYPE_MINUTE],
-						FullTime.time[RTC_TIMETYPE_SECOND],
-						wind_dir, windspeed, wind_dir_raw);
-				pos++; // trailing null byte of string
+						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon, compass,
+						wind_dir, windspeed);
 
 
-				// TODO send to radio board
+				uint8_t chksum = dfx_checksum_calc(buf, pos);
+				pos += snprintf((char*)buf + pos, sizeof(buf) - pos,
+						"%.2x", chksum);
+
+				pos++; // trailing null byte of string (written by snprintf, missing in return value "pos")
+
+				for (uint16_t i = 0; i < pos; ++i) {
+					swu_tx_chr(buf[i]);
+				}
 
 				break;
-			}
-			case EVENT_GPS_DATA_AVAILABLE:
-			{
-				//DBG("GPS data received.\n");
-			}
-			case EVENT_DFX_SEND:
-			{
-				//dfx_pack_and_send();
 			}
 			default: {
 				break;
