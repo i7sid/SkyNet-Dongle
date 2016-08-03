@@ -39,7 +39,8 @@ typedef enum event_types {
 	EVENT_DEBUG_1,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_2,			///< @brief Reserved for debugging purposes.
 	EVENT_DEBUG_3,			///< @brief Reserved for debugging purposes.
-	EVENT_DEBUG_4			///< @brief Reserved for debugging purposes.
+	EVENT_DEBUG_4,			///< @brief Reserved for debugging purposes.
+	EVENT_DFX_SEND			///< @brief Send DFX packet to RF module.
 } event_types;
 
 typedef struct queued_event {

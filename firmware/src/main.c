@@ -23,6 +23,7 @@
 #include <cr_section_macros.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "stopwatch.h"
 
@@ -47,6 +48,8 @@
 
 #include "skycom/dfx.h"
 
+#define roundf(x)		{ ( (x - floorf(x)) < (ceilf(x) - x) ) ? floorf(x) : ceilf(x) }
+
 
 __NOINIT(RAM2) volatile uint8_t goto_bootloader;
 extern RTC_TIME_T FullTime;
@@ -65,6 +68,11 @@ void debug_send_usb(void) {
 void debug_send_rf(void) {
 	events_enqueue(EVENT_DEBUG_2, NULL);
 	register_delayed_event(10000, debug_send_rf);
+}
+
+void ev_send_dfx(void) {
+	events_enqueue(EVENT_DFX_SEND, NULL);
+	register_delayed_event(10000, ev_send_dfx);
 }
 
 
@@ -146,6 +154,7 @@ int main(void) {
 
     // init communication with adafruit feather
     dfx_init();
+    ev_send_dfx();
 
     // usb init
     /*
@@ -291,56 +300,29 @@ int main(void) {
 					break; // no gps data available yet
 				}
 
-
 				float compass = skynetbase_compass_read();
 				Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
 
 				uint8_t pos = 0;
 				uint8_t buf[64];
 
+				pos += snprintf((char*)buf, sizeof(buf) - pos,
+						"%c:%f:%c:%f",
+						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon);
 
+/*
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
 						"%02d%02d%02d|%c:%f:%c:%f|%f",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
 						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon, compass);
+*/
 
-				pos++; // trailing null byte of string
+				buf[pos++] = 0; // trailing null byte of string
 
-				/*
-				mac_frame_data frame;
-				mac_frame_data_init(&frame);
-				frame.payload = buf;
-				frame.payload_size = pos;
-				//frame.payload_size = pos+4; // TODO Debug (+4)
-
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-
-				// MAC addresses
-				NV_DATA_T *config = skynet_nv_get();
-				frame.mhr.dest_address[0] = 0xFF;
-				frame.mhr.dest_address[1] = 0xFF;
-				frame.mhr.src_address[0] = config->mac_addr[4];
-				frame.mhr.src_address[1] = config->mac_addr[5];
-
-				// ext headers
-				mac_extheader hdr;
-				mac_extheader_init(&hdr);
-				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 2;
-				hdr.data[0] = SENSOR_POSITION;
-				hdr.data[1] = SENSOR_COMPASS; // TODO DEBUG
-				mac_extheader hdr2;
-				mac_extheader_init(&hdr2);
-				hdr2.typelength_union.type_length.type = EXTHDR_TTL;
-				hdr2.typelength_union.type_length.length = 1;
-				hdr2.data[0] = 2;
-
-				hdr.next = &hdr2;
-				frame.extheader = &hdr;
-				*/
+				dfx_set_pos_n(buf, pos);
+				dfx_set_compass((uint16_t)roundf(compass));
 
 				// TODO send to radio board
 
@@ -369,40 +351,6 @@ int main(void) {
 						wind_dir, windspeed, wind_dir_raw);
 				pos++; // trailing null byte of string
 
-				/*
-				mac_frame_data frame;
-				mac_frame_data_init(&frame);
-				frame.payload = buf;
-				frame.payload_size = pos+4; // TODO Debug (+4)
-
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-
-				// MAC addresses
-				NV_DATA_T *config = skynet_nv_get();
-				frame.mhr.dest_address[0] = 0xFF;
-				frame.mhr.dest_address[1] = 0xFF;
-				frame.mhr.src_address[0] = config->mac_addr[4];
-				frame.mhr.src_address[1] = config->mac_addr[5];
-
-				// ext headers
-				mac_extheader hdr;
-				mac_extheader_init(&hdr);
-				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 3;
-				hdr.data[0] = SENSOR_WIND_DIR;
-				hdr.data[1] = SENSOR_WIND_SPEED;
-				hdr.data[2] = SENSOR_WIND_DIR_RAW;
-				//hdr.data[3] = SENSOR_COMPASS;
-				mac_extheader hdr2;
-				mac_extheader_init(&hdr2);
-				hdr2.typelength_union.type_length.type = EXTHDR_TTL;
-				hdr2.typelength_union.type_length.length = 1;
-				hdr2.data[0] = 2;
-
-				hdr.next = &hdr2;
-				frame.extheader = &hdr;
-				*/
 
 				// TODO send to radio board
 
@@ -412,108 +360,9 @@ int main(void) {
 			{
 				//DBG("GPS data received.\n");
 			}
-			case EVENT_DEBUG_1:
+			case EVENT_DFX_SEND:
 			{
-				// DEBUG: send usb packet
-				char debugstr[] = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890";
-				//char debugstr[] = "This is a debug string.";
-				skynet_cdc_write_debug("%s\n", debugstr);
-
-				/*skynet_led_blink_active(10);
-				msDelayActive(30);*/
-				skynet_led_blink_active(10);
-				break;
-			}
-			case EVENT_DEBUG_2:
-			{
-				// DEBUG: send RF packet
-				/*
-				uint8_t p[] = "Test-Payload1234567890";
-				uint8_t d[4] = {10,254,0,1};
-
-
-				udp_send(d, 24681, 24680, p, strlen((char*)p));
-
-				*/
-
-
-
-				uint8_t pos = 0;
-				uint8_t buf[64];
-
-				//snprintf((char*)buf, sizeof(buf), "%04d-%02d-%02d|%02d:%02d:%02d|%d|%f\n",
-				/*
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|..........abcdefghijklmnopqrstuvwxyzABCD\n",
-						FullTime.time[RTC_TIMETYPE_HOUR],
-						FullTime.time[RTC_TIMETYPE_MINUTE],
-						FullTime.time[RTC_TIMETYPE_SECOND]);
-				*/
-				pos += snprintf((char*)buf, sizeof(buf)-pos, "%02d%02d%02d|%d|%d|.........\n",
-						FullTime.time[RTC_TIMETYPE_HOUR],
-						FullTime.time[RTC_TIMETYPE_MINUTE],
-						FullTime.time[RTC_TIMETYPE_SECOND],
-						sn_cnt_mallocs, sn_cnt_frees);
-				pos++; // trailing null byte of string
-
-				/*
-				mac_frame_data frame;
-				mac_frame_data_init(&frame);
-				frame.payload = buf;
-				frame.payload_size = pos;
-
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-
-				// MAC addresses
-				NV_DATA_T *config = skynet_nv_get();
-				frame.mhr.dest_address[0] = 0xFF;
-				frame.mhr.dest_address[1] = 0xFF;
-				frame.mhr.src_address[0] = config->mac_addr[4];
-				frame.mhr.src_address[1] = config->mac_addr[5];
-
-				// ext headers
-				mac_extheader hdr;
-				mac_extheader_init(&hdr);
-				hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-				hdr.typelength_union.type_length.length = 1;
-				hdr.data[0] = SENSOR_WIND_SPEED;
-
-				frame.extheader = &hdr;
-
-				// send frame
-				//mac_transmit_packet(&frame, true);
-
-*/
-
-				// TODO send to radio board
-
-
-				skynet_led_blink_active(10);
-
-				break;
-/*
-				mac_frame_data frame;
-				mac_frame_data_init(&frame);
-				frame.payload = p;
-				frame.payload_size = strlen((char*)p) + 1;
-				frame.mhr.dest_pan_id[0] = 23;
-				frame.mhr.src_pan_id[0] = 23;
-				frame.mhr.src_address[0] = 4;
-				frame.mhr.dest_address[0] = 5;
-
-				MHR_FC_SET_DEST_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-				MHR_FC_SET_SRC_ADDR_MODE(frame.mhr.frame_control, MAC_ADDR_MODE_SHORT);
-
-				mac_transmit_packet(&frame);
-				*/
-
-				/*
-				char* dbg_string = "Hello world! 0123456789 <=>?@";
-				radio_send_variable_packet((uint8_t *)dbg_string, (uint16_t)strlen(dbg_string));
-				*/
-
-				skynet_led_blink_active(10);
-				break;
+				//dfx_pack_and_send();
 			}
 			default: {
 				break;
