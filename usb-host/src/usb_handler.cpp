@@ -14,6 +14,7 @@
 #include <cctype>
 #include <locale>
 #include <sstream>
+#include <map>
 
 #include <usb/message.h>
 #include <mac/mac.h>
@@ -38,9 +39,11 @@ extern gui gui;
 #include <netinet/ether.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
-
 extern tap* ptr_tap;
 #endif // NO_TAP
+
+
+map<string, uint8_t> last_seqno;
 
 
 void usbReceiveHandler(usb_message pkt) {
@@ -83,6 +86,7 @@ void usbReceiveHandler(usb_message pkt) {
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
+
 #ifndef NO_TAP
 		mac_payload_type frame_type = mac_payload_type::NONE;
         uint16_t ether_type = 0;
@@ -96,6 +100,17 @@ void usbReceiveHandler(usb_message pkt) {
                 (unsigned int)(frame.mhr.src_address[1]);
 
         station &from_s = get_station(mac_builder.str());
+
+		// TODO filter out packets that were received multiple times
+		if (last_seqno.count(mac_builder.str()) > 0 && last_seqno[mac_builder.str()] == frame.mhr.seq_no) {
+			// packet was seen before, so clean up and abort
+			free(frame.payload);
+			mac_frame_extheaders_free(frame.extheader);
+			return;
+		}
+		else {
+			last_seqno[mac_builder.str()] = frame.mhr.seq_no;
+		}
 
 		// process extheaders
         mac_extheader* next_hdr = frame.extheader;
