@@ -158,11 +158,11 @@ int main(void) {
     ev_send_dfx();
 
     // usb init
-    /*
+
     skynet_cdc_init();
     msDelay(700); // wait a moment to ensure that all systems are up and ready
     register_delayed_event(500, skynet_cdc_task);
-     */
+
 
 
 #ifdef IS_BASESTATION
@@ -322,12 +322,25 @@ int main(void) {
 				// start next query
 				skynetbase_gps_query();
 
+				uint8_t gps_lat_dir = '-';
+				uint8_t gps_lon_dir = '-';
+				double gps_lat = 0;
+				double gps_lon = 0;
 
-				if (!(gps->status) || !(gps->lat_dir) || !(gps->lon_dir) || !(gps->lat) || !(gps->lon)) {
-					// TODO send notification to network?
-					break; // no gps data available yet
+				if (gps->status) {
+					if (gps->lat_dir) {
+						gps_lat_dir = gps->lat_dir;
+					}
+					if (gps->lon_dir) {
+						gps_lon_dir = gps->lon_dir;
+					}
+					if (gps->lat) {
+						gps_lat = gps->lat;
+					}
+					if (gps->lon) {
+						gps_lon = gps->lon;
+					}
 				}
-
 
 				uint8_t pos = 0;
 				uint8_t buf[128];
@@ -337,13 +350,15 @@ int main(void) {
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
-						gps->lat_dir, gps->lat, gps->lon_dir, gps->lon, compass,
+						gps_lat_dir, gps_lat, gps_lon_dir, gps_lon, compass,
 						wind_dir, windspeed);
 
 
 				uint8_t chksum = dfx_checksum_calc(buf, pos);
 				pos += snprintf((char*)buf + pos, sizeof(buf) - pos,
 						"%.2x", chksum);
+
+				skynet_cdc_write_debug("%s\n", buf);
 
 				pos++; // trailing null byte of string (written by snprintf, missing in return value "pos")
 
