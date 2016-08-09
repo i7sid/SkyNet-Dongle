@@ -8,7 +8,7 @@
 #define RFM95_RST 4
 #define RFM95_INT 3
 #define LED 13
-#define RF95_FREQ 867.0
+#define RF95_FREQ 868.3
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
@@ -26,24 +26,9 @@ inline uint8_t dfx_checksum_calc(char* data, uint16_t length) {
 
 uint16_t cnt = 0;
 
-char buf_time[8];
-char buf_pos[32];
-char buf_wind_dir[16];
-char buf_compass[16];
-char buf_wind_speed[16];
-char buf_checksum[8];
-
-char* buf_tokens[6];
-
 char buf[128];
 
 void setup() {
-  buf_tokens[0] = buf_time;
-  buf_tokens[1] = buf_pos;
-  buf_tokens[2] = buf_compass;
-  buf_tokens[3] = buf_wind_dir;
-  buf_tokens[4] = buf_wind_speed;
-  buf_tokens[5] = buf_checksum;
 
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
@@ -66,11 +51,15 @@ void setup() {
   while (!rf95.init()) {
     while (1);
   }
-
   if (!rf95.setFrequency(RF95_FREQ)) {
     while (1);
   }
-  //rf95.setTxPower(23, false);
+  //  rf95.setTxPower(23, false);
+  RH_RF95::ModemConfig modemCfg;
+  modemCfg.reg_1d = (0b1001 << 4) | (0b001 << 1); // 500kHz, 4/5
+  modemCfg.reg_1e = (1 << 2) | (0x9 << 4); // CRC on, 512 chips/symbol
+  modemCfg.reg_26 = 0;
+  rf95.setModemRegisters(&modemCfg);
 
 
   //Serial1.begin(9600);

@@ -58,6 +58,19 @@ void station::set_wind_direction_raw(float value) {
 void station::set_compass(float value) {
     this->current_compass = value;
 }
+void station::set_base_hist_speed_short(float value) {
+    this->base_hist_speed_short = value;
+}
+void station::set_base_hist_dir_short(float value) {
+    this->base_hist_dir_short = value;
+}
+void station::set_base_hist_speed_long(float value) {
+    this->base_hist_speed_long = value;
+}
+void station::set_base_hist_dir_long(float value) {
+    this->base_hist_dir_long = value;
+}
+
 void station::update_position(string value) {
     this->pos_string = value;
 
@@ -109,6 +122,18 @@ float station::get_wind_direction_raw(void) const {
 float station::get_compass(void) const {
     return current_compass;
 }
+float station::get_base_hist_speed_short(void) const {
+    return base_hist_speed_short;
+}
+float station::get_base_hist_dir_short(void) const {
+    return base_hist_dir_short;
+}
+float station::get_base_hist_speed_long(void) const {
+    return base_hist_speed_long;
+}
+float station::get_base_hist_dir_long(void) const {
+    return base_hist_dir_long;
+}
 string station::get_position_string(void) const {
     return pos_string;
 }
@@ -152,7 +177,7 @@ std::ostream& operator<< (std::ostream &out, const station &s) {
         << s.get_latitude() << " | "
         << std::setprecision(10)
         << s.get_longitude() << " | "
-        << std::setprecision(5)
+        << std::setprecision(3)
         << s.get_compass() << "°" << endl
         << "Wind: " << s.get_wind_speed() << " km/h | "
         << s.get_wind_direction() << "°" << endl
@@ -162,6 +187,10 @@ std::ostream& operator<< (std::ostream &out, const station &s) {
         << "HistD (S/now): "
         << speed_avg_short - speed_avg_long << " km/h / "
         << s.get_wind_speed() - speed_avg_long << " km/h" << endl
+        << s.get_base_hist_speed_short() << " km/h | "
+        << s.get_base_hist_dir_short() << "°" << endl
+        << s.get_base_hist_speed_long() << " km/h | "
+        << s.get_base_hist_dir_long() << "°" << endl
         ;
     return out;
 }

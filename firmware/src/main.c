@@ -38,6 +38,7 @@
 #include "cmsis_175x_6x.h"
 #include "skynet_cdc.h"
 #include "basestation/skynet_basestation.h"
+#include "basestation/history.h"
 #include "cpu/nv_storage.h"
 #include "cpu/v_storage.h"
 #include "skycom/rf_pkt_handler.h"
@@ -230,6 +231,12 @@ int main(void) {
 
 	// start first GPS position query
 	skynetbase_gps_query();
+
+	// set factors for exponential weighted averaging
+	history_set_weight(HISTORY_WIND_SPEED_SHORT, 0.03);
+	history_set_weight(HISTORY_WIND_DIR_SHORT, 0.03);
+	history_set_weight(HISTORY_WIND_SPEED_LONG, 0.01);
+	history_set_weight(HISTORY_WIND_DIR_LONG, 0.01);
 #endif
 
 
@@ -319,6 +326,12 @@ int main(void) {
 				wind_dir += compass;
 				wind_dir = wind_dir % 360;
 
+				// history
+				float hist_speed_short = history_new_sample(HISTORY_WIND_SPEED_SHORT, windspeed);
+				float hist_speed_long = history_new_sample(HISTORY_WIND_SPEED_LONG, windspeed);
+				float hist_dir_short = history_new_sample(HISTORY_WIND_DIR_SHORT, wind_dir);
+				float hist_dir_long = history_new_sample(HISTORY_WIND_DIR_LONG, wind_dir);
+
 				// start next query
 				skynetbase_gps_query();
 
@@ -346,12 +359,13 @@ int main(void) {
 				uint8_t buf[128];
 
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|",
+						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|%f|%f|%f|%f|",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
 						gps_lat_dir, gps_lat, gps_lon_dir, gps_lon, compass,
-						wind_dir, windspeed);
+						wind_dir, windspeed, hist_speed_short, hist_dir_short,
+						hist_speed_long, hist_dir_long);
 
 
 				uint8_t chksum = dfx_checksum_calc(buf, pos);

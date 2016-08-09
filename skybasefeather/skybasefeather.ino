@@ -7,7 +7,10 @@
 #define RFM95_RST 4
 #define RFM95_INT 3
 #define LED 13
-#define RF95_FREQ 867.0
+#define RF95_FREQ 868.3
+
+#define MAC_0   (0x70)
+#define MAC_1   (0x86)
 
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
@@ -30,9 +33,13 @@ char buf_pos[32];
 char buf_wind_dir[16];
 char buf_compass[16];
 char buf_wind_speed[16];
+char buf_hist_wind_speed_short[16];
+char buf_hist_wind_dir_short[16];
+char buf_hist_wind_speed_long[16];
+char buf_hist_wind_dir_long[16];
 char buf_checksum[8];
 
-char* buf_tokens[6];
+char* buf_tokens[10];
 
 char buf[128];
 
@@ -42,7 +49,11 @@ void setup() {
   buf_tokens[2] = buf_compass;
   buf_tokens[3] = buf_wind_dir;
   buf_tokens[4] = buf_wind_speed;
-  buf_tokens[5] = buf_checksum;
+  buf_tokens[5] = buf_hist_wind_speed_short;
+  buf_tokens[6] = buf_hist_wind_dir_short;
+  buf_tokens[7] = buf_hist_wind_speed_long;
+  buf_tokens[8] = buf_hist_wind_dir_long;
+  buf_tokens[9] = buf_checksum;
 
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
@@ -62,14 +73,19 @@ void setup() {
   Serial.begin(9600);
 
 
+  // rf95 initialization
   while (!rf95.init()) {
     while (1);
   }
-
   if (!rf95.setFrequency(RF95_FREQ)) {
     while (1);
   }
   rf95.setTxPower(23, false);
+  RH_RF95::ModemConfig modemCfg;
+  modemCfg.reg_1d = (0b1001 << 4) | (0b001 << 1); // 500kHz, 4/5
+  modemCfg.reg_1e = (1 << 2) | (0x9 << 4); // CRC on, 512 chips/symbol
+  modemCfg.reg_26 = 0;
+  rf95.setModemRegisters(&modemCfg);
 
 
   Serial1.begin(9600);
@@ -168,16 +184,15 @@ void loop() {
   */
 }
 
-#define MAC_0   (0x5D)
-#define MAC_1   (0x5D)
-
 void skynet_send_frame(void) {
-  uint8_t buf[128];
+  uint8_t buf[256];
   uint16_t pos = 0;
 
   pos += snprintf((char*)buf, sizeof(buf) - pos,
-                  "%s|%s|%s|%s|%s",
-                  buf_time, buf_pos, buf_compass, buf_wind_dir, buf_wind_speed);
+                  "%s|%s|%s|%s|%s|%s|%s|%s|%s",
+                  buf_time, buf_pos, buf_compass, buf_wind_dir, buf_wind_speed,
+                  buf_hist_wind_speed_short, buf_hist_wind_dir_short,
+                  buf_hist_wind_speed_long, buf_hist_wind_dir_long);
   pos++; // terminating null byte
 
   Serial.println((char*)buf);
@@ -205,11 +220,15 @@ void skynet_send_frame(void) {
   mac_extheader hdr;
   mac_extheader_init(&hdr);
   hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-  hdr.typelength_union.type_length.length = 4;
+  hdr.typelength_union.type_length.length = 8;
   hdr.data[0] = SENSOR_POSITION;
   hdr.data[1] = SENSOR_COMPASS;
   hdr.data[2] = SENSOR_WIND_DIR;
   hdr.data[3] = SENSOR_WIND_SPEED;
+  hdr.data[4] = SENSOR_HIST_WIND_SPEED_SHORT;
+  hdr.data[5] = SENSOR_HIST_WIND_DIR_SHORT;
+  hdr.data[6] = SENSOR_HIST_WIND_SPEED_LONG;
+  hdr.data[7] = SENSOR_HIST_WIND_DIR_LONG;
   mac_extheader hdr2;
   mac_extheader_init(&hdr2);
   hdr2.typelength_union.type_length.type = EXTHDR_TTL;

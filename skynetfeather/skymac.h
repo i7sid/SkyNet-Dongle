@@ -197,16 +197,18 @@ typedef enum mac_payload_type {
   DONGLE_CMD_ANSWER = 4   ///<@brief Answer from dongle (to command)
 } mac_payload_type;
 
-
 typedef enum base_sensor_data_type {
-  SENSOR_DATE     = 0x1,  ///<@brief date of the sensor node
-  SENSOR_POSITION   = 0x2,  ///<@brief gps position data
-  SENSOR_COMPASS    = 0x4,  ///<@brief compass orientation
-  SENSOR_WIND_SPEED   = 0x8,  ///<@brief wind speed
-  SENSOR_WIND_DIR   = 0x10, ///<@brief wind direction (compensated by compass)
-  SENSOR_WIND_DIR_RAW = 0x20  ///<@brief wind direction (uncompensated)
+  SENSOR_DATE           = 1, ///<@brief date of the sensor node
+  SENSOR_POSITION       = 2, ///<@brief gps position data
+  SENSOR_COMPASS        = 3, ///<@brief compass orientation
+  SENSOR_WIND_SPEED     = 4, ///<@brief wind speed
+  SENSOR_WIND_DIR       = 5, ///<@brief wind direction (compensated by compass)
+  SENSOR_WIND_DIR_RAW   = 6, ///<@brief wind direction (uncompensated)
+  SENSOR_HIST_WIND_SPEED_SHORT  = 7, ///<@brief 
+  SENSOR_HIST_WIND_DIR_SHORT    = 8, ///<@brief 
+  SENSOR_HIST_WIND_SPEED_LONG   = 9, ///<@brief 
+  SENSOR_HIST_WIND_DIR_LONG     = 10 ///<@brief 
 } base_sensor_data_type;
-
 
 typedef enum dongle_command {
   IGNORE        = 0,  ///<@brief Nothing. Just ignore.

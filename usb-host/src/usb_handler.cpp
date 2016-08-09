@@ -184,6 +184,34 @@ void usbReceiveHandler(usb_message pkt) {
                             }
                             catch (exception) { cerr << "!"; }
 						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_SHORT) {
+                            try {
+                                from_s.set_base_hist_speed_short(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_SHORT) {
+                            try {
+                                from_s.set_base_hist_dir_short(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_LONG) {
+                            try {
+                                from_s.set_base_hist_speed_long(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_LONG) {
+                            try {
+                                from_s.set_base_hist_dir_long(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
 					}
 
 

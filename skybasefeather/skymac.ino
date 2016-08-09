@@ -1,6 +1,7 @@
 #include "skymac.h"
 
-#define MAC_SEND_TRIES    (3)
+#define MAC_SEND_TRIES    (2)
+
 static uint8_t seq_no = 0; ///<@brief Current sequence number
 extern RH_RF95 rf95;
 
