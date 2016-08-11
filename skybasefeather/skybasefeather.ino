@@ -1,7 +1,8 @@
-#include <SPI.h>
+//#include <SPI.h>
 #include <RH_RF95.h>
 
 #include "skymac.h"
+#include "wdt.h"
 
 #define RFM95_CS 8
 #define RFM95_RST 4
@@ -41,7 +42,7 @@ char buf_checksum[8];
 
 char* buf_tokens[10];
 
-char buf[128];
+char buf[256];
 
 void setup() {
   buf_tokens[0] = buf_time;
@@ -91,12 +92,18 @@ void setup() {
   Serial1.begin(9600);
 
   Serial.write("Init complete.\n");
+  WDT_init();
+  WDT_enable();
 }
 
 unsigned long last_pkt = 0;
 
 void loop() {
+  WDT_clear();
+  
   while (Serial1.available()) {
+    WDT_clear();
+    
     digitalWrite(LED, HIGH);
     uint8_t c = Serial1.read();
 
@@ -182,6 +189,7 @@ void loop() {
     }
     }
   */
+  WDT_clear();
 }
 
 void skynet_send_frame(void) {
@@ -239,8 +247,6 @@ void skynet_send_frame(void) {
   frame.extheader = &hdr;
 
   mac_transmit_packet(&frame, true);
-
-  // TODO calc checksum
 }
 
 

@@ -1,9 +1,36 @@
 #include "skymac.h"
+#include "wdt.h"
 
 #define MAC_SEND_TRIES    (2)
+#define RSSI_THRESH 50
+
 
 static uint8_t seq_no = 0; ///<@brief Current sequence number
 extern RH_RF95 rf95;
+
+uint8_t nb; ///<@brief How many backoff-times have been needed in current try?
+uint8_t be; ///<@brief Backoff exponent, how many backoff periods shall be waited
+
+int getRssi() {
+  uint8_t r = rf95.spiRead(0x1B);
+  return r;
+}
+
+bool channelFree() {
+  rf95.available();
+  int rssi = getRssi();
+  //Serial.println(rssi, DEC);
+  return (rssi <= RSSI_THRESH);
+}
+
+/// @brief  Returns a pseudo random number (strictly) smaller than max.
+inline int mac_random(int max) {
+    return (rand() % max);
+}
+
+void mac_init(void) {
+  seq_no = (uint8_t)mac_random(0x100);
+}
 
 bool mac_transmit_packet(mac_frame_data *frame, bool new_seq) {
   uint16_t est_size = mac_frame_data_estimate_size(frame);
@@ -30,10 +57,37 @@ bool mac_transmit_packet(mac_frame_data *frame, bool new_seq) {
 }
 
 bool mac_transmit_data(uint8_t* data, uint16_t l) {
+     
+    nb = 0;
+    be = MAC_CONST_MIN_BE;
+
+    do {
+      // initial delay
+      int del = mac_random((1 << be) - 1);  // is: 2^be - 1
+      delay(del * MAC_CONST_A_UNIT_BACKOFF_PERIOD * MAC_CONST_SYMBOL_LENGTH);
+      //DBG("mac slept\n");
+      WDT_clear();
+
+
+      if (channelFree()) {
+        rf95.send(data, l);
+        delay(1);
+        rf95.waitPacketSent();
+        return true;
+      }
+      else {
+        nb++;
+        be = min(be + 1, MAC_CONST_MAX_BE);
+      }
+    } while (nb <= MAC_CONST_MAX_CSMA_BACKOFFS);
+    return false;
+
+    /*
   rf95.send(data, l);
   delay(1);
   rf95.waitPacketSent();
   return true;
+  */
 }
 
 

@@ -13,10 +13,10 @@
 #define SKYMAC_H_
 
 //#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in us?
-#define MAC_CONST_SYMBOL_LENGTH             (2000)
+#define MAC_CONST_SYMBOL_LENGTH             (1)
 //
 
-#define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (20) // in "symbols"
+#define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (1)      // in "symbols"
 #define MAC_CONST_MAX_BE                    (8)
 #define MAC_CONST_MIN_BE                    (3)
 #define MAC_CONST_MAX_CSMA_BACKOFFS         (4)
