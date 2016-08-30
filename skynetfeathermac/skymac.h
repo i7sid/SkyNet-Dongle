@@ -1,3 +1,8 @@
+#ifndef SKYMAC_H_
+#define SKYMAC_H_
+
+#include <Arduino.h>
+
 #define malloc_count()    {}
 #define free_count()      {}
 
@@ -9,14 +14,12 @@
 //#define MAC_CONST_aMaxMACPayloadSize        (  )
 #define MAC_CONST_aBaseSlotDuration         (60)
 */
-#ifndef SKYMAC_H_
-#define SKYMAC_H_
 
-//#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in us?
-#define MAC_CONST_SYMBOL_LENGTH             (2000)
+#define MAC_CONST_SYMBOL_LENGTH             (10) // TODO: correct value in us?
+//#define MAC_CONST_SYMBOL_LENGTH             (2000)
 //
 
-#define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (20) // in "symbols"
+#define MAC_CONST_A_UNIT_BACKOFF_PERIOD     (1) // in "symbols"
 #define MAC_CONST_MAX_BE                    (8)
 #define MAC_CONST_MIN_BE                    (3)
 #define MAC_CONST_MAX_CSMA_BACKOFFS         (4)
@@ -133,6 +136,10 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
  */
 void mac_frame_extheaders_free(mac_extheader* hdr);
 
+/**
+ * @brief Gives raw packet data (bytes) to the radio module.
+ */
+bool mac_transmit_data(uint8_t* data, uint16_t l);
 
 
 typedef enum mac_frame_types {

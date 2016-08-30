@@ -1,8 +1,10 @@
 //#include <SPI.h>
 #include <RH_RF95.h>
 
-#include "skymac.h"
-#include "wdt.h"
+#include "skynetfeathermac/skymac.h"
+#include "skynetfeathermac/wdt.h"
+#include "skynetfeathermac/config.h"
+
 
 #define RFM95_CS 8
 #define RFM95_RST 4
@@ -10,10 +12,9 @@
 #define LED 13
 #define RF95_FREQ 868.3
 
-#define MAC_0   (0x70)
-#define MAC_1   (0x86)
-
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
+skynetfeatherconfig cfg;
+
 
 inline uint8_t dfx_checksum_calc(char* data, uint16_t length) {
   uint8_t sum = 0;
@@ -45,6 +46,7 @@ char* buf_tokens[10];
 char buf[256];
 
 void setup() {
+  // init some pointers
   buf_tokens[0] = buf_time;
   buf_tokens[1] = buf_pos;
   buf_tokens[2] = buf_compass;
@@ -56,12 +58,12 @@ void setup() {
   buf_tokens[8] = buf_hist_wind_dir_long;
   buf_tokens[9] = buf_checksum;
 
+  // init LED
   pinMode(LED, OUTPUT);
   digitalWrite(LED, LOW);
 
 
   pinMode(RFM95_RST, OUTPUT);
-  digitalWrite(RFM95_RST, HIGH);
 
   // manual reset
   digitalWrite(RFM95_RST, LOW);
@@ -70,7 +72,7 @@ void setup() {
   delay(10);
 
 
-  //while (!Serial);
+  //while (!Serial);    // DEBUG: wait for serial terminal to be connected
   Serial.begin(9600);
 
 
@@ -81,6 +83,8 @@ void setup() {
   if (!rf95.setFrequency(RF95_FREQ)) {
     while (1);
   }
+
+  // configure radio modem
   rf95.setTxPower(23, false);
   RH_RF95::ModemConfig modemCfg;
   modemCfg.reg_1d = (0b1001 << 4) | (0b001 << 1); // 500kHz, 4/5
@@ -88,8 +92,17 @@ void setup() {
   modemCfg.reg_26 = 0;
   rf95.setModemRegisters(&modemCfg);
 
-
+  // Init serial communication from LPC1769 (base station)
   Serial1.begin(9600);
+
+  // read out serial number of CPU and write to config
+  cfg.serial0 = *((uint32_t*)0x0080A00C);
+  cfg.serial1 = *((uint32_t*)0x0080A040);
+  cfg.serial2 = *((uint32_t*)0x0080A044);
+  cfg.serial3 = *((uint32_t*)0x0080A048);
+  cfg.mac0 = (cfg.serial0 >> 8) & 0xFF;
+  cfg.mac1 = (cfg.serial0     ) & 0xFF;
+
 
   Serial.write("Init complete.\n");
   WDT_init();
@@ -100,7 +113,10 @@ unsigned long last_pkt = 0;
 
 void loop() {
   WDT_clear();
-  
+
+  // TODO await packets from radio, check and resend if needed (basic multihop)
+
+  // check for data from base station / LPC1769
   while (Serial1.available()) {
     WDT_clear();
     
@@ -116,7 +132,7 @@ void loop() {
       // calc checksum
       uint8_t expchecksum = dfx_checksum_calc(buf, cnt - 3);
       
-      // TODO: check checksum
+      // check checksum
       char* cchecksum = buf + cnt - 3;
       uint8_t ichecksum = (uint8_t)(strtoul(cchecksum, NULL, 16));
       if (expchecksum != ichecksum) {
@@ -135,20 +151,7 @@ void loop() {
         ptr = strtok(NULL, delimiter);
       }
 
-/*
-      Serial.write(buf_time, strlen(buf_time));
-      Serial.write("\n");
-      Serial.write(buf_pos, strlen(buf_pos));
-      Serial.write("\n");
-      Serial.write(buf_compass, strlen(buf_compass));
-      Serial.write("\n");
-      Serial.write(buf_wind_dir, strlen(buf_wind_dir));
-      Serial.write("\n");
-      Serial.write(buf_wind_speed, strlen(buf_wind_speed));
-      Serial.write("\n");
-      */
-
-      cnt = 0;
+      cnt = 0; // received characters / current position in buffer = 0
 
       unsigned long n = millis();
       if (n - last_pkt > 5000) {
@@ -221,8 +224,8 @@ void skynet_send_frame(void) {
   //frame.mhr.src_address[0] = config->mac_addr[4];
   //frame.mhr.src_address[1] = config->mac_addr[5];
 
-  frame.mhr.src_address[0] = MAC_0;
-  frame.mhr.src_address[1] = MAC_1;
+  frame.mhr.src_address[0] = cfg.mac0;
+  frame.mhr.src_address[1] = cfg.mac1;
 
   // ext headers
   mac_extheader hdr;
