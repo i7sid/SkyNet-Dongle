@@ -5,6 +5,9 @@
 
 RM = rm -rf
 GXX = g++
+GREP = grep
+GREP_ARGS  = --exclude={Makefile,*.swp,*.swo,*~}
+GREP_ARGS += --exclude-dir=".git" -n --color=auto
 
 MAC_ADDR = 03:6B:84:A0:75:CB
 
@@ -34,7 +37,7 @@ CXXFLAGS += -g -rdynamic
  
 SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp) ../firmware/src/mac/mac_frame_data.c
 
-.PHONY: all clean
+.PHONY: all clean todo
 
 all: skynet-usb-host
 
@@ -44,6 +47,8 @@ skynet-usb-host: $(SRC)
 clean:
 	$(RM) skynet-usb-host
 
+todo:
+	-$(GREP) $(GREP_ARGS) -i "TODO" . -R
 
 
 # vim:ft=make
