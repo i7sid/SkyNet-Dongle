@@ -39,9 +39,11 @@ char buf_hist_wind_speed_short[16];
 char buf_hist_wind_dir_short[16];
 char buf_hist_wind_speed_long[16];
 char buf_hist_wind_dir_long[16];
+char buf_hist_wind_speed_diff[16];
+char buf_hist_wind_dir_diff[16];
 char buf_checksum[8];
 
-char* buf_tokens[10];
+char* buf_tokens[12];
 
 char buf[256];
 
@@ -56,7 +58,9 @@ void setup() {
   buf_tokens[6] = buf_hist_wind_dir_short;
   buf_tokens[7] = buf_hist_wind_speed_long;
   buf_tokens[8] = buf_hist_wind_dir_long;
-  buf_tokens[9] = buf_checksum;
+  buf_tokens[9] = buf_hist_wind_speed_diff;
+  buf_tokens[10] = buf_hist_wind_dir_diff;
+  buf_tokens[11] = buf_checksum;
 
   // init LED
   pinMode(LED, OUTPUT);
@@ -200,10 +204,9 @@ void skynet_send_frame(void) {
   uint16_t pos = 0;
 
   pos += snprintf((char*)buf, sizeof(buf) - pos,
-                  "%s|%s|%s|%s|%s|%s|%s|%s|%s",
+                  "%s|%s|%s|%s|%s|%s|%s",
                   buf_time, buf_pos, buf_compass, buf_wind_dir, buf_wind_speed,
-                  buf_hist_wind_speed_short, buf_hist_wind_dir_short,
-                  buf_hist_wind_speed_long, buf_hist_wind_dir_long);
+                  buf_hist_wind_speed_diff, buf_hist_wind_dir_diff);
   pos++; // terminating null byte
 
   Serial.println((char*)buf);
@@ -231,15 +234,23 @@ void skynet_send_frame(void) {
   mac_extheader hdr;
   mac_extheader_init(&hdr);
   hdr.typelength_union.type_length.type = EXTHDR_SENSOR_VALUES;
-  hdr.typelength_union.type_length.length = 8;
+//  hdr.typelength_union.type_length.length = 8;
+//  hdr.data[0] = SENSOR_POSITION;
+//  hdr.data[1] = SENSOR_COMPASS;
+//  hdr.data[2] = SENSOR_WIND_DIR;
+//  hdr.data[3] = SENSOR_WIND_SPEED;
+//  hdr.data[4] = SENSOR_HIST_WIND_SPEED_SHORT;
+//  hdr.data[5] = SENSOR_HIST_WIND_DIR_SHORT;
+//  hdr.data[6] = SENSOR_HIST_WIND_SPEED_LONG;
+//  hdr.data[7] = SENSOR_HIST_WIND_DIR_LONG;
+  hdr.typelength_union.type_length.length = 6;
   hdr.data[0] = SENSOR_POSITION;
   hdr.data[1] = SENSOR_COMPASS;
   hdr.data[2] = SENSOR_WIND_DIR;
   hdr.data[3] = SENSOR_WIND_SPEED;
-  hdr.data[4] = SENSOR_HIST_WIND_SPEED_SHORT;
-  hdr.data[5] = SENSOR_HIST_WIND_DIR_SHORT;
-  hdr.data[6] = SENSOR_HIST_WIND_SPEED_LONG;
-  hdr.data[7] = SENSOR_HIST_WIND_DIR_LONG;
+  hdr.data[4] = SENSOR_HIST_WIND_SPEED_DIFF;
+  hdr.data[5] = SENSOR_HIST_WIND_DIR_DIFF;
+
   mac_extheader hdr2;
   mac_extheader_init(&hdr2);
   hdr2.typelength_union.type_length.type = EXTHDR_TTL;

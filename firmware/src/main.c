@@ -356,16 +356,18 @@ int main(void) {
 				}
 
 				uint8_t pos = 0;
-				uint8_t buf[128];
+				uint8_t buf[256];
 
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|%f|%f|%f|%f|",
+						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|%f|%f|%f|%f|%f|%f|",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],
 						gps_lat_dir, gps_lat, gps_lon_dir, gps_lon, compass,
 						wind_dir, windspeed, hist_speed_short, hist_dir_short,
-						hist_speed_long, hist_dir_long);
+						hist_speed_long, hist_dir_long,
+						hist_speed_short - hist_speed_long,
+						hist_dir_short - hist_dir_long);
 
 
 				uint8_t chksum = dfx_checksum_calc(buf, pos);

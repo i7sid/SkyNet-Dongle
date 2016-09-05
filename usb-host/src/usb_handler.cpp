@@ -27,6 +27,7 @@
 #include "station.h"
 #include "output/output.h"
 #include "string_helper.h"
+#include "thermal.h"
 
 using namespace std;
 
@@ -101,7 +102,8 @@ void usbReceiveHandler(usb_message pkt) {
 
         station &from_s = get_station(mac_builder.str());
 
-		// TODO filter out packets that were received multiple times
+        // TODO IMPORTANT! cleanup last_seqno
+		// filter out packets that were received multiple times
 		if (last_seqno.count(mac_builder.str()) > 0 && last_seqno[mac_builder.str()] == frame.mhr.seq_no) {
 			// packet was seen before, so clean up and abort
 			free(frame.payload);
@@ -212,6 +214,20 @@ void usbReceiveHandler(usb_message pkt) {
                             }
                             catch (exception) { cerr << "!"; }
 						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_DIFF) {
+                            try {
+                                from_s.set_base_hist_speed_diff(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
+						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_DIFF) {
+                            try {
+                                from_s.set_base_hist_dir_diff(stof(parts[i+1]));
+                                from_s.set_last_wind_time(db_timestamp.str());
+                            }
+                            catch (exception) { cerr << "!"; }
+						}
 					}
 
 
@@ -222,6 +238,18 @@ void usbReceiveHandler(usb_message pkt) {
 					gui.update_status_win();
 					flush(cerr);
                     DataOutput::update_all(&from_s);
+
+                    // updraft calculation
+                    if (stations.size() > 1) {
+                        auto it = stations.begin();
+
+                        // TODO chose last two recently updated stations)
+                        bool r = therm.calc_updraft_position(it->second, (++it)->second);
+                        if (r) {
+                            // TODO use calculated updraft position
+                        }
+                    }
+
 					break;
 				}
 

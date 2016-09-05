@@ -31,7 +31,9 @@ typedef enum base_sensor_data_type {
   SENSOR_HIST_WIND_SPEED_SHORT  = 7, ///<@brief
   SENSOR_HIST_WIND_DIR_SHORT    = 8, ///<@brief
   SENSOR_HIST_WIND_SPEED_LONG   = 9, ///<@brief
-  SENSOR_HIST_WIND_DIR_LONG     = 10 ///<@brief
+  SENSOR_HIST_WIND_DIR_LONG     = 10, ///<@brief
+  SENSOR_HIST_WIND_SPEED_DIFF	= 11, ///<@brief
+  SENSOR_HIST_WIND_DIR_DIFF		= 12  ///<@brief
 } base_sensor_data_type;
 
 typedef enum dongle_command {

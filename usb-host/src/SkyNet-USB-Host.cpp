@@ -30,6 +30,7 @@
 #include "usb_handler.h"
 #include "gui/gui.h"
 #include "station.h"
+#include "thermal.h"
 #include "output/output.h"
 #include "output/json.h"
 #include "output/csv.h"
@@ -49,6 +50,7 @@ int local_mac[6];
 //JsonOutput out_json("wind.json");
 JsonOutput out_json("/var/www/tmp/wind.json");
 CsvOutput out_csv;
+thermal therm;
 
 #ifndef NO_DB
 DbOutput *out_db;

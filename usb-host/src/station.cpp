@@ -70,6 +70,12 @@ void station::set_base_hist_speed_long(float value) {
 void station::set_base_hist_dir_long(float value) {
     this->base_hist_dir_long = value;
 }
+void station::set_base_hist_speed_diff(float value) {
+    this->base_hist_speed_diff = value;
+}
+void station::set_base_hist_dir_diff(float value) {
+    this->base_hist_dir_diff = value;
+}
 
 void station::update_position(string value) {
     this->pos_string = value;
@@ -134,6 +140,12 @@ float station::get_base_hist_speed_long(void) const {
 float station::get_base_hist_dir_long(void) const {
     return base_hist_dir_long;
 }
+float station::get_base_hist_speed_diff(void) const {
+    return base_hist_speed_diff;
+}
+float station::get_base_hist_dir_diff(void) const {
+    return base_hist_dir_diff;
+}
 string station::get_position_string(void) const {
     return pos_string;
 }
@@ -168,8 +180,8 @@ float station::average_wind_direction(size_t window) const {
 
 
 std::ostream& operator<< (std::ostream &out, const station &s) {
-    float speed_avg_long = s.average_wind_speed(FILTER_LONG_WINDOW);
-    float speed_avg_short = s.average_wind_speed(FILTER_SHORT_WINDOW);
+//    float speed_avg_long = s.average_wind_speed(FILTER_LONG_WINDOW);
+//    float speed_avg_short = s.average_wind_speed(FILTER_SHORT_WINDOW);
 
     out << "Station: " << s.get_mac() << endl
         << s.get_position_string() << endl
@@ -181,16 +193,18 @@ std::ostream& operator<< (std::ostream &out, const station &s) {
         << s.get_compass() << "°" << endl
         << "Wind: " << s.get_wind_speed() << " km/h | "
         << s.get_wind_direction() << "°" << endl
-        << "Hist (S/L):    "
-        << speed_avg_short << " km/h / "
-        << speed_avg_long << " km/h" << endl
-        << "HistD (S/now): "
-        << speed_avg_short - speed_avg_long << " km/h / "
-        << s.get_wind_speed() - speed_avg_long << " km/h" << endl
-        << s.get_base_hist_speed_short() << " km/h | "
-        << s.get_base_hist_dir_short() << "°" << endl
-        << s.get_base_hist_speed_long() << " km/h | "
-        << s.get_base_hist_dir_long() << "°" << endl
+        << "Diff: " << s.get_base_hist_speed_diff() << " km/h" << endl
+        << "Diff: " << s.get_base_hist_dir_diff() << " °" << endl
+//        << "Hist (S/L):    "
+//        << speed_avg_short << " km/h / "
+//        << speed_avg_long << " km/h" << endl
+//        << "HistD (S/now): "
+//        << speed_avg_short - speed_avg_long << " km/h / "
+//        << s.get_wind_speed() - speed_avg_long << " km/h" << endl
+//        << s.get_base_hist_speed_short() << " km/h | "
+//        << s.get_base_hist_dir_short() << "°" << endl
+//        << s.get_base_hist_speed_long() << " km/h | "
+//        << s.get_base_hist_dir_long() << "°" << endl
         ;
     return out;
 }

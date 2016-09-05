@@ -10,6 +10,7 @@
 #include "usbtty.h"
 #include "guihelper.h"
 #include "station.h"
+#include "thermal.h"
 #include <usb/message.h>
 #include <mac/mac.h>
 #include <thread>         // std::thread (C++11!)
@@ -122,6 +123,12 @@ void gui::update_status_win() {
     {
         mvwprintw(status_win, i++, 2, line.c_str());
     }
+
+    stringstream score_s;
+    float score = therm.calc_updraft_score();
+    score_s << "Score: " << score << endl;
+    mvwprintw(status_win, i++, 2, score_s.str().c_str());
+
 	wrefresh(status_win);
 }
 

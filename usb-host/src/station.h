@@ -45,6 +45,8 @@ class station {
         void    set_base_hist_dir_short(float value);
         void    set_base_hist_speed_long(float value);
         void    set_base_hist_dir_long(float value);
+        void    set_base_hist_speed_diff(float value);
+        void    set_base_hist_dir_diff(float value);
         void    set_last_wind_time(std::string time);
         void    set_last_pos_time(std::string time);
 
@@ -57,10 +59,14 @@ class station {
         float   get_wind_direction(void) const;
         float   get_wind_direction_raw(void) const;
         float   get_compass(void) const;
-        float   get_base_hist_speed_short(void) const;
-        float   get_base_hist_dir_short(void) const;
-        float   get_base_hist_speed_long(void) const;
-        float   get_base_hist_dir_long(void) const;
+        float   get_base_hist_speed_short(void) const;  ///< Calculated on station
+        float   get_base_hist_dir_short(void) const;    ///< Calculated on station
+        float   get_base_hist_speed_long(void) const;   ///< Calculated on station
+        float   get_base_hist_dir_long(void) const;     ///< Calculated on station
+        float   get_base_hist_speed_diff(void) const;   ///< Calculated on station
+        float   get_base_hist_dir_diff(void) const;     ///< Calculated on station
+
+
         std::string get_position_string(void) const;
         std::string get_last_wind_time(void) const;
         std::string get_last_pos_time(void) const;
@@ -81,10 +87,13 @@ class station {
         float   current_dir     = 0;
         float   current_dir_raw = 0;
         float   current_compass = 0;
-        float   base_hist_speed_short   = 0;
-        float   base_hist_dir_short     = 0;
-        float   base_hist_speed_long    = 0;
-        float   base_hist_dir_long      = 0;
+        float   base_hist_speed_short   = 0; ///< Calculated on station
+        float   base_hist_dir_short     = 0; ///< Calculated on station
+        float   base_hist_speed_long    = 0; ///< Calculated on station
+        float   base_hist_dir_long      = 0; ///< Calculated on station
+        float   base_hist_speed_diff    = 0; ///< Calculated on station
+        float   base_hist_dir_diff      = 0; ///< Calculated on station
+
 
         //float   historic_speed[FILTER_LONG_WINDOW];
         //float   historic_dir[FILTER_LONG_WINDOW];
