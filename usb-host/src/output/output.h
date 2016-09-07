@@ -15,8 +15,8 @@
 
 class DataOutput {
     public:
-        ~DataOutput() {};
-//        virtual ~DataOutput();
+//        ~DataOutput() {};
+        virtual ~DataOutput() {};
         virtual void updated(station *s) = 0;
 
         static void update_all(station *s);

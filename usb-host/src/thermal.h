@@ -15,7 +15,8 @@
 #include <cmath>
 #include "station.h"
 
-#define PI 3.14159265
+#define PI                  (3.14159265)
+#define UPDRAFT_SPEED       (2.0)
 
 class thermal {
     public:
@@ -31,13 +32,20 @@ class thermal {
          */
         bool calc_updraft_position(station &s1, station &s2);
 
+        void calc_updraft_offset(double height, station &s1, station &s2);
+
         double get_updraft_latitude(void) const;
         double get_updraft_longitude(void) const;
 
 
     protected:
-        double updraft_pos_lat = 0;
-        double updraft_pos_lon = 0;
+        double meters2degrees(double m) const;
+
+        double updraft_pos_lat          = 0;
+        double updraft_pos_lon          = 0;
+        double updraft_pos_air_lat      = 0;
+        double updraft_pos_air_lon      = 0;
+        double updraft_pos_air_height   = 0;
 };
 
 inline double deg2rad(double deg) {
