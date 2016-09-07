@@ -33,6 +33,7 @@
 #include "thermal.h"
 #include "output/output.h"
 #include "output/json.h"
+#include "output/fifo.h"
 #include "output/csv.h"
 #include "output/db.h"
 
@@ -50,6 +51,7 @@ int local_mac[6];
 //JsonOutput out_json("wind.json");
 JsonOutput out_json("/var/www/tmp/wind.json");
 CsvOutput out_csv;
+FifoOutput out_fifo;
 thermal therm;
 
 #ifndef NO_DB
@@ -115,8 +117,10 @@ int main(int argc, char** argv) {
 
 	    // output handlers
         out_csv.set_filename("data-" + time_string.str() + ".csv");
+        out_fifo.create("/run/fifoskynet");
         DataOutput::register_output(&out_json);
         DataOutput::register_output(&out_csv);
+        DataOutput::register_output(&out_fifo);
 #ifndef NO_DB
 		if (args.use_db) {
             out_db = new DbOutput();

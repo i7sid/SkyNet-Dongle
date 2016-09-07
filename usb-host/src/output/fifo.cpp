@@ -33,6 +33,9 @@ FifoOutput::~FifoOutput() {
 
 bool FifoOutput::create(std::string filename) {
     // create FIFO
+
+    this->filename = filename;
+
     if((mkfifo(filename.c_str(), O_RDWR)) == -1) {
         return false;
     }
@@ -46,12 +49,12 @@ bool FifoOutput::open_fifo(std::string filename) {
 
     // make it world readable and writeable
     chmod(filename.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP |
-                    S_IROTH | S_IWOTH | S_IXOTH); 
+                    S_IROTH | S_IWOTH | S_IXOTH);
 
     // open FIFO
     fd = open(filename.c_str(), O_RDONLY);
     if (fd == -1) {
-        perror("FIFO open");
+        //perror("FIFO open");
         return false;
     }
 
@@ -60,12 +63,12 @@ bool FifoOutput::open_fifo(std::string filename) {
 
 void FifoOutput::updated(station *s) {
     char buf[] = "Updraft\n0000\n00000000000000000000";
-    
+
     bool opened = open_fifo(filename.c_str());
     if (!opened) return;
 
     // TODO get updraft data and write it to buffer
-    
+
     // write buffer + terminating null byte
     write(fd, buf, strlen(buf) + 1);
 }
