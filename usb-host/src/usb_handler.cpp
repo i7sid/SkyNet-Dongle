@@ -48,6 +48,7 @@ map<string, uint8_t> last_seqno;
 
 
 void usbReceiveHandler(usb_message pkt) {
+        //cerr << "~" << endl;
 	if (pkt.type == USB_DEBUG) {
         COLOR_DBG();
         for (unsigned int i = 0; i < pkt.payload_length; ++i) {
@@ -87,7 +88,6 @@ void usbReceiveHandler(usb_message pkt) {
         pkt.payload_length -= PKT_DBG_OVERHEAD;
 		mac_frame_data_unpack(&frame, (uint8_t*)pkt.payload, (unsigned int)pkt.payload_length);
 
-
 #ifndef NO_TAP
 		mac_payload_type frame_type = mac_payload_type::NONE;
         uint16_t ether_type = 0;
@@ -102,7 +102,6 @@ void usbReceiveHandler(usb_message pkt) {
 
         station &from_s = get_station(mac_builder.str());
 
-        // TODO IMPORTANT! cleanup last_seqno
 		// filter out packets that were received multiple times
 		if (last_seqno.count(mac_builder.str()) > 0 && last_seqno[mac_builder.str()] == frame.mhr.seq_no) {
 			// packet was seen before, so clean up and abort
@@ -160,7 +159,7 @@ void usbReceiveHandler(usb_message pkt) {
                                 from_s.set_compass(stof(parts[i+1]));
                                 from_s.set_last_pos_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!1"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_DATE) {
 							cerr << "Date: " << parts[i+1] << endl;
@@ -170,63 +169,63 @@ void usbReceiveHandler(usb_message pkt) {
                                 from_s.set_wind_speed(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!2"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR) {
                             try {
                                 from_s.set_wind_direction(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!3"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_WIND_DIR_RAW) {
                             try {
                                 from_s.set_wind_direction_raw(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!4"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_SHORT) {
                             try {
                                 from_s.set_base_hist_speed_short(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!5"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_SHORT) {
                             try {
                                 from_s.set_base_hist_dir_short(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!6"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_LONG) {
                             try {
                                 from_s.set_base_hist_speed_long(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!7"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_LONG) {
                             try {
                                 from_s.set_base_hist_dir_long(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!8"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_SPEED_DIFF) {
                             try {
                                 from_s.set_base_hist_speed_diff(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!9"; }
 						}
 						else if (next_hdr->data[i] == SENSOR_HIST_WIND_DIR_DIFF) {
                             try {
                                 from_s.set_base_hist_dir_diff(stof(parts[i+1]));
                                 from_s.set_last_wind_time(db_timestamp.str());
                             }
-                            catch (exception) { cerr << "!"; }
+                            catch (exception) { cerr << "!0"; }
 						}
 					}
 

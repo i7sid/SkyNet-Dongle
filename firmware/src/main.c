@@ -359,7 +359,7 @@ int main(void) {
 				uint8_t buf[256];
 
 				pos += snprintf((char*)buf, sizeof(buf) - pos,
-						"%02d%02d%02d|%c:%f:%c:%f|%f|%d|%f|%f|%f|%f|%f|%f|%f|",
+						"%02d%02d%02d|%c:%f:%c:%f|%.1f|%d|%.3f|%.1f|%.1f|%.1f|%.1f|%.1f|%.1f|",
 						FullTime.time[RTC_TIMETYPE_HOUR],
 						FullTime.time[RTC_TIMETYPE_MINUTE],
 						FullTime.time[RTC_TIMETYPE_SECOND],

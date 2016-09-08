@@ -18,12 +18,16 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <signal.h>
 
 using namespace std;
 
 
 
-FifoOutput::FifoOutput() : filename("") {}
+FifoOutput::FifoOutput() : filename("") {
+    // ignore SIGPIPE
+    signal(SIGPIPE, SIG_IGN);
+}
 
 FifoOutput::~FifoOutput() {
     close(fd);                  // close file descriptor
@@ -39,20 +43,21 @@ bool FifoOutput::create(std::string filename) {
     if((mkfifo(filename.c_str(), O_RDWR)) == -1) {
         return false;
     }
-    return true;
-}
-
-bool FifoOutput::open_fifo(std::string filename) {
-    if (fd) return true;
-
-    this->filename = filename;
 
     // make it world readable and writeable
     chmod(filename.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP |
                     S_IROTH | S_IWOTH | S_IXOTH);
 
+    return true;
+}
+
+bool FifoOutput::open_fifo(std::string filename) {
+    if (fd != -1) return true;
+
+    this->filename = filename;
+
     // open FIFO
-    fd = open(filename.c_str(), O_RDONLY);
+    fd = open(filename.c_str(), O_WRONLY | O_NONBLOCK);
     if (fd == -1) {
         //perror("FIFO open");
         return false;

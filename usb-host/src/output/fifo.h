@@ -27,7 +27,7 @@ class FifoOutput : public DataOutput {
 
     private:
         std::string     filename;
-        int             fd = 0;
+        int             fd = -1;
 //        std::string last_wind_time = "";
 //        std::string last_pos_time = "";
 

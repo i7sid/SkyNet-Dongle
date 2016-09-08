@@ -49,16 +49,16 @@ char buf[256];
 
 void setup() {
   // init some pointers
-  buf_tokens[0] = buf_time;
-  buf_tokens[1] = buf_pos;
-  buf_tokens[2] = buf_compass;
-  buf_tokens[3] = buf_wind_dir;
-  buf_tokens[4] = buf_wind_speed;
-  buf_tokens[5] = buf_hist_wind_speed_short;
-  buf_tokens[6] = buf_hist_wind_dir_short;
-  buf_tokens[7] = buf_hist_wind_speed_long;
-  buf_tokens[8] = buf_hist_wind_dir_long;
-  buf_tokens[9] = buf_hist_wind_speed_diff;
+  buf_tokens[0]  = buf_time;
+  buf_tokens[1]  = buf_pos;
+  buf_tokens[2]  = buf_compass;
+  buf_tokens[3]  = buf_wind_dir;
+  buf_tokens[4]  = buf_wind_speed;
+  buf_tokens[5]  = buf_hist_wind_speed_short;
+  buf_tokens[6]  = buf_hist_wind_dir_short;
+  buf_tokens[7]  = buf_hist_wind_speed_long;
+  buf_tokens[8]  = buf_hist_wind_dir_long;
+  buf_tokens[9]  = buf_hist_wind_speed_diff;
   buf_tokens[10] = buf_hist_wind_dir_diff;
   buf_tokens[11] = buf_checksum;
 
@@ -203,11 +203,21 @@ void skynet_send_frame(void) {
   uint8_t buf[256];
   uint16_t pos = 0;
 
+/*
   pos += snprintf((char*)buf, sizeof(buf) - pos,
                   "%s|%s|%s|%s|%s|%s|%s",
                   buf_time, buf_pos, buf_compass, buf_wind_dir, buf_wind_speed,
                   buf_hist_wind_speed_diff, buf_hist_wind_dir_diff);
+*/
+
+  pos += snprintf((char*)buf, sizeof(buf) - pos,
+                  "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|",
+                  buf_time, buf_pos, buf_compass, buf_wind_dir, buf_wind_speed,
+                  buf_hist_wind_speed_short, buf_hist_wind_speed_short,
+                  buf_hist_wind_speed_long, buf_hist_wind_dir_long,
+                  buf_hist_wind_speed_diff, buf_hist_wind_dir_diff);
   pos++; // terminating null byte
+  //Serial.println(pos, DEC);
 
   Serial.println((char*)buf);
   
@@ -243,13 +253,17 @@ void skynet_send_frame(void) {
 //  hdr.data[5] = SENSOR_HIST_WIND_DIR_SHORT;
 //  hdr.data[6] = SENSOR_HIST_WIND_SPEED_LONG;
 //  hdr.data[7] = SENSOR_HIST_WIND_DIR_LONG;
-  hdr.typelength_union.type_length.length = 6;
+  hdr.typelength_union.type_length.length = 10;
   hdr.data[0] = SENSOR_POSITION;
   hdr.data[1] = SENSOR_COMPASS;
   hdr.data[2] = SENSOR_WIND_DIR;
   hdr.data[3] = SENSOR_WIND_SPEED;
-  hdr.data[4] = SENSOR_HIST_WIND_SPEED_DIFF;
-  hdr.data[5] = SENSOR_HIST_WIND_DIR_DIFF;
+  hdr.data[4] = SENSOR_HIST_WIND_SPEED_SHORT;
+  hdr.data[5] = SENSOR_HIST_WIND_DIR_SHORT;
+  hdr.data[6] = SENSOR_HIST_WIND_SPEED_LONG;
+  hdr.data[7] = SENSOR_HIST_WIND_DIR_LONG;
+  hdr.data[8] = SENSOR_HIST_WIND_SPEED_DIFF;
+  hdr.data[9] = SENSOR_HIST_WIND_DIR_DIFF;
 
   mac_extheader hdr2;
   mac_extheader_init(&hdr2);
