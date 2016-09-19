@@ -23,8 +23,9 @@
 
 
 //#define RADIO_CTS_TIMEOUT 255
+#define RADIO_CTS_TIMEOUT 1023
 //#define RADIO_CTS_TIMEOUT 10000
-#define RADIO_CTS_TIMEOUT 100000
+//#define RADIO_CTS_TIMEOUT 100000
 
 extern uint8_t radioCmd[16];
 

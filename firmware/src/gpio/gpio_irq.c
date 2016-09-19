@@ -18,10 +18,13 @@ void GPIO_IRQ_HANDLER(void) {
 	// The timing receiving long packets is very fragile!
 	// Every DBG takes too much time and leads to broken packet reception!
 
+#if 0
 	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT0) & (1 << 19)) {
 		radio_packet_handler();
 		Chip_GPIOINT_ClearIntStatus(LPC_GPIOINT, GPIOINT_PORT0, (1 << 19));
 	}
+#endif
+
 	if (Chip_GPIOINT_GetStatusFalling(LPC_GPIOINT, GPIOINT_PORT2) & (1 << 13)) {
 		//handels the interrups from the windcups of the basestation
 		skynetbase_windspeed_tickhandler();

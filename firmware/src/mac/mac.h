@@ -16,6 +16,8 @@
 #include "../cpu/systick.h"
 #include <stdlib.h>
 #include "mac_config.h"
+#include "mac_payload_types.h"
+#include "mac_extheader.h"
 
 
 /**
@@ -72,7 +74,7 @@ typedef struct mac_frame_control {
     uint8_t     frame_version       : 2;
     uint8_t     source_addr_mode    : 2;
 
-} __attribute__((packed))  mac_frame_control;
+} __attribute__((aligned(1),packed))  mac_frame_control;
 
 
 
@@ -81,12 +83,27 @@ typedef struct mac_frame_control {
 #include "util.h"
 
 /**
+ * @brief	Initializes the mac layer. (i.e. create first random sequence number)
+ */
+void mac_init(void);
+
+/**
  * @brief	Tries to send a packet over PHY using \ref max_transmit_data.
  *
  * @return	True, if sent successfully, false otherwise.
  */
-bool mac_transmit_packet(mac_frame_data* frame);
+bool mac_transmit_packet(mac_frame_data* frame, bool new_seq);
 
+/**
+ * @brief	Returns a random integer strict smaller than max.
+ */
+int mac_random(int max);
+
+
+/**
+ * @brief	Generates and transmits an acknolodgement packet with given sequence number.
+ */
+bool mac_transmit_ack(uint8_t seq_no);
 
 
 #endif /* !MAC_H */

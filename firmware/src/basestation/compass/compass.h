@@ -14,6 +14,7 @@
 #include "../../misc/misc.h"
 #include "../../misc/debug.h"
 #include "../../cpu/systick.h"
+#include <string.h>
 
 
 /// @brief	I2C address of compass module.
@@ -42,6 +43,14 @@
 #define HMC5883L_ID_C		(0xC)	///< @brief Identification Register C
 
 
+typedef struct compass_calibration_data {
+	float offset_x;
+	float offset_y;
+	float offset_z;
+	float factor_z;
+	float declination;
+} __attribute__((aligned(1),packed)) compass_calibration_data;
+
 /**
  * @brief	Initializes the compass.
  */
@@ -56,9 +65,31 @@ float skynetbase_compass_read(void);
 
 
 /**
+ * @brief 	Old calibration routine.
+ */
+//void skynetbase_compass_calibrate(void);
+
+/**
  * @brief 	Start calibration routine.
  */
-void skynetbase_compass_calibrate(void);
+void skynetbase_compass_start_calibration(void);
+
+/**
+ * @brief 	Stop calibration routine and calculate calibration.
+ */
+void skynetbase_compass_stop_calibration(void);
+
+/**
+ * @brief		Set the calibration configuration.
+ * @param data	Pointer from where configuration will be \b copied.
+ */
+void skynetbase_compass_calibration_set(compass_calibration_data *data);
+
+/**
+ * @brief		Returns the calibration configuration.
+ * @return		Pointer to internal calibration data.  (statically allocated memory)
+ */
+compass_calibration_data* skynetbase_compass_calibration_get(void);
 
 
 #endif /* BASESTATION_COMPASS_COMPASS_H_ */

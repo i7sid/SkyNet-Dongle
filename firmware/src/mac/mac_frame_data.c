@@ -5,6 +5,8 @@
  * @author	Michael Zapf <michael.zapf@fau.de>
  */
 
+#ifndef IS_BASESTATION
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -18,16 +20,19 @@ extern "C" {
 #include "mac_frame_data.h"
 #include "mac.h"
 
+/*
 void* mac_frame_data_calloc(void) {
 	mac_frame_data *frame = (mac_frame_data *)calloc(sizeof(mac_frame_data), 1);
 	mac_frame_data_init(frame);
 	return frame;
 }
+*/
 
 
-void mac_frame_data_free(mac_frame_data *frame) {
-	free(frame->payload);
-	free(frame);
+void mac_frame_data_free_contents(mac_frame_data *frame) {
+	if (frame->payload != NULL) { free(frame->payload);	free_count(); }
+	mac_frame_extheaders_free(frame->extheader); // nothing happens if NULL
+	//free(frame); // do not do this!
 }
 
 
@@ -50,6 +55,7 @@ void mac_frame_data_init(mac_frame_data *frame) {
 	// TODO set new seq_no
 }
 
+//#include <stdio.h>		// DEBUG!
 uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 	uint16_t pos = 0;
     // copy MHR
@@ -57,6 +63,7 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 		case MAC_FRAME_BEACON:
 			break;
 		case MAC_FRAME_DATA:
+		{
 			// ignore security for first implementation
 			MHR_FC_SET_SECURITY_ENABLED(frame->mhr.frame_control, 0);
 
@@ -126,12 +133,24 @@ uint16_t mac_frame_data_pack(mac_frame_data *frame, uint8_t *buffer) {
 			// ignore aux security header for now
 
 			break;
+		}
 		case MAC_FRAME_ACK:
 			break;
 		case MAC_FRAME_MAC_CMD:
 			break;
 	}
 
+	// copy extheaders
+	mac_extheader* hdr = frame->extheader;
+
+	while (hdr != NULL) {
+		buffer[pos++] = hdr->typelength_union.raw;
+		for (uint8_t i = 0; i < hdr->typelength_union.type_length.length; ++i) {
+			buffer[pos++] = hdr->data[i];
+		}
+		hdr = hdr->next;
+	}
+	buffer[pos++] = 0x0; // last extheader
 
     // copy payload
     memcpy(buffer + pos, frame->payload, frame->payload_size);
@@ -202,15 +221,49 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 		frame->mhr.src_address[7] = buffer[pos++];
 	}
 
+	// extheaders
+	union typelength_union next_ext_type;
+	next_ext_type.raw = buffer[pos++];
+	mac_extheader** last_ptr = &(frame->extheader);
+	while (next_ext_type.type_length.type != EXTHDR_NO) {
+		mac_extheader* hdr = (mac_extheader*)malloc(sizeof(mac_extheader)); malloc_count(); // TODO error check NULL
+		if (hdr == NULL) {
+			// TODO throw error?
+			return pos;
+		}
+		mac_extheader_init(hdr);
+		hdr->typelength_union.raw = next_ext_type.raw;
+		memcpy(hdr->data, &(buffer[pos]), next_ext_type.type_length.length);
+		pos += next_ext_type.type_length.length;
+		next_ext_type.raw = buffer[pos++];
+
+		// now set pointer in previous header (or in packet if this is first header)
+		*last_ptr = hdr;
+		last_ptr = &(hdr->next);
+	}
+
+	/*
+	DBG("pos: %d\n", pos);
+	DBG("len: %d\n", length);
+	*/
+
 	// payload
 	frame->payload_size = length - 2 - pos;
-	frame->payload = (uint8_t*)malloc(frame->payload_size);
+	frame->payload = (uint8_t*)malloc(frame->payload_size+1); 	malloc_count(); // +1 for additional NULL byte
 	if (frame->payload == NULL) {
 		// TODO throw error? return -1?
 		return pos;
 	}
 
+	/*
+	DBG("d: %d\n", length);
+	DBG("e: %d\n", frame->payload_size);
+	*/
 	memcpy(frame->payload, buffer + pos, frame->payload_size);
+
+	// additional function for more comfort: add trailing null byte
+	frame->payload[frame->payload_size] = 0;
+
 	pos += frame->payload_size;
 
 	// fcs
@@ -220,6 +273,14 @@ uint16_t mac_frame_data_unpack(mac_frame_data *frame, uint8_t *buffer, uint16_t 
 	return pos;
 }
 
+void mac_frame_extheaders_free(mac_extheader* hdr) {
+	if (hdr == NULL) return;
+	mac_frame_extheaders_free(hdr->next);
+	free(hdr);		free_count();
+}
+
 #ifdef __cplusplus
 }
+#endif
+
 #endif

@@ -5,6 +5,8 @@
  *      Author: michi
  */
 
+#ifndef NO_TAP
+
 #include "tap.h"
 
 #include <sys/types.h>
@@ -79,3 +81,5 @@ void tap::send_packet(char* data, size_t length) {
         std::cerr << "Lost " << (length - written) << " bytes."<< std::endl;
     }
 }
+
+#endif // NO_TAP

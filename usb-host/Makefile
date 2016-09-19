@@ -5,15 +5,39 @@
 
 RM = rm -rf
 GXX = g++
+GREP = grep
+GREP_ARGS  = --exclude={Makefile,*.swp,*.swo,*~}
+GREP_ARGS += --exclude-dir=".git" -n --color=auto
+
+MAC_ADDR = 03:6B:84:A0:75:CB
+
 CXXFLAGS = -std=c++0x -I"./src" -I"../firmware/src/misc" \
 		   -I"../firmware/src/mac" -I"../firmware/src" -O3 -s -Wall \
 		   -fmessage-length=0 -Wno-packed-bitfield-compat \
-		   -Werror -Wno-unused-result
+		   -Werror -Wno-unused-result \
+		   -DPKT_DBG_OVERHEAD=\(4\) \
+		   -DMAC_ADDR=\"$(MAC_ADDR)\"
 
-LDFLAGS = -pthread
-SRC = $(wildcard src/*.cpp) ../firmware/src/mac/mac_frame_data.c
+LDFLAGS = -pthread -lmenu -lform -lncurses
 
-.PHONY: all clean
+ifeq ($(NO_TAP),1)
+	CXXFLAGS += -DNO_TAP
+else
+endif
+
+ifeq ($(NO_DB),1)
+	CXXFLAGS += -DNO_DB
+else
+	CXXFLAGS += -I"/usr/include/mysql"
+	LDFLAGS += -lmysqlclient -lmysqlpp
+endif
+
+CXXFLAGS += -g -rdynamic
+
+ 
+SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp) ../firmware/src/mac/mac_frame_data.c
+
+.PHONY: all clean todo
 
 all: skynet-usb-host
 
@@ -23,6 +47,8 @@ skynet-usb-host: $(SRC)
 clean:
 	$(RM) skynet-usb-host
 
+todo:
+	-$(GREP) $(GREP_ARGS) -i "TODO" . -R
 
 
 # vim:ft=make

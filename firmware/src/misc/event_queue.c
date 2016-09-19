@@ -12,6 +12,7 @@
 
 RINGBUFF_T events_ringbuf;
 char events_buf[MAX_QUEUED_EVENTS * sizeof(queued_event)];
+static int count = 0;
 
 void events_init(void) {
 	//queued_event
@@ -26,12 +27,19 @@ int events_enqueue(event_types type, void* data) {
 	e.type = type;
 	e.data = data;
 
+	__disable_irq();
 	int r = RingBuffer_Insert(&events_ringbuf, &e);
+	count++;
+	__enable_irq();
 #ifdef DEBUG
 	if (!r) {
 		// TODO do something? (but then remove #ifdef DEBUG !)
 		DBG("ERROR: events ringbuffer is full. (%d)\n", (int)type);
+		DBG("%d, %d %d %x %x\n", sizeof(queued_event), count, events_ringbuf.count, events_ringbuf.head, events_ringbuf.tail);
 	}
+	/*else {
+		DBG("OK %d, %d %d %x %x\n", sizeof(queued_event), count, events_ringbuf.count, events_ringbuf.head, events_ringbuf.tail);
+	}*/
 #endif
 	return r;
 }
@@ -46,8 +54,12 @@ event_types events_dequeue(queued_event *e) {
 		ev = &instead;
 	}
 
+	__disable_irq();
 	uint8_t r = RingBuffer_Pop(&events_ringbuf, ev);
+	__enable_irq();
+
 	if (r) {
+		count--;
 		return ev->type;
 	}
 	else {

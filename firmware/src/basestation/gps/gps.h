@@ -9,6 +9,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "chip.h"
 #include "../../misc/misc.h"
 #include "../../misc/debug.h"

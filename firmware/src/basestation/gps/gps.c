@@ -11,6 +11,8 @@ gps_pubx_data current_data;
 /* Transmit and receive ring buffers */
 STATIC RINGBUFF_T txring, rxring;
 
+extern RTC_TIME_T FullTime;
+
 /* Transmit and receive ring buffer sizes */
 #define UART_SRB_SIZE 64	/* Send */
 #define UART_RRB_SIZE 128	/* Receive */
@@ -50,19 +52,19 @@ int skynetbase_gps_init(void) {
 	DBG("GPS up.\n");
 
 	skynetbase_gps_config("$PUBX,40,GLL,0,0,0,0*5C\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,ZDA,0,0,0,0*44\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,VTG,0,0,0,0*5E\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GSV,0,0,0,0*59\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,RMC,0,0,0,0*47\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GSA,0,0,0,0*4E\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 	skynetbase_gps_config("$PUBX,40,GGA,0,0,0,0*5A\r\n");
-	msDelayActive(150);
+	msDelayActive(250);
 
 	DBG("GPS configured.\n");
 
@@ -96,12 +98,6 @@ void skynetbase_gps_receive_data(void) {
 	}
 	else if (c == '*' && gpsoutpos > 0) { // ending, for now ignore checksum
 		gpsout[gpsoutpos] = 0;
-		/*
-		char *data = malloc(gpsoutpos+1);
-		memcpy(data, gpsout, gpsoutpos);
-		data[gpsoutpos] = 0;
-		events_enqueue(EVENT_GPS_MESSAGE, data);
-		*/
 		skynetbase_gps_received_data(gpsout, gpsoutpos);
 		return;
 	}
@@ -111,7 +107,7 @@ void skynetbase_gps_receive_data(void) {
 
 void skynetbase_gps_received_data(char gpsout[], uint8_t gpsoutpos) {
 	gpsout[gpsoutpos] = 0;
-	DBG("%s\n", gpsout);
+	//DBG("%s\n", gpsout);
 
 	char delim[] = ",";
 
@@ -208,8 +204,14 @@ void skynetbase_gps_received_data(char gpsout[], uint8_t gpsoutpos) {
 
 	events_enqueue(EVENT_GPS_DATA_AVAILABLE, NULL);
 
-	DBG("Lat: %f (%c)\n", current_data.lat, current_data.lat_dir);
-	DBG("Lon: %f (%c)\n", current_data.lon, current_data.lon_dir);
+	// update RTC
+	Chip_RTC_GetFullTime(LPC_RTC, &FullTime);
+	sscanf(current_data.time, "%02d%02d%02d", &(FullTime.time[RTC_TIMETYPE_HOUR]),
+			&(FullTime.time[RTC_TIMETYPE_MINUTE]), &(FullTime.time[RTC_TIMETYPE_SECOND]));
+	Chip_RTC_SetFullTime(LPC_RTC, &FullTime);
+
+	//DBG("Lat: %f (%c)\n", current_data.lat, current_data.lat_dir);
+	//DBG("Lon: %f (%c)\n", current_data.lon, current_data.lon_dir);
 }
 
 void GPS_IRQ_Handler() {

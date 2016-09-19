@@ -31,11 +31,11 @@
 
 
 // CONFIGURATION PARAMETERS
-#define RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ                     {30000000L}
-#define RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER                    {0x00}
-#define RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH               {0x07}
-#define RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP        {0x03}
-#define RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET       {0xF000}
+#define RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ                     (30000000L)
+#define RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER                    (0x00)
+#define RADIO_CONFIGURATION_DATA_RADIO_PACKET_LENGTH               (0x07)
+#define RADIO_CONFIGURATION_DATA_RADIO_STATE_AFTER_POWER_UP        (0x03)
+#define RADIO_CONFIGURATION_DATA_RADIO_DELAY_CNT_AFTER_RESET       (0xF000)
 
 
 // CONFIGURATION COMMANDS
@@ -44,7 +44,8 @@
 // Command:                  RF_POWER_UP
 // Description:              Command to power-up the device and select the operational mode and functionality.
 */
-#define RF_POWER_UP 0x02, 0x01, 0x00, 0x01, 0xC9, 0xC3, 0x80
+//#define RF_POWER_UP 0x02, 0x01, 0x00, 0x01, 0xC9, 0xC3, 0x80
+#define RF_POWER_UP 0x02, 0x81, 0x00, 0x01, 0xC9, 0xC3, 0x80
 
 /*
 // Command:                  RF_GPIO_PIN_CFG
@@ -74,7 +75,9 @@
 // Descriptions:
 //   GLOBAL_CONFIG - Global configuration settings.
 */
-#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x60
+//#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x60
+#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x61
+//#define RF_GLOBAL_CONFIG_1 0x11, 0x00, 0x01, 0x03, 0x02
 
 /*
 // Set properties:           RF_INT_CTL_ENABLE_2
@@ -97,7 +100,8 @@
 // Descriptions:
 //   INT_CTL_CHIP_ENABLE - Enable individual interrupt sources within the Chip Interrupt Group to generate a HW interrupt on the NIRQ output pin.
 */
-#define RF_INT_CTL_CHIP_ENABLE_1 0x11, 0x01, 0x01, 0x03, 0x08
+//#define RF_INT_CTL_CHIP_ENABLE_1 0x11, 0x01, 0x01, 0x03, 0x08
+#define RF_INT_CTL_CHIP_ENABLE_1 0x11, 0x01, 0x01, 0x03, 0x28
 
 /*
 // Set properties:           RF_FRR_CTL_A_MODE_4
@@ -111,7 +115,8 @@
 //   FRR_CTL_C_MODE - Fast Response Register C Configuration.
 //   FRR_CTL_D_MODE - Fast Response Register D Configuration.
 */
-#define RF_FRR_CTL_A_MODE_4 0x11, 0x02, 0x04, 0x00, 0x0A, 0x00, 0x00, 0x00
+#define RF_FRR_CTL_A_MODE_4 0x11, 0x02, 0x04, 0x00, 0x0A, 0x03, 0x07, 0x00
+// means: A: Latched RSSI, B: PH_STATUS, C: CHIP_STATUS
 
 /*
 // Set properties:           RF_PREAMBLE_TX_LENGTH_9
@@ -156,7 +161,8 @@
 // Descriptions:
 //   PKT_CRC_CONFIG - Select a CRC polynomial and seed.
 */
-#define RF_PKT_CRC_CONFIG_1 0x11, 0x12, 0x01, 0x00, 0x80
+//#define RF_PKT_CRC_CONFIG_1 0x11, 0x12, 0x01, 0x00, 0x05
+#define RF_PKT_CRC_CONFIG_1 0x11, 0x12, 0x01, 0x00, 0x00
 
 /*
 // Set properties:           RF_PKT_WHT_SEED_15_8_4
@@ -193,7 +199,7 @@
 //   PKT_FIELD_2_CONFIG - General data processing and packet configuration bits for Field 2.
 */
 //#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x32, 0x01, 0x00, 0x10, 0x20, 0x00, 0x02, 0x00, 0x00, 0x1F, 0xFF, 0x00
-#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x32, 0x01, 0x00, 0x10, 0x20, 0x00, 0x02, 0x00, 0x00, 0x1F, 0xFF, 0x00
+#define RF_PKT_LEN_12 0x11, 0x12, 0x0C, 0x08, 0x32, 0x01, 0x00, 0x30, 0x30, 0x00, 0x02, 0x00, 0x00, 0x1F, 0xFF, 0x00
 
 /*
 // Set properties:           RF_PKT_FIELD_2_CRC_CONFIG_12
@@ -215,6 +221,8 @@
 //   PKT_FIELD_5_LENGTH_7_0 - Unsigned 13-bit Field 5 length value.
 //   PKT_FIELD_5_CONFIG - General data processing and packet configuration bits for Field 5.
 */
+//#define RF_PKT_FIELD_2_CRC_CONFIG_12 0x11, 0x12, 0x0C, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+//#define RF_PKT_FIELD_2_CRC_CONFIG_12 0x11, 0x12, 0x0C, 0x14, 0x2A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 #define RF_PKT_FIELD_2_CRC_CONFIG_12 0x11, 0x12, 0x0C, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 
 /*
@@ -249,7 +257,7 @@
 //   MODEM_FREQ_DEV_1 - 17-bit unsigned TX frequency deviation word.
 */
 #define RF_MODEM_MOD_TYPE_12 0x11, 0x20, 0x0C, 0x00, 0x03, 0x00, 0x07, 0x0F, 0x42, 0x40, 0x09, 0xC9, 0xC3, 0x80, 0x00, 0x02
-
+																	// data rate ------
 /*
 // Set properties:           RF_MODEM_FREQ_DEV_0_1
 // Number of properties:     1

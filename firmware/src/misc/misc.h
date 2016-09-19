@@ -98,6 +98,6 @@
 /// @brief  Let _delay_ms point to an active waiting routine as expected.
 #define _delay_ms 	msDelayActive
 
-#define SI446X_PATCH_CMDS
+//#define SI446X_PATCH_CMDS
 
 #endif // MISC_H_

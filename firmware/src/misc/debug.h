@@ -27,4 +27,15 @@ static inline void do_nothing_debug(char* fmt, ...) { return; };
 #define uart0_puts_P uart0_puts
 
 
+#ifdef CORE_M3
+extern uint32_t sn_cnt_mallocs;
+extern uint32_t sn_cnt_frees;
+void malloc_count(void);
+void free_count(void);
+#else
+inline void malloc_count(void) {}
+inline void free_count(void) {}
+#endif
+
+
 #endif /* DEBUG_H_ */

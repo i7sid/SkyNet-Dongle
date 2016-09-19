@@ -28,16 +28,21 @@ typedef enum usb_packet_type {
 	USB_SKYNET_PACKET  = 0,	///< SkyNet data packet
 	USB_CONTROL = 1,		///< Node control message
 	USB_INFO    = 2,		///< Pure information
-	USB_DEBUG   = 3			///< Debugging string (as from sprintf)
+	USB_DEBUG   = 3,		///< Debugging string (as from sprintf)
+	USB_RANGE_TEST = 4		///< Range test message with local GPS
 } usb_packet_type;
 
 /**
  * @brief	Different types of control messages.
  */
 typedef enum usb_ctrl_msg_type {
-	USB_CTRL_RESET  = 0,		///< Reset the node
-	USB_CTRL_BOOTLOADER  = 1,	///< Reset the node and switch to bootloader
-	USB_CTRL_CALIB_COMPASS  = 2	///< Start calibration sequence of compass
+	USB_CTRL_RESET  		= 0, ///< Reset the node
+	USB_CTRL_BOOTLOADER  	= 1, ///< Reset the node and switch to bootloader
+	USB_CTRL_CALIB_COMPASS  = 2, ///< Start calibration sequence of compass
+	USB_CTRL_SET_MAC_ADDR   = 3, ///< Set the MAC address of the node
+	USB_CTRL_SET_IP_ADDR    = 4, ///< Set the IPv4 address of the node
+	USB_CTRL_GET_MAC_ADDR   = 5, ///< Get the MAC address of the node via debug
+	USB_CTRL_GET_IP_ADDR    = 6  ///< Get the IPv4 address of the node via debug
 } usb_ctrl_msg_type;
 
 /**

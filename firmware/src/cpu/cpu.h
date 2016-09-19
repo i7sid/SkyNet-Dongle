@@ -35,14 +35,6 @@ void cpu_set_speed(cpu_speed speed);
  */
 void cpu_sleep();
 
-/**
- * @brief			Power off the device.
- *
- * Powers down all peripherals (radio, bluetooth) and sends the CPU to a deep
- * sleep state, waiting for a long press to input button.
- */
-void cpu_powerdown();
-
 
 /**
  * @brief			Resets the node.

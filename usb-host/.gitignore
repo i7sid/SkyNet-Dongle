@@ -1,6 +1,10 @@
 Debug/**
 Release/**
 
+debug_logs/**
+
+*.exe
+*.csv
 *~
 *.swp
 skynet-usb-host

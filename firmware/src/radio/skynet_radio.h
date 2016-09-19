@@ -19,7 +19,8 @@
 #include "radio_comm.h"
 #include "radio_config.h"
 
-#define SKYNET_RADIO_MAX_SIZE (1024)
+#define SKYNET_RADIO_MAX_SIZE 			(1024u)
+#define SKYNET_RADIO_RSSI_CCA_THRESHOLD	((uint8_t)0x70u)
 
 #define SKYNET_RADIO_TESTPATTERN 	"12345678901234567890123456789012345678901234567890123456789012345678901234567890"
 #define SKYNET_RADIO_TESTLENGTH 		80
@@ -35,6 +36,11 @@ typedef struct skynet_packet {
 	int		length;
 } skynet_packet;
 
+
+/**
+ * @brief	Starts packet reception. (Chip goes to RX mode.)
+ */
+void radio_start_rx(void);
 
 /**
  * @brief	Initiliaze peripheral pin(s).

@@ -21,13 +21,16 @@ uint32_t tick_events_t[MAX_DELAYED_EVENTS];
 /// @brief Array holding function pointers for delayed events.
 void (*tick_events_f[MAX_DELAYED_EVENTS])();
 
+uint32_t systick_ms_ticks = 0;
 
 void SysTick_Handler(void) {
+	systick_ms_ticks++;
+
 	// delayed events
-	bool no_delayed = true;
+	//bool no_delayed = true;
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
 		if (tick_events_t[i] > 0 && tick_events_f[i] > 0x0) {
-			no_delayed = false;
+			//no_delayed = false;
 			tick_events_t[i] -= 1;
 			if (tick_events_t[i] == 0) {
 				tick_events_f[i]();
@@ -35,41 +38,49 @@ void SysTick_Handler(void) {
 		}
 	}
 
-	if (no_delayed) {
+	/*if (no_delayed) {
 		SysTick->CTRL  = 0; // disable Systick if not needed any more
-	}
+	}*/
 }
 
 
 
 void register_delayed_event(uint32_t ms, void* f) {
+	__disable_irq();
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
 		if (tick_events_t[i] == 0) {
 			tick_events_t[i] = ms;
 			tick_events_f[i] = f;
 			enable_systick();
+			__enable_irq();
 			return;
 		}
 	}
+	__enable_irq();
+
 
 	DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
 }
 
 void remove_delayed_event(void* f) {
-	bool stop_systick = true;
+	__disable_irq();
+	//bool stop_systick = true;
 	for (int i = 0; i < MAX_DELAYED_EVENTS; ++i) {
 		if (tick_events_f[i] == f) {
 			tick_events_t[i] = 0;
 			tick_events_f[i] = 0x0;
 		}
-		else if (tick_events_f[i] != 0x0) {
-			stop_systick = false;
-		}
+		//else if (tick_events_f[i] != 0x0) {
+		//	stop_systick = false;
+		//}
 	}
 
+	/*
 	if (stop_systick) {
 		disable_systick();
 	}
+	*/
+	__enable_irq();
 
 	//DBG("[ERROR] tick_events_delayed OVERFLOW! No free slots!\n");
 }
@@ -110,8 +121,14 @@ void enable_systick(void) {
 	SysTick_Config(SystemCoreClock/1000); // Enable and setup SysTick Timer at 0.001 HZ
 }
 
+inline uint32_t skynet_systick_get(void) {
+	return systick_ms_ticks;
+}
+
+/*
 INLINE void disable_systick(void) {
 	SysTick->CTRL  = 0;
 }
+*/
 
 

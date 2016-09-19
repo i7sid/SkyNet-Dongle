@@ -22,7 +22,12 @@ typedef struct mac_frame_ack {
     uint8_t frame_control[2];
     uint8_t seq_no;
     uint8_t fcs[2];
-} __attribute__((packed)) mac_frame_ack;
+} __attribute__((aligned(1),packed)) mac_frame_ack;
 
+inline void mac_frame_ack_init(mac_frame_ack *frame) {
+	memset(frame, 0, sizeof(mac_frame_ack));
+	MHR_FC_SET_FRAME_TYPE(frame->frame_control, MAC_FRAME_ACK);
+	MHR_FC_SET_FRAME_VERSION(frame->frame_control, 0x01);
+}
 
 #endif /* !MAC_FRAME_ACK_H */
