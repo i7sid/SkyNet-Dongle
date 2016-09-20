@@ -1,0 +1,13 @@
+graphs/*.png
+graphs/*.pdf
+
+data/*.csv
+!./data/raw/*
+
+
+
+*~
+*.swp
+*.swo
+*.bak
+
