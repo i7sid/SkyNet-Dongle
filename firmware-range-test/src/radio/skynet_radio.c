@@ -344,9 +344,13 @@ void radio_packet_handler(void) {
 				skynet_packet *pkt = malloc(sizeof(skynet_packet));	malloc_count();
 				char* newdata = malloc(copy_length * sizeof(char));	malloc_count();
 				if (pkt != NULL) {
+					si446x_get_modem_status(0xFF);
+					uint8_t rssi = Si446xCmd.GET_MODEM_STATUS.CURR_RSSI;
+
 					memcpy(newdata, data, copy_length);
 					pkt->data = newdata;
 					pkt->length = copy_length;
+					pkt->rssi = rssi;
 
 					// TODO prüfen/ unterscheiden, ob es DATA oder ACK o.ä. ist
 					//		nur DATAs sollen in die event_queue, ACKs werden in received_ack gespeichert

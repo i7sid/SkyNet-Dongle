@@ -34,6 +34,7 @@ extern volatile bool radio_initialized;
 typedef struct skynet_packet {
 	char*	data;
 	int		length;
+	uint8_t	rssi;
 } skynet_packet;
 
 

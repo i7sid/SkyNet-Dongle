@@ -10,6 +10,7 @@
 ///@brief Send a rf debug packet each second.
 //#define DEBUG_SEND_RF_TEST
 
+#define RANGETEST_RX
 
 #if defined (__USE_LPCOPEN)
 #if defined(NO_BOARD_LIB)
@@ -190,7 +191,9 @@ int main(void) {
     Chip_WWDT_Start(LPC_WWDT);
 #endif
 
+#ifndef RANGETEST_RX
     register_delayed_event(2000, debug_send_rf);
+#endif
 
     uint16_t seq = 0;
 	while (1) {
@@ -211,8 +214,9 @@ int main(void) {
 				skynet_cdc_received_message(event.data);
 				break;
 			case EVENT_RF_GOT_PACKET:
-				//skynet_received_packet(event.data);
-				// TODO
+
+				skynet_received_packet(event.data);
+
 				break;
 			case EVENT_DEBUG_2: {
 			    //skynet_cdc_write_debug("Try to send...\n");
