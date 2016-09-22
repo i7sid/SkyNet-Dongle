@@ -63,6 +63,9 @@ void setup() {
   cfg.mac1 = (cfg.serial0     ) & 0xFF;
 
   WDT_init();
+  GCLK->GENDIV.reg  = GCLK_GENDIV_ID(2) | GCLK_GENDIV_DIV(8); // slower watchdog
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_ID(GCLK_CLKCTRL_ID_WDT_Val) |              
+         GCLK_CLKCTRL_GEN_GCLK2 | GCLK_CLKCTRL_CLKEN;
   WDT_enable();
 }
 

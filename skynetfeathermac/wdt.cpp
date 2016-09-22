@@ -24,7 +24,7 @@ void WDT_init() {
     // sync clock
     while (GCLK->STATUS.bit.SYNCBUSY) {}
 
-    // configure watchdog (about 3 seconds with clock from above)
+    // configure watchdog (about 1 second with clock from above)
     WDT->CONFIG.bit.PER = 0xB;  // 1024 clock cycles
 
 }
