@@ -1,0 +1,42 @@
+PHP_IGC version 0.1
+
+PHP_IGC Classes read and manage IGC files and data.
+Copyright (C) 2007  name of Mike Milano
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+Instructions: Include PHP_IGC.php and instantiate the PHP_IGC class
+	      with the path to an IGC file.
+
+Example:
+
+<?php
+
+$igc = new PHP_IGC('/path/to/my_igc_file.igc');
+$igc->setDetails();
+
+$google_maps_code = $igc->getMap('ABCDEFG', 640, 480);
+?>
+<html>
+<head>
+	<title>PHP IGC</title>
+</head>
+<body>
+
+	<?php echo $google_maps_code; ?>
+
+</body>
+</html>

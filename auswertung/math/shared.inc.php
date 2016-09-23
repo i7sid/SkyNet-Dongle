@@ -71,6 +71,41 @@ function meters2degrees($m) {
 }
 
 
+/**
+ * @brief   Calculates the distance in 2d space between two coordinates.
+ * @param   $a  First coordinate / start point
+ * @param   $b  Second coordinate / target point
+ * @return  Distance between $a and $b in meters.
+ */
+function getDistance2D($a, $b) {
+    # source for exact 2d distance calculation:
+    # https://www.kompf.de/gps/distcalc.html
+
+    $lon1 = deg2rad($a->x);
+    $lon2 = deg2rad($b->x);
+    $lat1 = deg2rad($a->y);
+    $lat2 = deg2rad($b->y);
+    return 6378388 * acos(
+        sin($lat1) * sin($lat2) + cos($lat1) * cos($lat2) * cos($lon2 - $lon1)
+    );
+}
+
+/**
+ * @brief   Calculates the distance in 3d space between two coordinates.
+ * @param   $a  First coordinate / start point
+ * @param   $b  Second coordinate / target point
+ * @return  Distance between $a and $b in meters.
+ */
+function getDistance3D($a, $b) {
+    $d = getDistance2D($a, $b);
+    $h = abs($b->z - $a->z);
+
+    if ($d == 0) return $h;
+    if ($h == 0) return $d;
+
+    return sqrt($d * $d  +  $h * $h);
+}
+
 
 class TimePoint {
     public $time                = null;
