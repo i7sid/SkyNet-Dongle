@@ -5,8 +5,12 @@
 
 
 # configuration for current build
-DATE	=2016-09-09
-TIME	=11-07-32
+#DATE	=2016-09-09
+#TIME	=11-07-32
+#DATE	=2016-07-19
+#TIME	=09-33-49
+DATE	=2016-07-08
+TIME	=09-12-35
 
 
 
@@ -66,9 +70,9 @@ STARTS_SRC	= $(patsubst ./data/raw/wind-%.csv,./data/raw/starts-%.csv,$(WIND_SRC
 WIND_RAW	= $(patsubst ./data/raw/%.csv,./data/%-raw.csv,$(WIND_SRC))
 
 
-.PHONY: all separate process graphs model wind-vis clean
+.PHONY: all separate process graphs model clean
 
-all: separate process model graphs wind-vis
+all: separate process model graphs
 
 
 separate: $(WIND_SRC) $(POS_SRC)

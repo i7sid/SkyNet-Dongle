@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flight Wind Analysis</title>
+    <link rel="stylesheet" href="./ol.css" type="text/css">
+    <meta charset="utf-8">
+    <meta name="author" content="Michael Zapf <michael.zapf@fau.de>">
+    <meta name="robots" content="noindex,nofollow">
+
+    <style>
+        html,body { margin:0; padding:0; width:100%; height:100%; }
+        #map { position:absolute; width:100%; top:0; bottom:100px; }
+        #controls { position:absolute; left:0; right:0; bottom:0; height:120px;
+            background-color:#EEEEFF; }
+        #sliderTime { width:100%; }
+        #sliderCanvas { width:100%; height:30px; }
+        .custom-mouse-position { display:inline-block; }
+    </style>
+    <script src="./jquery-3.1.0.min.js"></script>
+    <!--<script src="./ol-debug.js"></script>-->
+    <script src="./ol.js"></script>
+    <script src="./vis-utils.js"></script>
+
+    <script>
+    var wind_data = [];
+    </script>
+
+    <script src="./fileio.js"></script>
+
+  </head>
+  <body>
+    <div id="map" class="map"></div>
+    <div id="controls">
+        <input id="sliderTime" type="range" min="0" max="10000" step="1" /><br>
+        <canvas id="sliderCanvas" height="30" width="1000">
+        </canvas>
+        Zeit: <span id="chosenTime"></span><br>
+        Flüge im Zeitfenster: <span id="chosenFlights"></span><br>
+        Maus: <span id="mouseCoord"></span><br>
+    <div>
+
+
+
+    <script>
+    var centerPoint = new ol.geom.Point([11.52477,49.19977]) // Center of the map
+        .transform("EPSG:4326", "EPSG:3857");
+
+    var vectorSourceFlights = new ol.source.Vector();
+    var time = {
+      start: Infinity,
+      stop: -Infinity,
+      duration: 0
+    };
+    vectorSourceFlights.on('addfeature', function(event) {
+      var geometry = event.feature.getGeometry();
+      time.start = Math.min(time.start, geometry.getFirstCoordinate()[2]);
+      time.stop = Math.max(time.stop, geometry.getLastCoordinate()[2]);
+      time.duration = time.stop - time.start;
+      $('#sliderTime').attr('min', time.start).
+                        attr('max', time.stop);
+    });
+
+    var vectorSourceStations = new ol.source.Vector();
+    var vectorSourceIntersections = new ol.source.Vector();
+    var vectorSourceWind = new ol.source.Vector();
+    var vectorSourceWind5min = new ol.source.Vector();
+    var vectorSourceWind15min = new ol.source.Vector();
+
+    var i = 0;
+    var readFeatureText = function(txt) {
+        var features = igcFormat.readFeatures(txt,
+            {featureProjection: 'EPSG:3857'});
+        features[0].set('color', i++);
+        vectorSourceFlights.addFeatures(features);
+    };
+
+    // read wind data
+    var readWindData = function(features) {
+        for (var i = 0; i < features.length; i++) {
+            var type = features[i].get('geometry').getType();
+            if (type == 'LineString') {
+                var item_type = features[i].get('item_type');
+                if (item_type == 'wind_raw') {
+                    vectorSourceWind.addFeature(features[i]);
+                }
+                else if (item_type == 'wind_5min') {
+                    vectorSourceWind5min.addFeature(features[i]);
+                }
+                else if (item_type == 'wind_15min') {
+                    vectorSourceWind15min.addFeature(features[i]);
+                }
+            }
+            else if (type == 'Point') {
+                var point_type = features[i].get('point_type');
+                if (point_type == 'base_station') {
+                    vectorSourceStations.addFeature(features[i]);
+                }
+                else if (point_type == 'intersection_point') {
+                    //console.log(features[i]);
+                    vectorSourceIntersections.addFeature(features[i]);
+                }
+            }
+        }
+    };
+
+
+    wind_data.forEach(function(json) {
+        var features = geojsonFormat.readFeatures(json, {featureProjection: 'EPSG:3857'});
+        readWindData(features);
+    });
+
+    var alpha = '0.90';
+    var colorsHigh = [
+        'rgba(127, 208, 178, ' + alpha + ')',
+        'rgba(158, 189, 109, ' + alpha + ')',
+        'rgba(234, 157, 105, ' + alpha + ')',
+        'rgba(255, 170, 165, ' + alpha + ')',
+        'rgba(255, 139, 148, ' + alpha + ')',
+        'rgba(102, 153, 0  , ' + alpha + ')',
+        'rgba(148, 176, 15 , ' + alpha + ')',
+        'rgba(153, 204, 153, ' + alpha + ')',
+        'rgba(155, 187, 105, ' + alpha + ')',
+        'rgba(255, 184, 125, ' + alpha + ')',
+        'rgba(237, 150, 92 , ' + alpha + ')',
+        'rgba(255, 158, 125, ' + alpha + ')',
+        'rgba(208, 193, 52 , ' + alpha + ')',
+        'rgba(131, 105, 132, ' + alpha + ')',
+        'rgba(129, 90 , 150, ' + alpha + ')'
+                ];
+    alpha = '0.2';
+    var colorsLow = [
+        'rgba(168, 230, 207, ' + alpha + ')',
+        'rgba(220, 237, 193, ' + alpha + ')',
+        'rgba(255, 211, 182, ' + alpha + ')',
+        'rgba(255, 170, 165, ' + alpha + ')',
+        'rgba(255, 139, 148, ' + alpha + ')',
+        'rgba(102, 153, 0  , ' + alpha + ')',
+        'rgba(158, 196, 25 , ' + alpha + ')',
+        'rgba(153, 204, 153, ' + alpha + ')',
+        'rgba(200, 227, 158, ' + alpha + ')',
+        'rgba(255, 184, 125, ' + alpha + ')',
+        'rgba(237, 150, 92 , ' + alpha + ')',
+        'rgba(255, 158, 125, ' + alpha + ')',
+        'rgba(253, 244, 156, ' + alpha + ')',
+        'rgba(131, 105, 132, ' + alpha + ')',
+        'rgba(129, 90 , 150, ' + alpha + ')'
+                ];
+
+    var styleFunctionFlights = function(feature) {
+        var color = colorsLow[feature.get('color')];
+        var m = parseInt($("#sliderTime").val(), 10);
+
+        var geometry = feature.getGeometry();
+        var first = geometry.getFirstCoordinate()[2];
+        var last = geometry.getLastCoordinate()[2];
+        if (first <= m && last >= m) {
+            color = colorsHigh[feature.get('color')];
+        }
+        style = new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: color,
+                width: 2
+            })
+        });
+        return style;
+    };
+
+    var windStyleVisible = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0.8)',
+            width: 2
+        })
+    });
+    var windStyleVisible5min = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 255, 0.8)',
+            width: 2
+        })
+    });
+    var windStyleVisible15min = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: 'rgba(0, 255, 255, 0.6)',
+            width: 2
+        })
+    });
+    var windStyleInvisible = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: 'rgba(0, 0, 0, 0)',
+            width: 0
+        })
+    });
+    var intersectionStyleVisibleAir = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 23, // TODO dynamisch
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 0, 53, 0.4)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(100, 255, 200, 0.9)',
+                width: 1
+            })
+        }),
+        text:
+                new ol.style.Text({
+                    textAlign: 'center',
+                    textBaseline: 'middle',
+                    font: 'bold 10pt sans-serif',
+                    text: '',
+                    fill: new ol.style.Fill({ color: 'rgba(155, 100, 100, 1)' }),
+//                    stroke: new ol.style.Stroke({color: 'rgb(0,0,0)', width: 1}),
+                    offsetX: 0,
+                    offsetY: 0,
+                    rotation: 0
+            })
+    });
+    var intersectionStyleVisible = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 13, // TODO dynamisch
+            fill: new ol.style.Fill({
+                color: 'rgba(153, 0, 153, 0.4)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(100, 255, 200, 0.9)',
+                width: 1
+            })
+        }),
+        text:
+                new ol.style.Text({
+                    textAlign: 'center',
+                    textBaseline: 'middle',
+                    font: 'bold 10pt sans-serif',
+                    text: '',
+                    fill: new ol.style.Fill({ color: 'rgba(255, 200, 220, 1)' }),
+//                    stroke: new ol.style.Stroke({color: 'rgb(0,0,0)', width: 1}),
+                    offsetX: 0,
+                    offsetY: 0,
+                    rotation: 0
+            })
+    });
+    var intersectionStyleInvisible = new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 0
+        })
+    });
+    var styleFunctionWind = function(feature) {
+        var m = parseInt($("#sliderTime").val(), 10);
+        var time = feature.get('time');
+        var d = 3;
+        if ((m - d) <= time && (m + d) >= time) {
+            style = windStyleVisible;
+        }
+        else {
+            style = windStyleInvisible;
+        }
+        return style;
+    };
+    var styleFunctionWind5min = function(feature) {
+        var m = parseInt($("#sliderTime").val(), 10);
+        var time = feature.get('time');
+        var d = 3;
+        if ((m - d) <= time && (m + d) >= time) {
+            style = windStyleVisible5min;
+        }
+        else {
+            style = windStyleInvisible;
+        }
+        return style;
+    };
+    var styleFunctionWind15min = function(feature) {
+        var m = parseInt($("#sliderTime").val(), 10);
+        var time = feature.get('time');
+        var d = 3;
+        if ((m - d) <= time && (m + d) >= time) {
+            style = windStyleVisible15min;
+        }
+        else {
+            style = windStyleInvisible;
+        }
+        return style;
+    };
+
+    var styleFunctionStations = function(feature) { return new ol.style.Style({
+        image: new ol.style.Circle({
+            radius: 3,
+            fill: new ol.style.Fill({
+                color: 'rgba(0, 153, 153, 1)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(0, 255, 200, 0.9)',
+                width: 1
+            })
+        }),
+        text:
+            new ol.style.Text({
+                textAlign: 'right',
+                textBaseline: 'middle',
+                font: 'bold 10pt sans-serif',
+                text: feature.get('mac'),
+                fill: new ol.style.Fill({ color: 'rgba(0, 153, 153, 0.8)' }),
+//                stroke: new ol.style.Stroke({color: 'rgb(0,0,0)', width: 1}),
+                offsetX: -5,
+                offsetY: 0,
+                rotation: 0
+            })
+    })};
+
+    var styleFunctionIntersections = function(feature){
+        var m = parseInt($("#sliderTime").val(), 10);
+        var time = feature.get('time');
+        var d = 2;
+        if ((m - d) <= time && (m + d) >= time) {
+            if (feature.get('height') > 50) {
+                style = intersectionStyleVisibleAir;
+//                style.getText().setText(feature.get('item_id'));
+            }
+            else {
+                style = intersectionStyleVisible;
+//                style.getText().setText(feature.get('item_id'));
+            }
+        }
+        else {
+            style = intersectionStyleInvisible;
+        }
+        return style;
+    };
+
+
+    // show mouse position
+    var mousePositionControl = new ol.control.MousePosition({
+        coordinateFormat: ol.coordinate.createStringXY(4),
+        projection: 'EPSG:4326',
+        className: 'custom-mouse-position',
+        target: document.getElementById('mouseCoord'),
+        undefinedHTML: '&nbsp;'
+    });
+
+    var map = new ol.Map({
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceFlights,
+                style: styleFunctionFlights
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceWind,
+                style: styleFunctionWind
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceWind5min,
+                style: styleFunctionWind5min
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceWind15min,
+                style: styleFunctionWind15min
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceStations,
+                style: styleFunctionStations
+            }),
+            new ol.layer.Vector({
+                source: vectorSourceIntersections,
+                style: styleFunctionIntersections
+            })
+        ],
+        target: 'map',
+        view: new ol.View({
+            center: centerPoint.getCoordinates(),
+            zoom: 14
+        }),
+        controls: ol.control.defaults({
+                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+                collapsible: false
+            })
+        }).extend([mousePositionControl])
+    });
+
+/*
+    var imageStyle = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 5,
+        snapToPixel: false,
+        fill: new ol.style.Fill({color: 'yellow'}),
+        stroke: new ol.style.Stroke({color: 'red', width: 1})
+      })
+    });
+*/
+
+    var pilotPointStyle = function(feature) {
+        var col = colorsHigh[feature.get('color')];
+        var pilotText = feature.get('PLT');
+        //var pilotText = feature.get('');
+        return new ol.style.Style({
+            image: new ol.style.Circle({
+                radius: 5,
+                fill: new ol.style.Fill({
+                    color: col
+                }),
+                stroke: new ol.style.Stroke({
+                    width: 1,
+                    color: 'rgba(255, 50, 50, 0.9)'
+                })
+            }),
+            text:
+                new ol.style.Text({
+                    textAlign: 'left',
+                    textBaseline: 'middle',
+                    font: 'bold 10pt sans-serif',
+                    text: pilotText,
+                    fill: new ol.style.Fill({ color: col }),
+    //                stroke: new ol.style.Stroke({color: 'rgb(0,0,0)', width: 1}),
+                    offsetX: 7,
+                    offsetY: 0,
+                    rotation: 0
+                })
+        })
+    };
+
+      var featureOverlay = new ol.layer.Vector({
+          source: new ol.source.Vector(),
+          map: map,
+          style: pilotPointStyle
+      });
+
+    map.render();
+    $("#sliderTime").attr('min', time.start);
+    $("#sliderTime").attr('max', time.stop);
+    $("#sliderTime").on("input", function() {
+        var m = parseInt(this.value, 10);
+        var selDate = new Date(m * 1000);
+        $("#chosenTime").html(
+            selDate.getDate() + '.' + selDate.getMonth() + '.' + selDate.getFullYear() +
+            ' ' + selDate.getUTCHours() + ':' + selDate.getUTCMinutes() + ':' +
+            selDate.getUTCSeconds() + ' (UTC)');
+
+        var flights = $('#chosenFlights')[0];
+        flights.innerHTML = '';
+
+        vectorSourceFlights.forEachFeature(function(feature) {
+            var geometry = feature.getGeometry();
+
+            var first = geometry.getFirstCoordinate()[2];
+            var last = geometry.getLastCoordinate()[2];
+            if (first <= m && last >= m) {
+                var color = colorsHigh[feature.get('color')];
+                flights.innerHTML += '<span style="color:' + color + ';">' +
+                    feature.get('PLT') + '</span> &nbsp; ';
+
+                var coordinate = geometry.getCoordinateAtM(m, true);
+                var highlight = feature.get('highlight');
+                if (highlight === undefined) {
+                    //var col = colorsHigh[feature.get('color')];
+                    highlight = new ol.Feature(new ol.geom.Point(coordinate));
+                    highlight.set('color', feature.get('color'));
+                    highlight.set('PLT', feature.get('PLT'));
+                    feature.set('highlight', highlight);
+
+                    featureOverlay.getSource().addFeature(highlight);
+                } else {
+                    highlight.getGeometry().setCoordinates(coordinate);
+                }
+            }
+            else {
+                var highlight = feature.get('highlight');
+                if (highlight != undefined) {
+                    feature.set('highlight', undefined);
+                    featureOverlay.getSource().removeFeature(highlight);
+                }
+            }
+        });
+        vectorSourceWind.forEachFeature(function(feature) {
+            feature.changed();
+        });
+        vectorSourceWind5min.forEachFeature(function(feature) {
+            feature.changed();
+        });
+        vectorSourceWind15min.forEachFeature(function(feature) {
+            feature.changed();
+        });
+        vectorSourceIntersections.forEachFeature(function(feature) {
+            feature.changed();
+        });
+    });
+    $("#sliderTime").val($("#sliderTime").attr('min'));
+    $("#sliderTime").trigger("input");
+
+    function time2canvas(t, w) {
+        var len = time.stop - time.start;
+        var r = t - time.start;
+        r = (r / len) * w;
+        return r;
+    }
+
+    function drawCanvas() {
+        var el = document.getElementById("sliderCanvas");
+        if (!el.getContext) return;
+
+        var w = 1000;
+        var h = el.scrollHeight;
+
+        var time_width = time.stop - time.start;
+
+        var c = el.getContext('2d');
+        c.fillStyle = 'rgb(0, 0, 0)';
+        c.fillRect(0, 0, w, h);
+
+        var y = 1;
+        var fh = 2;
+        vectorSourceFlights.forEachFeature(function(f) {
+            var geometry = f.getGeometry();
+            var start = geometry.getFirstCoordinate()[2];
+            var stop = geometry.getLastCoordinate()[2];
+            var l = time2canvas(start, w);
+            var r = time2canvas(stop, w);
+            c.fillStyle = colorsHigh[f.get('color')];
+            c.fillRect(l, y, r-l, fh);
+            y += fh;
+        });
+    }
+
+    $(window).on('resize', function() {
+            drawCanvas();
+            });
+    $(document).ready(function() {
+            drawCanvas();
+            });
+    </script>
+  </body>
+</html>

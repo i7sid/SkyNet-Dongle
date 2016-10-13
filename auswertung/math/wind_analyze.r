@@ -1,10 +1,60 @@
 ## skynet test filter
 
+# configuration
+length_short    <- 60   #* (4/5)
+length_long     <- 180  # 360
+
 library(zoo)
 
-args = commandArgs(trailingOnly=TRUE)
+# helpers
+rad2deg <- function(rad) {(rad * 180) / (pi)}
+deg2rad <- function(deg) {(deg * pi) / (180)}
+
+# own mean function for direction
+dirmean <- function(inp) {
+  x = sin(deg2rad(inp))
+  y = cos(deg2rad(inp))
+  
+  x_mean = mean(x)
+  y_mean = mean(y)
+  
+  # border case x=y=0 is not important
+  if (x_mean >= 0 && y_mean == 0) {
+    return(90)
+  }
+  else if (x_mean < 0 && y_mean == 0) {
+    return(270)
+  }
+  else if (x_mean >= 0 && y_mean > 0) {
+    return(rad2deg(atan(abs(x_mean)/abs(y_mean))))
+  }
+  else if (x_mean >= 0 && y_mean < 0) {
+    return(180 - rad2deg(atan(abs(x_mean)/abs(y_mean))))
+  }
+  else if (x_mean < 0 && y_mean > 0) {
+    return(360 - rad2deg(atan(abs(x_mean)/abs(y_mean))))
+  }
+  else if (x_mean < 0 && y_mean < 0) {
+    return(180 + rad2deg(atan(abs(x_mean)/abs(y_mean))))
+  }
+  
+
+  return(0)
+}
+
+# own difference funtion for direction (treats jumps > 180° as in other direction)
+dirdiffelem <- function(z) {
+  a <- z[1]
+  b <- z[2]
+  
+  if      (a - b >  180) return(360 - a - b)
+  else if (a - b < -180) return(360 + a - b)
+  else                   return(a - b)
+}
+
 
 # check command line
+args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0) {
     stop("Usage: Rscript <scriptname> <in_file> <out_file_base>", call.=FALSE)
 }
@@ -54,8 +104,8 @@ write.table(z$V4, file = out_dir_file_raw, append = FALSE, quote = TRUE, sep = "
             col.names = FALSE, qmethod = c("escape", "double"),
             fileEncoding = "UTF-8")
 
-av_short <- rollapplyr(z$V3[,1], list(-(60:1)), mean, fill=0)
-av_short_dir <- rollapplyr(z$V4[,1], list(-(60:1)), mean, fill=0)
+av_short <- rollapplyr(z$V3[,1], list(-(length_short:1)), mean, fill=0)
+av_short_dir <- rollapplyr(z$V4[,1], list(-(length_short:1)), dirmean, fill=0)
 
 write.table(av_short, file = out_file_5, append = FALSE, quote = TRUE, sep = ",",
             eol = "\n", na = "NA", dec = ".", row.names = TRUE,
@@ -67,8 +117,8 @@ write.table(av_short_dir, file = out_dir_file_5, append = FALSE, quote = TRUE, s
             fileEncoding = "UTF-8")
 
 
-av_long <- rollapplyr(z$V3[,1], list(-(180:1)), mean, fill=0)
-av_long_dir <- rollapplyr(z$V4[,1], list(-(180:1)), mean, fill=0)
+av_long <- rollapplyr(z$V3[,1], list(-(length_long:1)), mean, fill=0)
+av_long_dir <- rollapplyr(z$V4[,1], list(-(length_long:1)), dirmean, fill=0)
 
 write.table(av_long, file = out_file_15, append = FALSE, quote = TRUE, sep = ",",
             eol = "\n", na = "NA", dec = ".", row.names = TRUE,
@@ -82,7 +132,9 @@ write.table(av_long_dir, file = out_dir_file_15, append = FALSE, quote = TRUE, s
 
 
 diff = av_short - av_long
-diff_dir = av_short_dir - av_long_dir
+merged_diff <- merge(av_short_dir, av_long_dir)
+diff_dir <- zoo(apply(merged_diff, 1, dirdiffelem), time(merged_diff))
+
 
 write.table(diff, file = out_file_diff, append = FALSE, quote = TRUE, sep = ",",
             eol = "\n", na = "NA", dec = ".", row.names = TRUE,
