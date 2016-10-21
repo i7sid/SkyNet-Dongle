@@ -45,8 +45,8 @@ foreach ($bases as $b) {
     $argv[$i++] = $b . '-dir-5min.csv';
     $argv[$i++] = $b . '-15min.csv';
     $argv[$i++] = $b . '-dir-15min.csv';
-    $argv[$i++] = $b . '-diff.csv';
-    $argv[$i++] = $b . '-dir-diff.csv';
+    #$argv[$i++] = $b . '-diff.csv';
+    $argv[$i++] = $b . '-vector.csv';
 }
 
 $argv[$i++] = str_replace('-wind-', '-pos-', $bases[0]) . '-mean.csv';

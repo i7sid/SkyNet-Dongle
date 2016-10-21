@@ -10,16 +10,16 @@ require_once('shared.inc.php');
 
 
 // print usage
-if ($argc < 19 || $argv[1] == '-h') {
+if ($argc < 17 || $argv[1] == '-h') {
     echo "Usage: " . $argv[0] . ' ' .
         'wind-speed-raw.csv wind-dir-raw.csv ' .
         'wind-speed-5min.csv wind-dir-5min.csv' .
-        'wind-speed-15min.csv wind-dir-15min.csv' .
-        'wind-speed-diff.csv wind-dir-diff.csv' .
+        'wind-speed-15min.csv wind-dir-15min.csv ' .
+        'wind-speed-diff.csv  ' .
         'wind-speed-raw.csv wind-dir-raw.csv ' .
-        'wind-speed-5min.csv wind-dir-5min.csv' .
-        'wind-speed-15min.csv wind-dir-15min.csv' .
-        'wind-speed-diff.csv wind-dir-diff.csv' .
+        'wind-speed-5min.csv wind-dir-5min.csv ' .
+        'wind-speed-15min.csv wind-dir-15min.csv ' .
+        'wind-speed-diff.csv ' .
         'station-1-pos.csv station-2-pos.csv' .
         "\n";
     exit;
@@ -31,17 +31,15 @@ $in_dir_5min    = readCSV($argv[4]);
 $in_speed_15min = readCSV($argv[5]);
 $in_dir_15min   = readCSV($argv[6]);
 $in_speed_diff  = readCSV($argv[7]);
-$in_dir_diff    = readCSV($argv[8]);
-$in2_speed_raw   = readCSV($argv[9]);
-$in2_dir_raw     = readCSV($argv[10]);
-$in2_speed_5min  = readCSV($argv[11]);
-$in2_dir_5min    = readCSV($argv[12]);
-$in2_speed_15min = readCSV($argv[13]);
-$in2_dir_15min   = readCSV($argv[14]);
-$in2_speed_diff  = readCSV($argv[15]);
-$in2_dir_diff    = readCSV($argv[16]);
-$pos_station1    = readCSV($argv[17]);
-$pos_station2    = readCSV($argv[18]);
+$in2_speed_raw   = readCSV($argv[8]);
+$in2_dir_raw     = readCSV($argv[9]);
+$in2_speed_5min  = readCSV($argv[10]);
+$in2_dir_5min    = readCSV($argv[11]);
+$in2_speed_15min = readCSV($argv[12]);
+$in2_dir_15min   = readCSV($argv[13]);
+$in2_speed_diff  = readCSV($argv[14]);
+$pos_station1    = readCSV($argv[15]);
+$pos_station2    = readCSV($argv[16]);
 
 $data = array();
 
@@ -93,13 +91,8 @@ foreach ($in_speed_diff as $l) {
     if (!array_key_exists($l[0], $data)) continue;
 
     $m = $data[$l[0]];
-    $m->station1->speed_diff = $l[1];
-}
-foreach ($in_dir_diff as $l) {
-    if (!array_key_exists($l[0], $data)) continue;
-
-    $m = $data[$l[0]];
-    $m->station1->dir_diff = $l[1];
+    $m->station1->speed_diff = $l[2];
+    $m->station1->dir_diff = $l[3];
 }
 
 
@@ -157,13 +150,8 @@ foreach ($in2_speed_diff as $l) {
     if (!array_key_exists($l[0], $data)) continue;
 
     $m = $data[$l[0]];
-    $m->station2->speed_diff = $l[1];
-}
-foreach ($in2_dir_diff as $l) {
-    if (!array_key_exists($l[0], $data)) continue;
-
-    $m = $data[$l[0]];
-    $m->station2->dir_diff = $l[1];
+    $m->station2->speed_diff = $l[2];
+    $m->station2->dir_diff = $l[3];
 }
 
 // sort all data by time
@@ -228,30 +216,34 @@ foreach ($data as $tp) {
     #$dir2 = ($dir2 + 180) % 360;
 
     // transform wind from polar to cartesian
-    $dir1_15 = (round($tp1->station1->dir_15min) + 180) % 360;
-    $dir2_15 = (round($tp2->station2->dir_15min) + 180) % 360;
-    $dir1_5 = (round($tp1->station1->dir_5min) + 180) % 360;
-    $dir2_5 = (round($tp2->station2->dir_5min) + 180) % 360;
-    $x_u1 = ($tp1->station1->speed_15min)^2 * cos(deg2rad($dir1_15));
-    $y_u1 = ($tp1->station1->speed_15min)^2 * sin(deg2rad($dir1_15));
-    $x_u2 = ($tp2->station2->speed_15min)^2 * cos(deg2rad($dir2_15));
-    $y_u2 = ($tp2->station2->speed_15min)^2 * sin(deg2rad($dir2_15));
-    $x_1 = ($tp1->station1->speed_5min)^2 * cos(deg2rad($dir1_5));
-    $y_1 = ($tp1->station1->speed_5min)^2 * sin(deg2rad($dir1_5));
-    $x_2 = ($tp2->station2->speed_5min)^2 * cos(deg2rad($dir2_5));
-    $y_2 = ($tp2->station2->speed_5min)^2 * sin(deg2rad($dir2_5));
+#    $dir1_15 = (round($tp1->station1->dir_15min) + 180) % 360;
+#    $dir2_15 = (round($tp2->station2->dir_15min) + 180) % 360;
+#    $dir1_5 = (round($tp1->station1->dir_5min) + 180) % 360;
+#    $dir2_5 = (round($tp2->station2->dir_5min) + 180) % 360;
+#    $x_u1 = ($tp1->station1->speed_15min)^2 * cos(deg2rad($dir1_15));
+#    $y_u1 = ($tp1->station1->speed_15min)^2 * sin(deg2rad($dir1_15));
+#    $x_u2 = ($tp2->station2->speed_15min)^2 * cos(deg2rad($dir2_15));
+#    $y_u2 = ($tp2->station2->speed_15min)^2 * sin(deg2rad($dir2_15));
+#    $x_1 = ($tp1->station1->speed_5min)^2 * cos(deg2rad($dir1_5));
+#    $y_1 = ($tp1->station1->speed_5min)^2 * sin(deg2rad($dir1_5));
+#    $x_2 = ($tp2->station2->speed_5min)^2 * cos(deg2rad($dir2_5));
+#    $y_2 = ($tp2->station2->speed_5min)^2 * sin(deg2rad($dir2_5));
+#
+#    // remember: CURRENT = LONG + UPDRAFT
+#    $x_a1 = $x_1 - $x_u1;
+#    $y_a1 = $y_1 - $y_u1;
+#    $x_a2 = $x_2 - $x_u2;
+#    $y_a2 = $y_2 - $y_u2;
+#
+#    // transform back to polar coordinates
+#    $dir1 = (450 - rad2deg(atan2($y_a1, $x_a1))) % 360;
+#    $dir2 = (450 - rad2deg(atan2($y_a2, $x_a2))) % 360;
+#    #$dir1 = (360 - rad2deg(atan2($y_a1, $x_a1)) + 90) % 360;
+#   $dir2 = (360 - rad2deg(atan2($y_a2, $x_a2)) + 90) % 360;
 
-    // remember: CURRENT = LONG + UPDRAFT
-    $x_a1 = $x_1 - $x_u1;
-    $y_a1 = $y_1 - $y_u1;
-    $x_a2 = $x_2 - $x_u2;
-    $y_a2 = $y_2 - $y_u2;
+    $dir1 = $tp1->station1->dir_diff;
+    $dir2 = $tp2->station2->dir_diff;
 
-    // transform back to polar coordinates
-    $dir1 = (450 - rad2deg(atan2($y_a1, $x_a1))) % 360;
-    $dir2 = (450 - rad2deg(atan2($y_a2, $x_a2))) % 360;
-    #$dir1 = (360 - rad2deg(atan2($y_a1, $x_a1)) + 90) % 360;
-    #$dir2 = (360 - rad2deg(atan2($y_a2, $x_a2)) + 90) % 360;
     $tp1->station1->dir_a = $dir1;
     $tp2->station2->dir_a = $dir2;
 
@@ -367,9 +359,11 @@ foreach ($data as $tp) {
         echo $tp->station1->mac . ',' .                 // CSV: 1
             $tp->station1->pos_x . ',' .                // CSV: 2
             $tp->station1->pos_y . ',' .                // CSV: 3
-            $tp->station1->speed . ',' .                // CSV: 4
-            $tp->station1->dir_5min . ',' .                  // CSV: 5
-            #$tp->station1->dir . ',' .                  // CSV: 5
+            #$tp->station1->speed . ',' .               // CSV: 4
+            $tp->station1->speed_diff . ',' .           // CSV: 4
+            $tp->station1->dir_diff . ',' .             // CSV: 5
+            #$tp->station1->dir_5min . ',' .            // CSV: 5
+            #$tp->station1->dir . ',' .                 // CSV: 5
             $tp->station1->speed_5min . ',' .           // CSV: 6
             $tp->station1->speed_15min . ',' .          // CSV: 7
             $tp->station1->speed_diff . ',';            // CSV: 8
@@ -382,9 +376,11 @@ foreach ($data as $tp) {
         echo $tp->station2->mac . ',' .                 // CSV: 9
             $tp->station2->pos_x . ',' .                // CSV: 10
             $tp->station2->pos_y . ',' .                // CSV: 11
-            $tp->station2->speed . ',' .                // CSV: 12
-            $tp->station2->dir_5min . ',' .                  // CSV: 13
-            #$tp->station2->dir . ',' .                  // CSV: 13
+            $tp->station2->speed_diff . ',' .           // CSV: 12
+            #$tp->station2->speed . ',' .               // CSV: 12
+            $tp->station2->dir_diff . ',' .             // CSV: 13
+            #$tp->station2->dir_5min . ',' .            // CSV: 13
+            #$tp->station2->dir . ',' .                 // CSV: 13
             $tp->station2->speed_5min . ',' .           // CSV: 14
             $tp->station2->speed_15min . ',' .          // CSV: 15
             $tp->station2->speed_diff . ',';            // CSV: 16
@@ -403,8 +399,8 @@ foreach ($data as $tp) {
     // more directions
     if ($tp->station1 !== null) {
         echo
-            $tp->station1->dir_a . ',' .             // CSV: 23
-            #$tp->station1->dir_5min . ',' .             // CSV: 23
+            #$tp->station1->dir_a . ',' .             // CSV: 23
+            $tp->station1->dir_5min . ',' .             // CSV: 23
             $tp->station1->dir_15min . ',' .            // CSV: 24
             $tp->station1->dir_diff . ',';              // CSV: 25
     }
@@ -414,8 +410,8 @@ foreach ($data as $tp) {
 
     if ($tp->station2 !== null) {
         echo
-            $tp->station2->dir_a . ',' .             // CSV: 26
-            #$tp->station2->dir_5min . ',' .             // CSV: 26
+            #$tp->station2->dir_a . ',' .             // CSV: 26
+            $tp->station2->dir_5min . ',' .             // CSV: 26
             $tp->station2->dir_15min . ',' .            // CSV: 27
             $tp->station2->dir_diff . ',';              // CSV: 28
     }
