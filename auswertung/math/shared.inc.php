@@ -11,7 +11,14 @@
 date_default_timezone_set('UTC');
 
 function _e($msg) {
-    file_put_contents('php://stderr', $msg);
+    if (is_string($msg)) {
+        file_put_contents('php://stderr', $msg);
+    }
+    else if (is_object($msg)) {
+        $r = var_export($msg, true);
+        $r .= "\n";
+        file_put_contents('php://stderr', $r);
+    }
 }
 
 function readCSV($csvFile) {
@@ -95,6 +102,7 @@ class Measurement {
     public $dir_5min        = 0;
     public $speed_15min     = 0;
     public $dir_15min       = 0;
+    public $dir_a           = 0;
     public $speed_diff      = 0;
     public $dir_diff        = 0;
     

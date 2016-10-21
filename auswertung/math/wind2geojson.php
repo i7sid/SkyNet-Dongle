@@ -152,18 +152,19 @@ foreach($in as $line) {
     if (!empty($line[9])) {
         $speed = $line[14];
         $dir = $line[26];
-        if (empty($speed)) $speed = 0;
-        if (empty($dir)) $dir = 0;
+        #if (empty($speed)) $speed = 0;
+        #if (empty($dir)) $dir = 0;
+        if (empty($speed) === false && empty($dir) === false) {
+            $p = array(
+                'mac'       => $line[9],
+                'time'      => $time,
+                'item_type' => 'wind_5min',
+                'item_id'   => $id
+            );
+            echo drawWindLine($line[10], $line[11], $speed, $dir, $p);
 
-        $p = array(
-            'mac'       => $line[9],
-            'time'      => $time,
-            'item_type' => 'wind_5min',
-            'item_id'   => $id
-        );
-        echo drawWindLine($line[10], $line[11], $speed, $dir, $p);
-
-        $id++;
+            $id++;
+        }
     }
 
     // wind direction station 1 (15 min)

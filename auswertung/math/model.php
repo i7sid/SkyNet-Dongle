@@ -215,11 +215,47 @@ foreach ($data as $tp) {
     $diff = abs($tp1->time->getTimestamp() - $tp2->time->getTimestamp());
 
     // check if time between last two measurements differs too much
-    if ($diff >= 150) continue;
+    if ($diff >= 150) {
+        continue;
+    }
 
-    // some shortcuts
-    $dir1 = $tp1->station1->dir_5min;
-    $dir2 = $tp2->station2->dir_5min;
+    #// some shortcuts
+    #$dir1 = $tp1->station1->dir_5min;
+    #$dir2 = $tp2->station2->dir_5min;
+
+    #// dir* is direction FROM that the wind comes, so add 180°
+    #$dir1 = ($dir1 + 180) % 360;
+    #$dir2 = ($dir2 + 180) % 360;
+
+    // transform wind from polar to cartesian
+    $dir1_15 = (round($tp1->station1->dir_15min) + 180) % 360;
+    $dir2_15 = (round($tp2->station2->dir_15min) + 180) % 360;
+    $dir1_5 = (round($tp1->station1->dir_5min) + 180) % 360;
+    $dir2_5 = (round($tp2->station2->dir_5min) + 180) % 360;
+    $x_u1 = ($tp1->station1->speed_15min)^2 * cos(deg2rad($dir1_15));
+    $y_u1 = ($tp1->station1->speed_15min)^2 * sin(deg2rad($dir1_15));
+    $x_u2 = ($tp2->station2->speed_15min)^2 * cos(deg2rad($dir2_15));
+    $y_u2 = ($tp2->station2->speed_15min)^2 * sin(deg2rad($dir2_15));
+    $x_1 = ($tp1->station1->speed_5min)^2 * cos(deg2rad($dir1_5));
+    $y_1 = ($tp1->station1->speed_5min)^2 * sin(deg2rad($dir1_5));
+    $x_2 = ($tp2->station2->speed_5min)^2 * cos(deg2rad($dir2_5));
+    $y_2 = ($tp2->station2->speed_5min)^2 * sin(deg2rad($dir2_5));
+
+    // remember: CURRENT = LONG + UPDRAFT
+    $x_a1 = $x_1 - $x_u1;
+    $y_a1 = $y_1 - $y_u1;
+    $x_a2 = $x_2 - $x_u2;
+    $y_a2 = $y_2 - $y_u2;
+
+    // transform back to polar coordinates
+    $dir1 = (450 - rad2deg(atan2($y_a1, $x_a1))) % 360;
+    $dir2 = (450 - rad2deg(atan2($y_a2, $x_a2))) % 360;
+    #$dir1 = (360 - rad2deg(atan2($y_a1, $x_a1)) + 90) % 360;
+    #$dir2 = (360 - rad2deg(atan2($y_a2, $x_a2)) + 90) % 360;
+    $tp1->station1->dir_a = $dir1;
+    $tp2->station2->dir_a = $dir2;
+
+
     #$dir1 = $tp1->station1->dir;
     #$dir2 = $tp2->station2->dir;
 
@@ -256,11 +292,33 @@ foreach ($data as $tp) {
     $cos1 = cos($rad1);
     $cos2 = cos($rad2);
 
-    // do not throw a "Division by zero" error
-    if ($cos2 == 0 ||  ($sin1 - ($sin2 / $cos2) * $cos1) == 0) continue;
+    $det = $sin2 * $cos1 - $sin1 * $cos2;
 
-    $t1 = ($x2 - $x1 + ($sin2 / $cos2) * ($y1 - $y2)) / ($sin1 - ($sin2 / $cos2) * $cos1);
-    $t2 = ($y1 - $y2 + $cos1 * $t1) / $cos2;
+    if ($det == 0) continue; // they are parallel!
+
+    $t2 = (($x1 - $x2) * $cos1 - $sin1 * ($y1 - $y2)) / $det;
+    $t1 = - ($sin2 * ($y1 - $y2) - ($x1 - $x2) * $cos2) / $det;
+
+    // TODO check if $dir1 and $dir2 are parallel
+    //
+
+    // do not throw a "Division by zero" error
+    #if ($cos2 == 0 ||  ($sin1 - ($sin2 / $cos2) * $cos1) == 0) continue;
+
+    #$t1 = ($x2 - $x1 + ($sin2 / $cos2) * ($y1 - $y2)) / ($sin1 - ($sin2 / $cos2) * $cos1);
+    #$t2 = ($y1 - $y2 + $cos1 * $t1) / $cos2;
+
+    #$t = new DateTime("2016-07-08 10:57:13");
+    #if ($t == $tp->time) {
+    #    _e("DEBUG!!!\n");
+    #    _e($tp1);
+    #    _e($tp2);
+    #    _e($dir1 . "  |  " . $dir2 . "\n");
+    #    _e($x1 . ", " . $y1 . "  |  " . $x2 . ", " . $y2 . "\n");
+    #    _e($sin1 . ", " . $cos1 . "  |  " . $sin2 . ", " . $cos2 . "\n");
+    #    _e($det . " | " . $t1 . " | " . $t2 . "\n");
+    #    exit;
+    #}
 
     if ($t1 >= 0 && $t2 >= 0) {
         $tp->thermal_point_x = $tp2->station2->pos_x + $t2 * $sin2;
@@ -273,6 +331,7 @@ foreach ($data as $tp) {
         $p = new XYZ($tp->thermal_point_x, $tp->thermal_point_y, 0);
         $v_long = ($tp1->station1->speed_15min + $tp2->station2->speed_15min) / 2;
         $dir_long = ($tp1->station1->dir_15min + $tp2->station2->dir_15min) / 2;
+        $dir_long = ($dir_long + 180) % 360;
         $v_therm = 1; // in m/s
         $thermal_air = calcWindOffset($p, $h, $v_long, $dir_long, $v_therm);
 
@@ -309,7 +368,8 @@ foreach ($data as $tp) {
             $tp->station1->pos_x . ',' .                // CSV: 2
             $tp->station1->pos_y . ',' .                // CSV: 3
             $tp->station1->speed . ',' .                // CSV: 4
-            $tp->station1->dir . ',' .                  // CSV: 5
+            $tp->station1->dir_5min . ',' .                  // CSV: 5
+            #$tp->station1->dir . ',' .                  // CSV: 5
             $tp->station1->speed_5min . ',' .           // CSV: 6
             $tp->station1->speed_15min . ',' .          // CSV: 7
             $tp->station1->speed_diff . ',';            // CSV: 8
@@ -323,7 +383,8 @@ foreach ($data as $tp) {
             $tp->station2->pos_x . ',' .                // CSV: 10
             $tp->station2->pos_y . ',' .                // CSV: 11
             $tp->station2->speed . ',' .                // CSV: 12
-            $tp->station2->dir . ',' .                  // CSV: 13
+            $tp->station2->dir_5min . ',' .                  // CSV: 13
+            #$tp->station2->dir . ',' .                  // CSV: 13
             $tp->station2->speed_5min . ',' .           // CSV: 14
             $tp->station2->speed_15min . ',' .          // CSV: 15
             $tp->station2->speed_diff . ',';            // CSV: 16
@@ -342,7 +403,8 @@ foreach ($data as $tp) {
     // more directions
     if ($tp->station1 !== null) {
         echo
-            $tp->station1->dir_5min . ',' .             // CSV: 23
+            $tp->station1->dir_a . ',' .             // CSV: 23
+            #$tp->station1->dir_5min . ',' .             // CSV: 23
             $tp->station1->dir_15min . ',' .            // CSV: 24
             $tp->station1->dir_diff . ',';              // CSV: 25
     }
@@ -352,7 +414,8 @@ foreach ($data as $tp) {
 
     if ($tp->station2 !== null) {
         echo
-            $tp->station2->dir_5min . ',' .             // CSV: 26
+            $tp->station2->dir_a . ',' .             // CSV: 26
+            #$tp->station2->dir_5min . ',' .             // CSV: 26
             $tp->station2->dir_15min . ',' .            // CSV: 27
             $tp->station2->dir_diff . ',';              // CSV: 28
     }

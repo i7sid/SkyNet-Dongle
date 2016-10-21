@@ -1,4 +1,5 @@
 data_in         = "../data/".station."-wind-".datum."-diff.csv"
+data_in_diff    = "../data/".station."-wind-".datum."-diff-diff.csv"
 starts_in       = "../data/starts-".datum.".csv"
 
 
@@ -22,6 +23,8 @@ set timefmt "%Y-%m-%d %H:%M:%S"
 set style data lines
 set nokey
 set xzeroaxis
+set tics nomirror
+set y2tics
 
 set xdata time
 set format x "%H:%M"
@@ -29,14 +32,17 @@ set xlabel "Zeit (UTC)"
 set ylabel "Windgeschwindigkeit (km/h)"
 
 set xrange [dfrom:duntil]
-set yrange [-15:15]
+set yrange [-10:10]
+set y2range [-1.5:1.5]
 
 set style increment user
 set style line 1 lt 1 linecolor rgb "green"
 set style line 2 lt 1 linecolor rgb "red"
+set style line 4 lt 1 linecolor rgb "blue"
 set style line 5 lt 1 linecolor rgb "black"
 
 plot data_in using 1:2 ls 5, \
+    data_in_diff using 1:2 ls 4 axes x1y2, \
     starts_in \
     u 2:(A_min_y):(0):(abs(A_min_y) + A_max_y):3 with vectors nohead lc var
 
@@ -45,3 +51,4 @@ plot data_in using 1:2 ls 5, \
 
 
 # vim: set ft=gnuplot:
+
