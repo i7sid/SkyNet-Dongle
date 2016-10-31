@@ -421,16 +421,16 @@ foreach ($data as $tp) {
         #$t1 = ($x2 - $x1 + ($sin2 / $cos2) * ($y1 - $y2)) / ($sin1 - ($sin2 / $cos2) * $cos1);
         #$t2 = ($y1 - $y2 + $cos1 * $t1) / $cos2;
 
-        $t = new DateTime("2016-07-08 12:44:46");
-        if ($t == $tp->time) {
-            _e("DEBUG!!!\n");
-            _e($tp1);
-            _e($tp2);
-            _e($dir1 . "  |  " . $dir2 . "\n");
-            _e($x1 . ", " . $y1 . "  |  " . $x2 . ", " . $y2 . "\n");
-            _e($sin1 . ", " . $cos1 . "  |  " . $sin2 . ", " . $cos2 . "\n");
-            _e($det . " | " . $t1 . " | " . $t2 . "\n");
-        }
+        #$t = new DateTime("2016-07-08 12:44:46");
+        #if ($t == $tp->time) {
+        #    _e("DEBUG!!!\n");
+        #    _e($tp1);
+        #    _e($tp2);
+        #    _e($dir1 . "  |  " . $dir2 . "\n");
+        #    _e($x1 . ", " . $y1 . "  |  " . $x2 . ", " . $y2 . "\n");
+        #    _e($sin1 . ", " . $cos1 . "  |  " . $sin2 . ", " . $cos2 . "\n");
+        #    _e($det . " | " . $t1 . " | " . $t2 . "\n");
+        #}
 
         if ($t1 >= 0 && $t2 >= 0) {
             $tp->thermal_point_x = $tp2->station2->pos_x + $t2 * $sin2;

@@ -4,13 +4,16 @@ SkyNet-Dongle
 Welcome to the SkyNet-Dongle git repository!
 The initial work was done in the context of a bachelor thesis at the
 Friedrich-Alexander University Erlangen-Nürnberg.
+Some updates were made during a master thesis at the
+Friedrich-Alexander University Erlangen-Nürnberg.
+
 
 
 Hardware
 --------
 The main components are
 * CPU: LPC1769
-* Radio: RF4463PRO (Chipset: Si4463)
+* Radio: [LoRa-Feather](https://learn.adafruit.com/adafruit-feather-m0-radio-with-lora-radio-module?view=all)
 
 
 Firmware
@@ -44,7 +47,7 @@ That works as following:
 Send via USB CDC serial terminal a "goto bootloader" command.
 You can use:
 
-    ./usb-host/skynet-usb-host -f
+    ./usb-host/skynet-usb-host
 
 (You have to compile the host application before that.)
 
