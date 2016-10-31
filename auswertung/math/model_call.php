@@ -45,7 +45,12 @@ foreach ($bases as $b) {
     $argv[$i++] = $b . '-dir-5min.csv';
     $argv[$i++] = $b . '-15min.csv';
     $argv[$i++] = $b . '-dir-15min.csv';
-    #$argv[$i++] = $b . '-diff.csv';
+    $argv[$i++] = $b . '-1min.csv';
+    $argv[$i++] = $b . '-dir-1min.csv';
+    $argv[$i++] = $b . '-30min.csv';
+    $argv[$i++] = $b . '-dir-30min.csv';
+    $argv[$i++] = $b . '-diff.csv';
+    $argv[$i++] = $b . '-dir-diff.csv';
     $argv[$i++] = $b . '-vector.csv';
 }
 

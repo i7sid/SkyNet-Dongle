@@ -69,6 +69,8 @@ vectormean <- function(inp) {
   
   x_mean = mean(x)
   y_mean = mean(y)
+  #x_mean = median(x)   # Alternative: Median statt Mean
+  #y_mean = median(y)
   
   #v_m = sqrt(x_mean^2 + y_mean^2)
   v_m = sqrt(sqrt(x_mean^2 + y_mean^2))
@@ -145,8 +147,18 @@ out_file_diff_diff = paste(out_file_diff_diff_a, sep="", collapse="")
 out_dir_file_diff_diff_a = c(out_file_base, "-dir-diff-diff.csv")
 out_dir_file_diff_diff = paste(out_dir_file_diff_diff_a, sep="", collapse="")
 
-out_file_polar_a = c(out_file_base, "-vector.csv")
-out_file_polar = paste(out_file_polar_a, sep="", collapse="")
+out_dir_diff_5_30 = paste(c(out_file_base, "-dir-diff-5-30.csv"), sep="", collapse="")
+out_dir_diff_15_30 = paste(c(out_file_base, "-dir-diff-15-30.csv"), sep="", collapse="")
+out_dir_diff_1_15 = paste(c(out_file_base, "-dir-diff-1-15.csv"), sep="", collapse="")
+out_dir_diff_1_30 = paste(c(out_file_base, "-dir-diff-1-30.csv"), sep="", collapse="")
+
+
+out_file_polar = paste(c(out_file_base, "-vector.csv"), sep="", collapse="")
+out_file_polar_1 = paste(c(out_file_base, "-vector-1.csv"), sep="", collapse="")
+out_file_polar_15 = paste(c(out_file_base, "-vector-15.csv"), sep="", collapse="")
+out_file_polar_raw = paste(c(out_file_base, "-vector-raw.csv"), sep="", collapse="")
+
+
 
 wspeed <- read.csv(file=in_file, head=FALSE, sep=",")
 datum <- strptime(wspeed$V1, format="%Y-%m-%d %H:%M:%S")
@@ -227,6 +239,8 @@ write.table(diff_dir_diff, file = out_dir_file_diff_diff, append = FALSE, quote 
 
 
 
+
+
 ## further means
 av_very_short <- rollapplyr(z, list(-(length_very_short:1)), vectormean, fill=0, by.column=FALSE)
 
@@ -259,21 +273,25 @@ z_short <- rollapplyr(z, list(-(length_short:1)), vectormean, fill=0, by.column=
 
 z_diff <- z_short - z_long
 
-wind_u_cartesian <- wind2cartesian(coredata(z_long));
+wind_u_cartesian <- wind2cartesian(coredata(av_very_long));
+#wind_u_cartesian <- wind2cartesian(coredata(z_long));
 z_u_cartesian <- aggregate(zoo(wind_u_cartesian), as.POSIXct(indices), tail, 1)
-#plot(z_u_cartesian$V1, z_u_cartesian$V2, xlim=c(-300,300), ylim=c(-300,300))
 
 ## calculate updraft vectors
-wind_cartesian <- wind2cartesian(coredata(z));
+wind_cartesian <- wind2cartesian(coredata(av_very_short));
+#wind_cartesian <- wind2cartesian(coredata(z));
 z_cartesian <- aggregate(zoo(wind_cartesian), as.POSIXct(indices), tail, 1)
-#plot(z_cartesian$V1, z_cartesian$V2, xlim=c(-300,300), ylim=c(-300,300))
 
 z_a_cartesian <- z_cartesian - z_u_cartesian
-#plot(z_a_cartesian$V1, z_a_cartesian$V2, xlim=c(-300,300), ylim=c(-300,300))
 
 wind_a_polar <- wind2polar(coredata(z_a_cartesian))
 z_a_polar <- aggregate(zoo(wind_a_polar), as.POSIXct(indices), tail, 1)
-z_a_short <- rollapplyr(z_a_polar, list(-(length_short:1)), vectormean, fill=0, by.column=FALSE)
+#z_a_short <- rollapplyr(z_a_polar, list(-(length_short:1)), vectormean, fill=0, by.column=FALSE)
+z_a_1 <- rollapplyr(z_a_polar, list(-(length_very_short:1)), vectormean, fill=0, by.column=FALSE)
+z_a_15 <- rollapplyr(z_a_polar, list(-(length_long:1)), vectormean, fill=0, by.column=FALSE)
+
+z_a_short <- z_a_1
+#z_a_short <- z_a_polar
 
 
 write.zoo(z_a_short, file = out_file_polar, append = FALSE, quote = TRUE, sep = ",",
@@ -281,39 +299,55 @@ write.zoo(z_a_short, file = out_file_polar, append = FALSE, quote = TRUE, sep = 
             col.names = FALSE, qmethod = c("escape", "double"),
             fileEncoding = "UTF-8")
 
+write.zoo(z_a_1, file = out_file_polar_1, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+write.zoo(z_a_15, file = out_file_polar_15, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+write.zoo(z_a_polar, file = out_file_polar_raw, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
 
 
-### OLD STUFF, just for reference
+## further diffs
+diff_5_30 = av_short$V3 - av_very_long$V3
+diff_15_30 = av_long$V3 - av_very_long$V3
+diff_1_15 = av_very_short$V3 - av_long$V3
+diff_1_30 = av_very_short$V3 - av_very_long$V3
 
-## own mean function for direction
-# dirmean <- function(inp) {
-#   x = sin(deg2rad(inp))
-#   y = cos(deg2rad(inp))
-#   
-#   x_mean = mean(x)
-#   y_mean = mean(y)
-#   
-#   # border case x=y=0 is not important
-#   if (x_mean >= 0 && y_mean == 0) {
-#     return(90)
-#   }
-#   else if (x_mean < 0 && y_mean == 0) {
-#     return(270)
-#   }
-#   else if (x_mean >= 0 && y_mean > 0) {
-#     return(rad2deg(atan(abs(x_mean)/abs(y_mean))))
-#   }
-#   else if (x_mean >= 0 && y_mean < 0) {
-#     return(180 - rad2deg(atan(abs(x_mean)/abs(y_mean))))
-#   }
-#   else if (x_mean < 0 && y_mean > 0) {
-#     return(360 - rad2deg(atan(abs(x_mean)/abs(y_mean))))
-#   }
-#   else if (x_mean < 0 && y_mean < 0) {
-#     return(180 + rad2deg(atan(abs(x_mean)/abs(y_mean))))
-#   }
-#   
-#   
-#   return(0)
-# }
-# 
+merged_diff_5_30 <- merge(av_short$V4, av_very_long$V4)
+merged_diff_15_30 <- merge(av_long$V4, av_very_long$V4)
+merged_diff_1_15 <- merge(av_very_short$V4, av_long$V4)
+merged_diff_1_30 <- merge(av_very_short$V4, av_very_long$V4)
+diff_dir_5_30 <- zoo(apply(merged_diff_5_30, 1, dirdiffelem), time(merged_diff_5_30))
+diff_dir_15_30 <- zoo(apply(merged_diff_15_30, 1, dirdiffelem), time(merged_diff_15_30))
+diff_dir_1_15 <- zoo(apply(merged_diff_1_15, 1, dirdiffelem), time(merged_diff_1_15))
+diff_dir_1_30 <- zoo(apply(merged_diff_1_30, 1, dirdiffelem), time(merged_diff_1_30))
+
+write.table(diff_dir_5_30, file = out_dir_diff_5_30, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+write.table(diff_dir_15_30, file = out_dir_diff_15_30, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+write.table(diff_dir_1_15, file = out_dir_diff_1_15, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+write.table(diff_dir_1_30, file = out_dir_diff_1_30, append = FALSE, quote = TRUE, sep = ",",
+            eol = "\n", na = "NA", dec = ".", row.names = TRUE,
+            col.names = FALSE, qmethod = c("escape", "double"),
+            fileEncoding = "UTF-8")
+
+

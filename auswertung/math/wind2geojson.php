@@ -12,9 +12,9 @@ function drawWindLine($x, $y, $speed, $dir, $props) {
     // calculate target point for wind direction marker
     $r = $speed * 0.0650;     // in km
     $alpha = $dir;
-    $alpha = (360 - $alpha + 90) % 360;
-    $dx = $r * cos(deg2rad($alpha));
-    $dy = $r * sin(deg2rad($alpha));
+    #$alpha = (360 - $alpha + 90) % 360;
+    $dx = $r * sin(deg2rad($alpha));
+    $dy = $r * cos(deg2rad($alpha));
 
     // source: https://www.kompf.de/gps/distcalc.html
     #$target_x = $x + ($dx / (111.3 * cos(deg2rad($y))));
@@ -97,7 +97,8 @@ foreach($in as $line) {
     // wind direction station 1 (live)
     if (!empty($line[1])) {
         $speed = $line[4];
-        $dir = $line[5];
+        $dir = $line[25];
+        #$dir = $line[5];
         if (empty($speed)) $speed = 0;
         if (empty($dir)) $dir = 0;
 
@@ -115,7 +116,8 @@ foreach($in as $line) {
     // wind direction station 2 (live)
     if (!empty($line[9])) {
         $speed = $line[12];
-        $dir = $line[13];
+        $dir = $line[28];
+        #$dir = $line[13];
         if (empty($speed)) $speed = 0;
         if (empty($dir)) $dir = 0;
 
