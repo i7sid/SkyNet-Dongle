@@ -9,17 +9,20 @@
 
     <style>
         html,body { margin:0; padding:0; width:100%; height:100%; }
-        #map { position:absolute; width:100%; top:0; bottom:100px; }
+        #map { position:absolute; width:100%; top:0; bottom:120px; }
         #controls { position:absolute; left:0; right:0; bottom:0; height:120px;
             background-color:#EEEEFF; }
         #sliderTime { width:100%; }
         #sliderCanvas { width:100%; height:30px; }
+        #timeContainer { float:right; }
+        #chosenTime { font-family:monospace; font-size:22pt; font-weight:bold; }
         .custom-mouse-position { display:inline-block; }
     </style>
     <script src="./jquery-3.1.0.min.js"></script>
     <!--<script src="./ol-debug.js"></script>-->
     <script src="./ol.js"></script>
     <script src="./vis-utils.js"></script>
+    <script src="./mousetrap.min.js"></script>
 
     <script>
     var wind_data = [];
@@ -31,10 +34,11 @@
   <body>
     <div id="map" class="map"></div>
     <div id="controls">
-        <input id="sliderTime" type="range" min="0" max="10000" step="1" /><br>
+        <input id="sliderTime" class="mousetrap" type="range" min="0" max="10000" step="1" /><br>
         <canvas id="sliderCanvas" height="30" width="1000">
         </canvas>
-        Zeit: <span id="chosenTime"></span><br>
+        <span id="timeContainer">Zeit: <span id="chosenTime"></span> (UTC)</span>
+        Datum: <span id="chosenDate"></span><br>
         Flüge im Zeitfenster: <span id="chosenFlights"></span><br>
         Maus: <span id="mouseCoord"></span><br>
     <div>
@@ -111,11 +115,11 @@
 
     var alpha = '0.90';
     var colorsHigh = [
-        'rgba(127, 208, 178, ' + alpha + ')',
-        'rgba(158, 189, 109, ' + alpha + ')',
-        'rgba(234, 157, 105, ' + alpha + ')',
-        'rgba(255, 170, 165, ' + alpha + ')',
-        'rgba(255, 139, 148, ' + alpha + ')',
+        'rgba(107, 188, 158, ' + alpha + ')',
+        'rgba(138, 169,  89, ' + alpha + ')',
+        'rgba(214, 137,  85, ' + alpha + ')',
+        'rgba(235, 150, 145, ' + alpha + ')',
+        'rgba(235, 119, 128, ' + alpha + ')',
         'rgba(102, 153, 0  , ' + alpha + ')',
         'rgba(148, 176, 15 , ' + alpha + ')',
         'rgba(153, 204, 153, ' + alpha + ')',
@@ -245,7 +249,7 @@
     var styleFunctionWind = function(feature) {
         var m = parseInt($("#sliderTime").val(), 10);
         var time = feature.get('time');
-        var d = 3;
+        var d = 2;
         if ((m - d) <= time && (m + d) >= time) {
             style = windStyleVisible;
         }
@@ -257,7 +261,7 @@
     var styleFunctionWind5min = function(feature) {
         var m = parseInt($("#sliderTime").val(), 10);
         var time = feature.get('time');
-        var d = 3;
+        var d = 2;
         if ((m - d) <= time && (m + d) >= time) {
             style = windStyleVisible5min;
         }
@@ -269,7 +273,7 @@
     var styleFunctionWind15min = function(feature) {
         var m = parseInt($("#sliderTime").val(), 10);
         var time = feature.get('time');
-        var d = 3;
+        var d = 2;
         if ((m - d) <= time && (m + d) >= time) {
             style = windStyleVisible15min;
         }
@@ -370,10 +374,10 @@
             zoom: 14
         }),
         controls: ol.control.defaults({
-                attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+            attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
                 collapsible: false
             })
-        }).extend([mousePositionControl])
+        }).extend([mousePositionControl, new ol.control.ScaleLine()])
     });
 
 /*
@@ -429,10 +433,13 @@
     $("#sliderTime").on("input", function() {
         var m = parseInt(this.value, 10);
         var selDate = new Date(m * 1000);
+        $("#chosenDate").html(
+            selDate.getDate() + '.' + (selDate.getMonth()+1) + '.' +
+            selDate.getFullYear());
+
         $("#chosenTime").html(
-            selDate.getDate() + '.' + selDate.getMonth() + '.' + selDate.getFullYear() +
-            ' ' + selDate.getUTCHours() + ':' + selDate.getUTCMinutes() + ':' +
-            selDate.getUTCSeconds() + ' (UTC)');
+            selDate.getUTCHours() + ':' + pad2(selDate.getUTCMinutes()) + ':' +
+            pad2(selDate.getUTCSeconds()));
 
         var flights = $('#chosenFlights')[0];
         flights.innerHTML = '';
@@ -518,6 +525,26 @@
             y += fh;
         });
     }
+
+    function timerOffset(a) {
+       var min = $('#sliderTime').attr('min');
+       var max = $('#sliderTime').attr('max');
+       var val = parseInt($('#sliderTime').val());
+       var t = val + a;
+
+       if (t > max)         t = max;
+       else if (t < min)    t = min;
+       $('#sliderTime').val(t);
+       $("#sliderTime").trigger("input");
+    }
+
+    Mousetrap.bind('y', function() { timerOffset(-60*30); });
+    Mousetrap.bind('x', function() { timerOffset(-60); });
+    Mousetrap.bind('c', function() { timerOffset(-10); });
+    //Mousetrap.bind('v', function() { timerOffset(10); });
+    Mousetrap.bind('b', function() { timerOffset(10); });
+    Mousetrap.bind('n', function() { timerOffset(60); });
+    Mousetrap.bind('m', function() { timerOffset(60*30); });
 
     $(window).on('resize', function() {
             drawCanvas();
